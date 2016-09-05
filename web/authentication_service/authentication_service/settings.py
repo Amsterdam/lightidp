@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'authentication_service.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.getenv('DB_NAME', 'auths'),
         'USER': os.getenv('DB_USER', 'auths'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'insecure'),
@@ -87,7 +87,6 @@ DATABASES = {
         'PORT': os.getenv('DATABASE_PORT_5432_TCP_PORT', '5405'),
     }
 }
-
 
 REST_FRAMEWORK = dict(
     DEFAULT_AUTHENTICATION_CLASSES=(
