@@ -1,11 +1,16 @@
-from django.conf import settings
 from rest_framework.test import APITestCase
+from django.contrib.auth.models import User
 
 TEST_USER = 'testuser'
-PASSWORD = settings.TEST_USER_PASSWORD
+PASSWORD = 'just_a_password'
 
 
 class AuthenticationServiceTest(APITestCase):
+
+    def setUp(self):
+        test_user = User.objects.create(username=TEST_USER)
+        test_user.set_password(PASSWORD)
+        test_user.save()
 
     def test_standard_jwt_method(self):
         response = self.client.post('/api-token-auth/', {'username': TEST_USER, 'password': PASSWORD})

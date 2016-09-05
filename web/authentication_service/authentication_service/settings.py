@@ -99,8 +99,6 @@ REST_FRAMEWORK = dict(
     COERCE_DECIMAL_TO_STRING=False,
 )
 
-TEST_USER_PASSWORD = os.getenv('TEST_USER_PASSWORD', 'for local use set in ~/.docker/env/authenticatie_service.env')
-
 JWT_SHARED_SECRET_KEY = os.getenv('JWT_SHARED_SECRET_KEY', 'for local use set in ~/.docker/env/authenticatie_service.env')
 
 JWT_AUTH = {
