@@ -1,0 +1,23 @@
+database:
+  image: admin.datapunt.amsterdam.nl:5000/atlas/postgres
+  ports:
+    - "5403:5432"
+  environment:
+    POSTGRES_DB: atlas
+    POSTGRES_USER: atlas
+    POSTGRES_PASSWORD: insecure
+
+
+web:
+  build: ./web
+  ports:
+    - "8102:8000"
+  links:
+    - database:database
+  environment:
+    SECRET_KEY: hoi
+    DB_NAME: atlas
+    DB_USER: atlas
+    DB_PASSWORD: insecure
+  env_file:
+    - "~/.docker/env/authenticatie_service.env"
