@@ -23,4 +23,5 @@ from rest_framework_jwt.views import obtain_jwt_token
 urlpatterns = [
     url(r'^authenticatie/token',  AuthenticationTokenView.as_view()),
     url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^status/', include('health.urls')),
 ]

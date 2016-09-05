@@ -22,9 +22,14 @@ class AuthenticationServiceTest(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
 
-
     def test_without_credentials(self):
         response = self.client.get('/authenticatie/token')
         self.assertEqual(response.status_code, 200)
         self.assertEqual([], response.data)
         self.assertNotIn('token', response.data)
+
+    def test_get_status_health(self):
+        response=self.client.get('/status/health')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Connectivity OK', str(response.content))
+
