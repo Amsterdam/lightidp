@@ -9,6 +9,8 @@ tests:
   build: ../web
   links:
     - database:database
+  volumes:
+    - ../reports:/app/reports
   environment:
     DATABASE_NAME: auths
     DATABASE_USER: auths
