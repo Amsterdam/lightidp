@@ -3,8 +3,8 @@ database:
   ports:
     - "5405:5432"
   environment:
-    POSTGRES_DB: auths
-    POSTGRES_USER: auths
+    POSTGRES_DB: authenticatie
+    POSTGRES_USER: authenticatie
     POSTGRES_PASSWORD: insecure
 
 
@@ -16,6 +16,6 @@ web:
     - database:database
   environment:
     SECRET_KEY: hoi
-    DB_NAME: auths
-    DB_USER: auths
+    DB_NAME: authenticatie
+    DB_USER: authenticatie
     DB_PASSWORD: insecure

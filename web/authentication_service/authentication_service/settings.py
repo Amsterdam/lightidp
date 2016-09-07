@@ -80,8 +80,8 @@ WSGI_APPLICATION = 'authentication_service.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DB_NAME', 'auths'),
-        'USER': os.getenv('DB_USER', 'auths'),
+        'NAME': os.getenv('DB_NAME', 'authenticatie'),
+        'USER': os.getenv('DB_USER', 'authenticatie'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'insecure'),
         'HOST': os.getenv('DATABASE_PORT_5432_TCP_ADDR', 'localhost'),
         'PORT': os.getenv('DATABASE_PORT_5432_TCP_PORT', '5405'),

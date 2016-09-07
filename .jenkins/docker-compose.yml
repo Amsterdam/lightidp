@@ -2,7 +2,7 @@ database:
   image: admin.datapunt.amsterdam.nl:5000/atlas/postgres
   environment:
     POSTGRES_PASSWORD: insecure
-    POSTGRES_USER: auths
+    POSTGRES_USER: authenticatie
 
 
 tests:
@@ -12,8 +12,8 @@ tests:
   volumes:
     - ../reports:/app/reports
   environment:
-    DATABASE_NAME: auths
-    DATABASE_USER: auths
+    DATABASE_NAME: authenticatie
+    DATABASE_USER: authenticatie
     DATABASE_PASSWORD: insecure
   command: bash -c "/app/docker-wait.sh && python manage.py jenkins"
 
@@ -23,6 +23,6 @@ web:
   links:
     - database:database
   environment:
-    DB_NAME: auths
-    DB_USER: auths
+    DB_NAME: authenticatie
+    DB_USER: authenticatie
     DB_PASSWORD: insecure
