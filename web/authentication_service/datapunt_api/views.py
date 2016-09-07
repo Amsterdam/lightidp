@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 
-
 class AuthenticationTokenView(APIView):
     def post(self, request):
         if 'grant_type' in request.data and request.data['grant_type'] == 'password':

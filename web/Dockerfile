@@ -23,5 +23,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 USER datapunt
 COPY authentication_service /app/
-CMD /app/docker-entrypoint.sh
-
+CMD ["/app/docker-entrypoint.sh"]
