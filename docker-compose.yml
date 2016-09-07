@@ -19,5 +19,3 @@ web:
     DB_NAME: auths
     DB_USER: auths
     DB_PASSWORD: insecure
-  env_file:
-    - "~/.docker/env/authenticatie_service.env"

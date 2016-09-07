@@ -99,7 +99,7 @@ REST_FRAMEWORK = dict(
     COERCE_DECIMAL_TO_STRING=False,
 )
 
-JWT_SHARED_SECRET_KEY = os.getenv('JWT_SHARED_SECRET_KEY', 'for local use set in ~/.docker/env/authenticatie_service.env')
+JWT_SHARED_SECRET_KEY = os.getenv('JWT_SHARED_SECRET_KEY', 'some_shared_secret')
 
 JWT_AUTH = {
     'JWT_ENCODE_HANDLER':
