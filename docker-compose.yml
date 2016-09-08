@@ -19,3 +19,5 @@ web:
     DB_NAME: authenticatie
     DB_USER: authenticatie
     DB_PASSWORD: insecure
+  volumes:
+    - ./reports:/app/reports
