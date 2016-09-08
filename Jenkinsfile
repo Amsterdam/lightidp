@@ -25,7 +25,7 @@ node {
 
     stage "Build base image"
     tryStep "build", {
-        sh "docker-compose -f .jenkins/docker-compose.yml build web --pull"
+        sh "docker-compose -f .jenkins/docker-compose.yml build web"
     }
 
     stage 'Test'
