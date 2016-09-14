@@ -6,13 +6,15 @@ from rest_framework.response import Response
 
 def cleanup_payload(payload):
     """
-    remove deprecated keys from payload, see rest_framwework_jwt.utils.jwt_payload_handler vs. 1.8.0
+    remove deprecated keys from payload,
+        see rest_framwework_jwt.utils.jwt_payload_handler version 1.8.0, that is putting them in
     """
     return {k: v for (k,v) in payload.items() if k != 'email' and k != 'user_id'}
 
 
 class AuthenticationTokenView(APIView):
     def post(self, request):
+        token = None
         if 'username' in request.data and 'password' in request.data:
             token = self.grant_user_credentials(request)
 

@@ -52,9 +52,14 @@ class AuthenticationServiceTest(APITestCase):
         original_expiry = datetime.fromtimestamp(int(decoded['orig_iat']))
         self.assertLess(original_expiry, expiry)
 
-    def test_without_credentials(self):
+    def test_get_token(self):
         response = self.client.get('/authenticatie/token')
         self.assertEqual(response.status_code, 405)
+
+    def test_without_credentials(self):
+        response = self.client.post('/authenticatie/token')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])
 
     def test_get_status_health(self):
         response=self.client.get('/status/health')
