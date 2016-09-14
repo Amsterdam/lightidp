@@ -1,4 +1,8 @@
+from datetime import datetime, timedelta
+import time
+
 from rest_framework.test import APITestCase
+from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
 
 TEST_USER = 'testuser'
@@ -12,21 +16,45 @@ class AuthenticationServiceTest(APITestCase):
         test_user.set_password(PASSWORD)
         test_user.save()
 
-    def test_standard_jwt_method(self):
-        response = self.client.post('/api-token-auth/', {'username': TEST_USER, 'password': PASSWORD})
+    def test_authenticatie_method_for_datapunt_apis(self):
+        response = self.client.post('/authenticatie/token', {'username': TEST_USER, 'password': PASSWORD})
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
 
-    def test_authenticatie_method_for_datapunt_apis(self):
-        response = self.client.post('/authenticatie/token', {'username': TEST_USER, 'password': PASSWORD, 'grant_type': 'password'})
+        jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
+        decoded = jwt_decode_handler(response.data['token'])
+        self.assertEqual(TEST_USER, decoded['username'])
+        self.assertEqual('user_credentials', decoded['grant_type'])
+
+        expiry = datetime.fromtimestamp(int(decoded['exp']))
+        timedelta = expiry - datetime.utcnow()
+        self.assertGreater(300, timedelta.total_seconds())
+        self.assertLess(299, timedelta.total_seconds())
+
+    def test_refresh(self):
+        response = self.client.post('/authenticatie/token', {'username': TEST_USER, 'password': PASSWORD})
+        now = datetime.utcnow()
+        time.sleep(2)
+        token = response.data['token']
+        response = self.client.post('/authenticatie/refresh', {'token': token})
+
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
+        self.assertNotEqual(token, response.data['token'])
+
+        jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
+        decoded = jwt_decode_handler(response.data['token'])
+
+        expiry = datetime.fromtimestamp(int(decoded['exp']))
+        timedelta = expiry - now
+        self.assertGreater(timedelta.total_seconds(), 300)
+
+        original_expiry = datetime.fromtimestamp(int(decoded['orig_iat']))
+        self.assertLess(original_expiry, expiry)
 
     def test_without_credentials(self):
         response = self.client.get('/authenticatie/token')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual([], response.data)
-        self.assertNotIn('token', response.data)
+        self.assertEqual(response.status_code, 405)
 
     def test_get_status_health(self):
         response=self.client.get('/status/health')

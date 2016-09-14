@@ -99,8 +99,6 @@ REST_FRAMEWORK = dict(
     COERCE_DECIMAL_TO_STRING=False,
 )
 
-JWT_SHARED_SECRET_KEY = os.getenv('JWT_SHARED_SECRET_KEY', 'some_shared_secret')
-
 JWT_AUTH = {
     'JWT_ENCODE_HANDLER':
         'rest_framework_jwt.utils.jwt_encode_handler',
@@ -117,7 +115,7 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER':
         'rest_framework_jwt.utils.jwt_response_payload_handler',
 
-    'JWT_SECRET_KEY': JWT_SHARED_SECRET_KEY,
+    'JWT_SECRET_KEY': os.getenv('JWT_SHARED_SECRET_KEY', 'some_shared_secret'),
     'JWT_ALGORITHM': 'HS256',
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
@@ -126,7 +124,7 @@ JWT_AUTH = {
     'JWT_AUDIENCE': None,
     'JWT_ISSUER': None,
 
-    'JWT_ALLOW_REFRESH': False,
+    'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 
     'JWT_AUTH_HEADER_PREFIX': 'JWT',

@@ -18,10 +18,11 @@ from django.contrib import admin
 from rest_framework import routers
 
 from datapunt_api.views import AuthenticationTokenView
-from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token #, verify_jwt_token
 
 urlpatterns = [
     url(r'^authenticatie/token',  AuthenticationTokenView.as_view()),
-    url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^authenticatie/refresh',  refresh_jwt_token),
+#    url(r'^authenticatie/verify',  verify_jwt_token),
     url(r'^status/', include('health.urls')),
 ]
