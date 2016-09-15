@@ -58,8 +58,10 @@ class AuthenticationServiceTest(APITestCase):
 
     def test_without_credentials(self):
         response = self.client.post('/authenticatie/token')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('non_field_errors', response.data)
+        self.assertEqual("Unable to login with provided credentials.",
+                         response.data['non_field_errors'][0])
 
     def test_get_status_health(self):
         response=self.client.get('/status/health')

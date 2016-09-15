@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from rest_framework import status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,7 +8,7 @@ from rest_framework.response import Response
 def cleanup_payload(payload):
     """
     remove deprecated keys from payload,
-        see rest_framwework_jwt.utils.jwt_payload_handler version 1.8.0, that is putting them in
+        see rest_framwework_jwt.utils.jwt_payload_handler version 1.8.0, which is putting them in
     """
     return {k: v for (k,v) in payload.items() if k != 'email' and k != 'user_id'}
 
@@ -24,7 +25,8 @@ class AuthenticationTokenView(APIView):
         if token is not None:
             return Response({'token': token})
 
-        return Response([])
+        return Response({"non_field_errors": ["Unable to login with provided credentials."]},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     def grant_user_credentials(self, request):
         username = request.data['username']
