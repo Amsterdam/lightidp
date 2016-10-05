@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import time
 
 from rest_framework.test import APITestCase
@@ -27,9 +27,9 @@ class AuthenticationServiceTest(APITestCase):
         self.assertEqual('user_credentials', decoded['grant_type'])
 
         expiry = datetime.fromtimestamp(int(decoded['exp']))
-        timedelta = expiry - datetime.utcnow()
-        self.assertGreater(300, timedelta.total_seconds())
-        self.assertLess(299, timedelta.total_seconds())
+        timediff = expiry - datetime.utcnow()
+        self.assertGreater(300, timediff.total_seconds())
+        self.assertLess(299, timediff.total_seconds())
 
     def test_refresh(self):
         response = self.client.post('/authenticatie/token', {'username': TEST_USER, 'password': PASSWORD})
@@ -46,8 +46,8 @@ class AuthenticationServiceTest(APITestCase):
         decoded = jwt_decode_handler(response.data['token'])
 
         expiry = datetime.fromtimestamp(int(decoded['exp']))
-        timedelta = expiry - now
-        self.assertGreater(timedelta.total_seconds(), 300)
+        timediff = expiry - now
+        self.assertGreater(timediff.total_seconds(), 300)
 
         original_expiry = datetime.fromtimestamp(int(decoded['orig_iat']))
         self.assertLess(original_expiry, expiry)
