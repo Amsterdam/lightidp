@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv("SECRET_KEY", "default-secret")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', 'amsterdam.nl']
 
 # Application definition
 
@@ -53,12 +53,6 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
-
-if DEBUG:
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES = ('debug_toolbar.middleware.DebugToolbarMiddleware',) + MIDDLEWARE_CLASSES
-    DEBUG_TOOLBAR_PATCH_SETTINGS = False
-    DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False,}
 
 ROOT_URLCONF = 'authentication_service.urls'
 
@@ -168,7 +162,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-CORS_ORIGIN_ALLOW_ALL = True # if True, the whitelist will not be used and all origins will be accepted
+# CORS_ORIGIN_ALLOW_ALL = False # if True, the whitelist will not be used and all origins will be accepted
 
 CORS_ORIGIN_REGEX_WHITELIST = (
     '^(https?://)?localhost(:\d+)?$',
@@ -176,7 +170,7 @@ CORS_ORIGIN_REGEX_WHITELIST = (
     '^(https?://)?.*\.amsterdam\.nl$',
 )
 
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 SESSION_SAVE_EVERY_REQUEST = True
 
