@@ -3,7 +3,7 @@ PyJWT==1.4.2
 coreapi==2.0.8
 coverage==4.2
 django-cors-headers==1.2.2
-djangorestframework==3.5.1
+djangorestframework==3.5.2
 djangorestframework-jwt==1.8.0
 django-rest-swagger==2.1.0
 itypes==1.1.0
