@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth import authenticate
 from rest_framework import status
+from base64 import b64decode
 from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -53,5 +54,6 @@ class AuthenticationTokenView(APIView):
 
 class SamlTokenView(APIView):
     def get(self, request):
-        log.warn('request: {}'.format(request.META))
-        return Response({'saml': request.META['HTTP_X_SAML_ATTRIBUTE_TOKEN1']})
+        saml_token = request.META['HTTP_X_SAML_ATTRIBUTE_TOKEN1']
+        return Response({'saml_b64': saml_token,
+                         'saml_xml': b64decode(saml_token).decode("utf-8")})
