@@ -50,7 +50,7 @@ class AuthenticationServiceTest(APITestCase):
             '93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4c2k6dHlwZT0ieHM6c3RyaW5nIj45MDAxMTU2MzQ8L3NhbWw6QXR0cmli'
             'dXRlVmFsdWU+PC9zYW1sOkF0dHJpYnV0ZT48L3NhbWw6QXR0cmlidXRlU3RhdGVtZW50Pjwvc2FtbDpBc3NlcnRpb24+'})
         self.assertEqual(response.status_code, 200)
-        self.assertIn('saml', response.data)
-        self.assertIn('PD94bWwgd', response.data['saml'])
-        self.assertIn('xml', response.data)
-        self.assertIn('900115634', response.data['xml'])
+        self.assertIn('saml_b64', response.data)
+        self.assertIn('PD94bWwgd', response.data['saml_b64'])
+        self.assertIn('saml_xml', response.data)
+        self.assertIn('900115634', response.data['saml_xml'])
