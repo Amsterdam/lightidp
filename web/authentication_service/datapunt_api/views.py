@@ -45,3 +45,8 @@ class AuthenticationTokenView(APIView):
 
     def grant_siam(self, request):
         return None
+
+
+class SamlTokenView(APIView):
+    def get(self, request):
+        return Response({'saml': request.META['X-saml-attribute-token1']})
