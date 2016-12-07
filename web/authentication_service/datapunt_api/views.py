@@ -1,8 +1,12 @@
+import logging
+
 from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+log = logging.getLogger(__name__)
 
 
 def cleanup_payload(payload):
@@ -49,4 +53,5 @@ class AuthenticationTokenView(APIView):
 
 class SamlTokenView(APIView):
     def get(self, request):
+        log.warn('request: {}'.format(request.META))
         return Response({'saml': request.META['x-saml-attribute-token1']})
