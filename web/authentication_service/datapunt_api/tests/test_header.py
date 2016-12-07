@@ -11,7 +11,7 @@ PASSWORD = 'just_a_password'
 
 class AuthenticationServiceTest(APITestCase):
     def test_header_in_code(self):
-        response = self.client.get('/authenticatie/echo', {}, **{'x-saml-attribute-token1':'xxxx'})
+        response = self.client.get('/authenticatie/echo', {}, **{'HTTP_X_SAML_ATTRIBUTE_TOKEN1':'xxxx'})
         self.assertEqual(response.status_code, 200)
         self.assertIn('saml', response.data)
         self.assertEqual('xxxx', response.data['saml'])

@@ -54,4 +54,4 @@ class AuthenticationTokenView(APIView):
 class SamlTokenView(APIView):
     def get(self, request):
         log.warn('request: {}'.format(request.META))
-        return Response({'saml': request.META['x-saml-attribute-token1']})
+        return Response({'saml': request.META['HTTP_X_SAML_ATTRIBUTE_TOKEN1']})
