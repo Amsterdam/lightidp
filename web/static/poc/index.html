@@ -9,9 +9,12 @@
 <div id="xhr"></div>
 
 <script type="text/javascript">
-	setInterval(function(){
-		jQuery.get('https://mijn.acc.amsterdam.nl/authenticatie/echo');
-	}, 20000);
+	setTimeout(function() {
+        jQuery.get('https://mijn.acc.amsterdam.nl/authenticatie/echo');
+        setInterval(function(){
+            jQuery.get('https://mijn.acc.amsterdam.nl/authenticatie/echo');
+        }, 960000);
+    }, 20000);
 </script>
 
 </body>
