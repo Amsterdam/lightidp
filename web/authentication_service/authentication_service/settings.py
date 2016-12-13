@@ -179,6 +179,6 @@ CORS_ORIGIN_REGEX_WHITELIST = (
 
 SESSION_SAVE_EVERY_REQUEST = True
 
-STATIC_URL = '/authenticatie/static'
+STATIC_URL = '/authenticatie/static/'
 
 STATIC_ROOT = '/static/'
