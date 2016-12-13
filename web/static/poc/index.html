@@ -9,14 +9,9 @@
 <div id="xhr"></div>
 
 <script type="text/javascript">
-    while (true) {
-	    jQuery.get('https://mijn.acc.amsterdam.nl/authenticatie/echo');
-	    var start = new Date().getTime();
-	    var end = start;
-	    while(end < start + 20000) {
-		    end = new Date().getTime();
-	    }
-    }
+	setInterval(function(){
+		jQuery.get('https://mijn.acc.amsterdam.nl/authenticatie/echo');
+	}, 20000);
 </script>
 
 </body>
