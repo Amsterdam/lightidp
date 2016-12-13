@@ -53,11 +53,11 @@ MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES = ('debug_toolbar.middleware.DebugToolbarMiddleware',) + MIDDLEWARE_CLASSES
-    DEBUG_TOOLBAR_PATCH_SETTINGS = False
-    DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False,}
+# if DEBUG:
+#     INSTALLED_APPS.append('debug_toolbar')
+#     MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE_CLASSES
+#     DEBUG_TOOLBAR_PATCH_SETTINGS = False
+#     DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False,}
 
 ROOT_URLCONF = 'authentication_service.urls'
 
@@ -179,6 +179,6 @@ CORS_ORIGIN_REGEX_WHITELIST = (
 
 SESSION_SAVE_EVERY_REQUEST = True
 
-STATIC_URL = '/static/'
+STATIC_URL = '/authenticatie/static'
 
-STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'static'))
+STATIC_ROOT = '/static/'
