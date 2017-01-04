@@ -1,4 +1,5 @@
 import logging
+from django.conf import settings
 from django.db import connection
 from django.http import HttpResponse
 
@@ -17,6 +18,12 @@ def health(request):
             "Database connectivity failed",
             content_type="text/plain", status=500)
 
-    return HttpResponse(
-        "Connectivity OK", content_type='text/plain', status=200)
+    # check debug
+    if settings.DEBUG:
+        log.exception("Debug mode not allowed in production")
+        return HttpResponse(
+            "Debug mode not allowed in production",
+            content_type="text/plain", status=500)
 
+    return HttpResponse(
+        "Health OK", content_type='text/plain', status=200)

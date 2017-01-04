@@ -66,5 +66,5 @@ class AuthenticationServiceTest(APITestCase):
     def test_get_status_health(self):
         response=self.client.get('/status/health')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('Connectivity OK', str(response.content))
+        self.assertIn('Health OK', str(response.content))
 
