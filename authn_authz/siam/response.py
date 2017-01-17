@@ -48,7 +48,7 @@ class ResponseBuilder:
         self.client = siamclient
 
     @_siam_errors_to_50X
-    def authn_link(self, passive):
+    def authn_link(self, passive, cb_url):
         """ Redirect user to the IdP's authn page for (passive) authn.
 
         Responsecodes:
@@ -56,8 +56,10 @@ class ResponseBuilder:
         * 50X from _siam_50x_handler for siam errors out of our control
 
         :param passive: (truthy) create a link for passive authn
+        :param cb_url: (str) the callback URL to redirect to after
+            authentication (must be urlencoded)
         """
-        link = self.client.get_authn_link((passive and True) or False)
+        link = self.client.get_authn_link((passive and True) or False, cb_url)
         return ('', 307, {'Location': link})
 
     @_siam_errors_to_50X

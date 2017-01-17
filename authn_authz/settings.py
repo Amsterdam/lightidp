@@ -2,13 +2,13 @@
 Default settings. Override by creating a new file and pointing to it in
 AUTHN_SIAM_SETTINGS
 '''
+import os
 
 # Flask config. See documentation at
 # http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values
-DEBUG = True
+DEBUG = os.getenv('SECRET_KEY') is None
 PREFERRED_URL_SCHEME = 'http'
-SERVER_NAME = 'localhost:8102'
-SECRET_KEY = 'make me more secret'
+SECRET_KEY = os.getenv('SECRET_KEY', 'make me more secret')
 
 # SIAM config
 SIAM_ROUTE_BASE = '/siam'

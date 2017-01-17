@@ -9,7 +9,7 @@ database:
 
 
 web:
-  build: ./web
+  build: .
   ports:
     - "8102:8000"
   links:
@@ -19,5 +19,3 @@ web:
     DB_NAME: authenticatie
     DB_USER: authenticatie
     DB_PASSWORD: insecure
-  volumes:
-    - ./reports:/app/reports

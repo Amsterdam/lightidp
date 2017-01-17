@@ -3,18 +3,7 @@
 set -u   # crash on missing env variables
 set -e   # stop on any error
 
-cd /app
-
-source docker-wait.sh
-
-echo Performing system check
-python manage.py check
-
-echo Collect static files
-python manage.py collectstatic --noinput
-
-echo Performing migrations
-yes yes | python manage.py migrate
+# source /app/docker-wait.sh
 
 # run uwsgi
 exec uwsgi --ini /app/uwsgi.ini

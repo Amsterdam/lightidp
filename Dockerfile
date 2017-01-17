@@ -5,25 +5,15 @@ ENV PYTHONUNBUFFERED 1
 
 EXPOSE 8000
 
-RUN apt-get update \
-	&& apt-get install -y \
-		gdal-bin \
-		libgeos-dev \
-		netcat \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-	&& adduser --system datapunt \
-	&& mkdir -p /static \
-	&& chown datapunt /static \
-	&& pip install uwsgi
-
-WORKDIR /static
-COPY static /static/
+RUN adduser --system datapunt
 
 WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 USER datapunt
-COPY authentication_service /app/
+COPY authn_authz /app/authn_authz
+COPY docker-entrypoint.sh /app/
+COPY docker-wait.sh /app/
+COPY uwsgi.ini /app/
 CMD ["/app/docker-entrypoint.sh"]

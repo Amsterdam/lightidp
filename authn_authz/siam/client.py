@@ -26,11 +26,10 @@ class Client:
     RESULT_CODE_OK = '0000'
     RESULT_CODE_INVALID_CREDENTIALS = '0007'
 
-    def __init__(self, base_url, app_id, authn_callback_url, aselect_server,
+    def __init__(self, base_url, app_id, aselect_server,
                  shared_secret):
         self.base_url = base_url
         self.app_id = app_id
-        self.authn_callback_url = authn_callback_url
         self.aselect_server = aselect_server
         self.shared_secret = shared_secret
 
@@ -50,7 +49,7 @@ class Client:
             raise requests.RequestException()
         return r
 
-    def get_authn_link(self, passive, timeout=(3.05, 1)):
+    def get_authn_link(self, passive, callback_url, timeout=(3.05, 1)):
         """ Request an authn url from the IdP, either passive or not.
 
         :param passive: whether or not to request a passive URL
@@ -63,7 +62,7 @@ class Client:
             'request': 'authenticate',
             'forced_logon': 'false',
             'app_id': self.app_id,
-            'app_url': self.authn_callback_url,
+            'app_url': callback_url,
             'a-select-server': self.aselect_server,
             'shared_secret': self.shared_secret,
             'forced_passive': passive

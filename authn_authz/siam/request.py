@@ -7,10 +7,9 @@ from .response import ResponseBuilder
 
 class RequestHandler:
 
-    def __init__(self, base_url, app_id, authn_callback_url, aselect_server,
-                 shared_secret, jwt_secret_key):
-        client = Client(base_url, app_id, authn_callback_url, aselect_server,
-                        shared_secret)
+    def __init__(self, base_url, app_id, aselect_server, shared_secret,
+                 jwt_secret_key):
+        client = Client(base_url, app_id, aselect_server, shared_secret)
         self.aselect_server = aselect_server
         self.jwt_secret_key = jwt_secret_key
         self.response_builder = ResponseBuilder(client)
@@ -18,10 +17,16 @@ class RequestHandler:
     def authenticate(self):
         """ Route for authn requests
         """
-        if 'active' in request.args:
-            response = self.response_builder.authn_link(False)
+        if 'callback' not in request.args:
+            response = ('Must provide a callback URL', 400)
+        elif 'active' in request.args:
+            response = self.response_builder.authn_link(
+                                            False,
+                                            request.args['callback'])
         else:
-            response = self.response_builder.authn_link(True)
+            response = self.response_builder.authn_link(
+                                            True,
+                                            request.args['callback'])
         return make_response(response)
 
     def token(self):
