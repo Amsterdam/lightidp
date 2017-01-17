@@ -4,3 +4,5 @@ docker-compose.yml
 Dockerfile
 .idea
 *.iml
+.project
+.pydevproject

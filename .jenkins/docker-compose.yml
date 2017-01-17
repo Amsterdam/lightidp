@@ -6,7 +6,7 @@ database:
 
 
 tests:
-  build: ../web
+  build: ../
   links:
     - database:database
   volumes:
@@ -19,7 +19,7 @@ tests:
 
 
 web:
-  build: ../web
+  build: ../
   links:
     - database:database
   environment:
