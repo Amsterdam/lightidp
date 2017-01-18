@@ -1,5 +1,5 @@
 import pytest
-import siam.client
+import auth.siam.client
 
 SIAM_BASE_URL = 'http://fake.siam'
 SIAM_APP_ID = 'fake'
