@@ -3,4 +3,10 @@ web:
   ports:
     - "8102:8000"
   environment:
-    SECRET_KEY: hoi
+    - DEBUG
+    - PREFERRED_URL_SCHEME
+    - SECRET_KEY
+    - SIAM_URL
+    - SIAM_A_SELECT_SERVER
+    - SIAM_APP_ID
+    - SIAM_SHARED_SECRET

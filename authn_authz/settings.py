@@ -29,7 +29,7 @@ import os
 
 # Flask config. See documentation at
 # http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values
-DEBUG = os.getenv('DEBUG', False)
+DEBUG = os.getenv('DEBUG', False) and True
 PREFERRED_URL_SCHEME = os.getenv('PREFERRED_URL_SCHEME', 'https')
 SECRET_KEY = os.getenv('SECRET_KEY')
 
