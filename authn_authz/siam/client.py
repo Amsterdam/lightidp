@@ -1,3 +1,7 @@
+"""
+    The SIAM client
+    ~~~~~~~~~~~~~~~
+"""
 import logging
 import requests
 import urllib

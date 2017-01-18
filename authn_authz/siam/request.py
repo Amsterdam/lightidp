@@ -1,5 +1,7 @@
-'''
-'''
+"""
+    Request handling
+    ~~~~~~~~~~~~~~~~
+"""
 from flask import request, make_response
 from .client import Client
 from .response import ResponseBuilder

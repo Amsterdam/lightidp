@@ -5,7 +5,8 @@ ENV PYTHONUNBUFFERED 1
 
 EXPOSE 8000
 
-RUN adduser --system datapunt
+RUN apt-get update \
+    && adduser --system datapunt
 
 WORKDIR /app
 COPY requirements.txt /app/

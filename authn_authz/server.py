@@ -1,5 +1,5 @@
 """
-    Authentication / authorization service
+    Authentication & authorization service
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 from flask import Flask

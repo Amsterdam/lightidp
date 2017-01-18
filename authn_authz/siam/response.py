@@ -1,8 +1,7 @@
-'''
-Created on 17 Jan 2017
-
-@author: evert
-'''
+"""
+    Response generation
+    ~~~~~~~~~~~~~~~~~~~
+"""
 import jwt
 import logging
 from .client import Timeout, RequestException

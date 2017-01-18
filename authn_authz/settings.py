@@ -1,7 +1,10 @@
-'''
-Default settings. Override by creating a new file and pointing to it in
-AUTHN_SIAM_SETTINGS
-'''
+"""
+    Authn / authz settings
+    ~~~~~~~~~~~~~~~~~~~~~~
+
+    Override by creating a new file and pointing to it in
+    AUTHN_SIAM_SETTINGS
+"""
 import os
 
 # Flask config. See documentation at
