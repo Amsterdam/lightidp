@@ -11,10 +11,10 @@ class RequestHandler:
 
     def __init__(self, base_url, app_id, aselect_server, shared_secret,
                  jwt_secret_key):
-        client = Client(base_url, app_id, aselect_server, shared_secret)
+        self.client = Client(base_url, app_id, aselect_server, shared_secret)
         self.aselect_server = aselect_server
         self.jwt_secret_key = jwt_secret_key
-        self.response_builder = ResponseBuilder(client)
+        self.response_builder = ResponseBuilder(self.client)
 
     def authenticate(self):
         """ Route for authn requests

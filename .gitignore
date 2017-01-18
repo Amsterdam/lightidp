@@ -10,3 +10,5 @@ reports/
 
 .project
 .pydevproject
+
+settings_test.py
