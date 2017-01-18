@@ -25,8 +25,8 @@ node {
 
     stage('Test') {
         tryStep "Test", {
-            sh "docker-compose build --pull"
-            sh "docker-compose run auth make -C /app test"
+            sh "docker-compose -f .jenkins/docker-compose.yml build --pull"
+            sh "docker-compose -f .jenkins/docker-compose.yml run auth make -C /app test"
 	      }, {}
     }
 

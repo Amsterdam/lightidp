@@ -1,7 +1,15 @@
 tests:
   build: ../
-  command: make test
+  command: make -C /app test
 
-
-web:
+auth:
   build: ../
+  environment:
+    - DEBUG
+    - PREFERRED_URL_SCHEME
+    - SECRET_KEY
+    - SIAM_URL
+    - SIAM_A_SELECT_SERVER
+    - SIAM_APP_ID
+    - SIAM_SHARED_SECRET
+  command: /bin/sh /app/docker-entrypoint.sh
