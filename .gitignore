@@ -7,7 +7,7 @@ batch.log
 **/__pycache__
 .jenkins/backups/
 reports/
-
+.cache
 .project
 .pydevproject
 
