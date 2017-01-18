@@ -4,6 +4,7 @@
 """
 import jwt
 import logging
+import time
 from .client import Timeout, RequestException
 
 logger = logging.getLogger(__name__)
@@ -80,6 +81,8 @@ class ResponseBuilder:
         else:
             encoded = jwt.encode({
                 'exp': int(verification['tgt_exp_time'][0][:-3]),
+                'orig_iat': int(time.time()),
+                'username': verification['uid'][0],
                 'ass': aselect_credentials,
                 'rid': rid}, secret_key, algorithm='HS256')
             resp = (encoded, 200)
