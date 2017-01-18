@@ -1,6 +1,6 @@
 tests:
   build: ../
-  command: make test
+#  command: make test
 
 
 web:

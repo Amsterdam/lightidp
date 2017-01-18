@@ -48,7 +48,7 @@ $ pip install -r -requirements.txt
 Start it without uWSGI:
 
 ```
-$ FLASK_APP=authn_authz/server.py python -m flask run -p 8102 --reload
+$ FLASK_APP=auth/server.py python -m flask run -p 8102 --reload
 ```
 
 ... or start it with uWSGI:

@@ -2,6 +2,7 @@
     The SIAM client
     ~~~~~~~~~~~~~~~
 """
+import collections
 import logging
 import requests
 import urllib
@@ -12,8 +13,14 @@ logger = logging.getLogger(__name__)
 Timeout = requests.Timeout
 RequestException = requests.RequestException
 
+# Base class for Client. Is a namedtuple, to make sure it's immutable after
+# construction
+_Client = collections.namedtuple('_Client',
+                                 ('base_url', 'app_id',
+                                  'aselect_server', 'shared_secret'))
 
-class Client:
+
+class Client(_Client):
     """ Client bundles all runtime configuration parameters in it's constructor
     and provides methods for all four distinct requests supported by the
     service.
@@ -21,21 +28,12 @@ class Client:
     :param base_url: base URL of the siam service.
     :param app_id: the app id of the calling application, as configured in the
         siam server.
-    :param app_url: the app url that the siam server can redirect the client
-        to after succesful authentication.
     :param aselect_server: the aselect_server identifier.
     :param shared_secret: the siam shared secret.
     """
 
     RESULT_CODE_OK = '0000'
     RESULT_CODE_INVALID_CREDENTIALS = '0007'
-
-    def __init__(self, base_url, app_id, aselect_server,
-                 shared_secret):
-        self.base_url = base_url
-        self.app_id = app_id
-        self.aselect_server = aselect_server
-        self.shared_secret = shared_secret
 
     def _request(self, params, timeout):
         """ Convenience method to make a GET request to SIAM.
