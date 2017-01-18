@@ -4,11 +4,11 @@
 """
 from flask import Flask
 
-import siam
+from . import siam
 
 # create the WSGI application
 app = Flask(__name__)
-app.config.from_object('settings')
+app.config.from_object('auth.settings')
 app.config.from_envvar('AUTHN_SIAM_SETTINGS', silent=True)
 
 # load configuration
