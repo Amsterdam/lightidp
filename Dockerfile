@@ -15,6 +15,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 USER datapunt
 COPY authn_authz /app/authn_authz
 COPY docker-entrypoint.sh /app/
-COPY docker-wait.sh /app/
 COPY uwsgi.ini /app/
 CMD ["/app/docker-entrypoint.sh"]
