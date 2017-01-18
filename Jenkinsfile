@@ -24,19 +24,15 @@ node {
     }
 
     stage('Test') {
-    tryStep "Test", {
-        sh "docker-compose -p authenticatie -f .jenkins/docker-compose.yml down"
-
-        sh "docker-compose -p authenticatie -f .jenkins/docker-compose.yml build && " +
-                "docker-compose -p authenticatie -f .jenkins/docker-compose.yml run -u root --rm tests"
-	}, {
-        sh "docker-compose -p authenticatie -f .jenkins/docker-compose.yml down"
-        }
+        tryStep "Test", {
+            sh "docker-compose build --pull"
+            sh "docker-compose run auth make -C /app test"
+	      }, {}
     }
 
     stage("Build develop image") {
         tryStep "build", {
-            def image = docker.build("build.datapunt.amsterdam.nl:5000/datapunt/authenticatie:${env.BUILD_NUMBER}", "web")
+            def image = docker.build("build.datapunt.amsterdam.nl:5000/datapunt/authenticatie:${env.BUILD_NUMBER}")
             image.push()
             image.push("acceptance")
         }
