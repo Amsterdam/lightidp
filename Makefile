@@ -12,3 +12,8 @@ test:
 coverage:
 	py.test --verbose --cov-report term --cov-report xml --cov=auth tests
 
+pep8:
+	# we make pep8 ignores the following rules
+	# E501 line too long
+	pep8 --ignore=E501 auth
+
