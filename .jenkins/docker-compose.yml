@@ -1,28 +1,15 @@
-database:
-  image: build.datapunt.amsterdam.nl:5000/atlas/postgres
-  environment:
-    POSTGRES_PASSWORD: insecure
-    POSTGRES_USER: authenticatie
-
-
 tests:
-  build: ../web
-  links:
-    - database:database
-  volumes:
-    - ../reports:/app/reports
-  environment:
-    DATABASE_NAME: authenticatie
-    DATABASE_USER: authenticatie
-    DATABASE_PASSWORD: insecure
-  command: bash -c "/app/docker-wait.sh && python manage.py test"
+  build: ../
+  command: make -C /app test
 
-
-web:
-  build: ../web
-  links:
-    - database:database
+auth:
+  build: ../
   environment:
-    DB_NAME: authenticatie
-    DB_USER: authenticatie
-    DB_PASSWORD: insecure
+    - DEBUG
+    - PREFERRED_URL_SCHEME
+    - SECRET_KEY
+    - SIAM_URL
+    - SIAM_A_SELECT_SERVER
+    - SIAM_APP_ID
+    - SIAM_SHARED_SECRET
+  command: /bin/sh /app/docker-entrypoint.sh

@@ -1,23 +1,13 @@
-database:
-  image: build.datapunt.amsterdam.nl:5000/atlas/postgres
-  ports:
-    - "5405:5432"
-  environment:
-    POSTGRES_DB: authenticatie
-    POSTGRES_USER: authenticatie
-    POSTGRES_PASSWORD: insecure
-
-
-web:
-  build: ./web
+auth:
+  build: .
   ports:
     - "8102:8000"
-  links:
-    - database:database
   environment:
-    SECRET_KEY: hoi
-    DB_NAME: authenticatie
-    DB_USER: authenticatie
-    DB_PASSWORD: insecure
-  volumes:
-    - ./reports:/app/reports
+    - DEBUG
+    - PREFERRED_URL_SCHEME
+    - SECRET_KEY
+    - SIAM_URL
+    - SIAM_A_SELECT_SERVER
+    - SIAM_APP_ID
+    - SIAM_SHARED_SECRET
+  command: /bin/sh /app/docker-entrypoint.sh
