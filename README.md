@@ -8,11 +8,12 @@ You can run the service in a virtual environment on your machine and you can run
 
 You _MUST_ provide:
 
-    - `SECRET_KEY`: The key used to seed JWTs
     - `SIAM_URL`: The URL endpoint for SIAM
     - `SIAM_A_SELECT_SERVER`: The a-select server (whatever that is)
     - `SIAM_APP_ID`: Your application ID
     - `SIAM_SHARED_SECRET`: Your shared secret
+    - `JWT_KEY`: The seed for your JWTs
+    - `JWT_LIFETIME`: The lifetime of your JWTs (in seconds)
 
     You _MAY_ also specify:
 

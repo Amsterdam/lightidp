@@ -13,11 +13,8 @@ logger = logging.getLogger(__name__)
 Timeout = requests.Timeout
 RequestException = requests.RequestException
 
-# Base class for Client. Is a namedtuple, to make sure it's immutable after
-# construction
-_Client = collections.namedtuple('_Client',
-                                 ('base_url', 'app_id',
-                                  'aselect_server', 'shared_secret'))
+# Base class for Client. Is a namedtuple, to make sure it's immutable after construction
+_Client = collections.namedtuple('_Client', 'base_url app_id aselect_server shared_secret')
 
 
 class Client(_Client):

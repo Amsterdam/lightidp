@@ -3,4 +3,4 @@
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 import requests
-from .request import RequestHandler
+from .request import request_handler

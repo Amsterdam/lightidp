@@ -10,47 +10,46 @@ import urllib
 
 from auth.siam import client, response
 
-# seed for json web tokens
-secret_key = 'secret'
 
-
+@pytest.mark.usefixtures('config')
 @pytest.fixture(scope="module")
-def json_web_token():
+def token(config):
     now = int(time.time())
-    exp = now + 60  # we should be run all tests in this module within 60 secs
-    return (jwt.encode({
-        'exp': exp,
+    return jwt.encode({
+        'exp': now + config['JWT_LIFETIME'],
         'orig_iat': now,
         'username': 'whoami',
         'ass': 'aselect_credentials',
         'rid': 'rid'
-    }, secret_key, algorithm='HS256'), exp)
-
-
-@pytest.fixture(scope="module")
-def json_web_token_expired():
-    now = int(time.time())
-    return jwt.encode({
-        'exp': now - 10,
-        'orig_iat': now,
-        'username': 'whoami',
-        'ass': 'aselect_credentials',
-        'rid': 'rid'}, secret_key, algorithm='HS256')
-
-
-@pytest.mark.usefixtures('siamclient')
-@pytest.fixture(scope="module")
-def response_builder(siamclient):
-    return response.ResponseBuilder(siamclient)
+    }, config['JWT_SECRET'], algorithm='HS256')
 
 
 @pytest.mark.usefixtures('config')
-def test_server_errors(json_web_token, response_builder, config):
+@pytest.fixture(scope="module")
+def token_expired(config):
+    now = int(time.time())
+    return jwt.encode({
+        'exp': now - 10,
+        'orig_iat': now - 20,
+        'username': 'whoami',
+        'ass': 'aselect_credentials',
+        'rid': 'rid'
+    }, config['JWT_SECRET'], algorithm='HS256')
+
+
+@pytest.mark.usefixtures('config', 'siamclient')
+@pytest.fixture(scope="module")
+def response_builder(config, siamclient):
+    return response.ResponseBuilder(
+        siamclient, config['JWT_SECRET'], config['JWT_LIFETIME']
+    )
+
+
+@pytest.mark.usefixtures('config')
+def test_server_errors(token, response_builder, config):
     tests = (
         (response_builder.authn_link, True, 'http://some.url'),
-        (response_builder.authn_verify, 'aselect_credentials', 'rid', 'key'),
-        (response_builder.session_renew, json_web_token[0], secret_key),
-        (response_builder.session_end, json_web_token[0], secret_key),
+        (response_builder.authn_verify, 'aselect_credentials', 'rid'),
     )
     # Test that result codes other than 200 result in a 502
     with responses.RequestsMock() as rsps:
@@ -105,10 +104,9 @@ def test_authn_verify_success(response_builder, config):
         'uid': uid
     })
     responses.add(responses.GET, config['SIAM_BASE_URL'], status=200, body=resp_success)
-    r = response_builder.authn_verify(ass, 'rid', secret_key)
+    r = response_builder.authn_verify(ass, 'rid')
     assert r[1] == 200
-    decoded = jwt.decode(r[0], secret_key)
-    assert decoded['exp'] == int(exp[:-3])
+    decoded = jwt.decode(r[0], config['JWT_SECRET'])
     assert decoded['username'] == '1'
     assert decoded['ass'] == ass
 
@@ -122,7 +120,7 @@ def test_authn_verify_fail(response_builder, config):
         'uid': 'uid'
     })
     responses.add(responses.GET, config['SIAM_BASE_URL'], status=200, body=resp_fail)
-    r = response_builder.authn_verify('aselect_credentials', 'rid', secret_key)
+    r = response_builder.authn_verify('aselect_credentials', 'rid')
     assert r == ('verification of credentials failed', 400)
 
 
@@ -133,12 +131,23 @@ def test_authn_verify_malformed(response_builder, config):
         'tgt_exp_time': "1",
         'uid': 'uid'
     })
-    responses.add(responses.GET, config['SIAM_BASE_URL'], status=200, body=resp_malformed)
-    r = response_builder.authn_verify('aselect_credentials', 'rid', secret_key)
-    assert r == ('malformed response from SIAM', 502)
+    with responses.RequestsMock() as rsps:
+        rsps.add(rsps.GET, config['SIAM_BASE_URL'], status=200, body=resp_malformed)
+        r = response_builder.authn_verify('aselect_credentials', 'rid')
+    assert r == ('problem between auth server and SIAM', 502)
+
     resp_malformed = urllib.parse.urlencode({
         'i am empty': None,
     })
-    responses.add(responses.GET, config['SIAM_BASE_URL'], status=200, body=resp_malformed)
-    r = response_builder.authn_verify('aselect_credentials', 'rid', secret_key)
+    with responses.RequestsMock() as rsps:
+        rsps.add(rsps.GET, config['SIAM_BASE_URL'], status=200, body=resp_malformed)
+        r = response_builder.authn_verify('aselect_credentials', 'rid')
     assert r == ('malformed response from SIAM', 502)
+
+
+@pytest.mark.usefixtures('config')
+@responses.activate
+def test_session_renew(token, response_builder, config):
+    ok = urllib.parse.urlencode({'result_code': client.Client.RESULT_CODE_OK})
+    responses.add(responses.GET, config['SIAM_BASE_URL'], status=200, body=ok)
+    r = response_builder.session_renew(token)

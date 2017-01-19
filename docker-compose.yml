@@ -5,9 +5,10 @@ auth:
   environment:
     - DEBUG
     - PREFERRED_URL_SCHEME
-    - SECRET_KEY
     - SIAM_URL
     - SIAM_A_SELECT_SERVER
     - SIAM_APP_ID
     - SIAM_SHARED_SECRET
+    - JWT_SECRET
+    - JWT_LIFETIME
   command: /bin/sh /app/docker-entrypoint.sh
