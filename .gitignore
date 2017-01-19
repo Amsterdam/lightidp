@@ -11,4 +11,5 @@ reports/
 .project
 .pydevproject
 .coverage
+coverage.xml
 settings_test.*

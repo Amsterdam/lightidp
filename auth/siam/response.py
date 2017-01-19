@@ -76,7 +76,11 @@ class ResponseBuilder:
         :param secret_key: The secret key used for the JWT encryption
         """
         verification = self.client.verify_creds(aselect_credentials, rid)
-        if verification['result_code'][0] != self.client.RESULT_CODE_OK:
+        if len({'result_code', 'tgt_exp_time', 'uid'} - verification.keys()) \
+                or len(verification['tgt_exp_time'][0]) != 13:
+            logger.critical('SIAM sent a bad response on rid={}'.format(rid))
+            resp = ('malformed response from SIAM', 502)
+        elif verification['result_code'][0] != self.client.RESULT_CODE_OK:
             resp = ('verification of credentials failed', 400)
         else:
             encoded = jwt.encode({
