@@ -10,5 +10,5 @@ reports/
 .cache
 .project
 .pydevproject
-
+.coverage
 settings_test.*

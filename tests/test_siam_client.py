@@ -1,5 +1,14 @@
+"""
+    Tests for the SIAM client
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Note that this only tests :meth:`~auth.siam.client.Client._request` and
+    :meth:`~auth.siam.client.Client.get_authn_link`. The other methods are just
+    convenient wrappers for :meth:`~auth.siam.client.Client._request`.
+"""
 import pytest
 import responses
+import urllib.parse
 import auth.siam.client
 
 SIAM_BASE_URL = 'http://fake.siam'
@@ -32,4 +41,18 @@ def test_siam_server_error(siamclient):
 
 @responses.activate
 def test_get_authn_link(siamclient):
-    ...
+    rid = '1'
+
+    # mock the response
+    body = urllib.parse.urlencode({
+        'as_url': SIAM_BASE_URL + '?request=login1',
+        'a-select-server': SIAM_ASELECT_SERVER,
+        'rid': rid,
+    })
+    responses.add(responses.GET, SIAM_BASE_URL, status=200, body=body)
+
+    expected = '{}?request=login1&a-select-server={}&rid={}'.format(
+        SIAM_BASE_URL, SIAM_ASELECT_SERVER, rid
+    )
+    resp = siamclient.get_authn_link(False, 'http://some.callback.url')
+    assert resp == expected
