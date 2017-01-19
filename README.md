@@ -1,4 +1,4 @@
-# authenticatie_service
+# Authn & authz services
 
 ## Running the service
 
