@@ -42,3 +42,19 @@ def test_get_authn_link(config, siamclient):
     )
     resp = siamclient.get_authn_link(False, 'http://some.callback.url')
     assert resp == expected
+
+
+@pytest.mark.usefixtures('config', 'siamclient')
+@responses.activate
+def test_renew_session(config, siamclient):
+    expected = {'result_code': [client.Client.RESULT_OK]}
+    body = urllib.parse.urlencode({'result_code': client.Client.RESULT_OK})
+    responses.add(responses.GET, config['SIAM_BASE_URL'], status=200, body=body)
+    assert siamclient.renew_session('aselect_credentials') == expected
+
+
+@pytest.mark.usefixtures('config', 'siamclient')
+@responses.activate
+def test_end_session(config, siamclient):
+    responses.add(responses.GET, config['SIAM_BASE_URL'], status=307)
+    assert siamclient.end_session('aselect_credentials') == 307

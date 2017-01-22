@@ -99,7 +99,7 @@ def test_authn_verify_success(response_builder, config):
     ass = 'aselect_credentials'
     # STEP 1:
     resp_success = urllib.parse.urlencode({
-        'result_code': client.Client.RESULT_CODE_OK,
+        'result_code': client.Client.RESULT_OK,
         'tgt_exp_time': exp,
         'uid': uid
     })
@@ -115,7 +115,7 @@ def test_authn_verify_success(response_builder, config):
 @responses.activate
 def test_authn_verify_fail(response_builder, config):
     resp_fail = urllib.parse.urlencode({
-        'result_code': client.Client.RESULT_CODE_INVALID_CREDENTIALS,
+        'result_code': client.Client.RESULT_INVALID_CREDENTIALS,
         'tgt_exp_time': str((int(time.time()) + 10) * 1000),
         'uid': 'uid'
     })
@@ -127,7 +127,7 @@ def test_authn_verify_fail(response_builder, config):
 @pytest.mark.usefixtures('config')
 def test_authn_verify_malformed(response_builder, config):
     resp_malformed = urllib.parse.urlencode({
-        'result_code': client.Client.RESULT_CODE_OK,
+        'result_code': client.Client.RESULT_OK,
         'tgt_exp_time': "1",
         'uid': 'uid'
     })
@@ -148,6 +148,24 @@ def test_authn_verify_malformed(response_builder, config):
 @pytest.mark.usefixtures('config')
 @responses.activate
 def test_session_renew(token, response_builder, config):
-    ok = urllib.parse.urlencode({'result_code': client.Client.RESULT_CODE_OK})
+    ok = urllib.parse.urlencode({'result_code': client.Client.RESULT_OK})
     responses.add(responses.GET, config['SIAM_BASE_URL'], status=200, body=ok)
     r = response_builder.session_renew(token)
+
+
+@pytest.mark.usefixtures('config')
+def test_expired_jwt(config, response_builder):
+    now = int(time.time())
+    token_expired = jwt.encode(
+        {'exp': now - 10}, config['JWT_SECRET'], algorithm='HS256'
+    )
+    result = response_builder.session_renew(token_expired)
+    assert result == ('JWT token expired', 400)
+
+
+@pytest.mark.usefixtures('config')
+def test_malformed_jwt(config, response_builder):
+    token_malformed = "iamnotajwttoken"
+    result = response_builder.session_renew(token_malformed)
+    assert result == ('JWT token could not be decoded', 400)
+

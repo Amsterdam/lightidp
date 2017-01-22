@@ -13,8 +13,10 @@ logger = logging.getLogger(__name__)
 Timeout = requests.Timeout
 RequestException = requests.RequestException
 
-# Base class for Client. Is a namedtuple, to make sure it's immutable after construction
-_Client = collections.namedtuple('_Client', 'base_url app_id aselect_server shared_secret')
+# Base class for Client, to make sure it's immutable after construction
+_Client = collections.namedtuple(
+    '_Client', 'base_url app_id aselect_server shared_secret'
+)
 
 
 class Client(_Client):
@@ -29,8 +31,8 @@ class Client(_Client):
     :param shared_secret: the siam shared secret.
     """
 
-    RESULT_CODE_OK = '0000'
-    RESULT_CODE_INVALID_CREDENTIALS = '0007'
+    RESULT_OK = '0000'
+    RESULT_INVALID_CREDENTIALS = '0007'
 
     def _request(self, params, timeout):
         """ Convenience method to make a GET request to SIAM.
@@ -42,7 +44,7 @@ class Client(_Client):
         """
         url = '{}?{}'.format(self.base_url, urllib.parse.urlencode(params))
         r = requests.get(url, timeout=timeout)
-        if r.status_code != 200:
+        if r.status_code >= 400:
             logger.critical('HTTP {} response from '
                             'SIAM for {}'.format(r.status_code, url))
             raise requests.RequestException()
@@ -107,4 +109,4 @@ class Client(_Client):
             'tgt_blob': aselect_credentials
         }
         r = self._request(params, timeout)
-        return urllib.parse.parse_qs(r.text)
+        return r.status_code

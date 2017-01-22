@@ -10,7 +10,9 @@ from .client import Timeout, RequestException
 
 logger = logging.getLogger(__name__)
 
-_ResponseBuilder = collections.namedtuple('_ResponseBuilder', 'client jwt_secret jwt_lt')
+_ResponseBuilder = collections.namedtuple(
+    '_ResponseBuilder', 'client jwt_secret jwt_lt'
+)
 
 
 def _siam_errors_to_50X(f):
@@ -80,7 +82,7 @@ class ResponseBuilder(_ResponseBuilder):
         if len({'result_code', 'tgt_exp_time', 'uid'} - verification.keys()):
             logger.critical('SIAM sent a bad response on rid={}'.format(rid))
             resp = ('malformed response from SIAM', 502)
-        elif verification['result_code'][0] != self.client.RESULT_CODE_OK:
+        elif verification['result_code'][0] != self.client.RESULT_OK:
             resp = ('verification of credentials failed', 400)
         elif now > int(verification['tgt_exp_time'][0][:-3] or 0):
             exp = verification['tgt_exp_time'][0][:-3]

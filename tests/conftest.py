@@ -2,7 +2,7 @@ import pytest
 import auth.siam.client
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def config():
     return {
         'SIAM_BASE_URL': 'http://www.google.com',
@@ -14,7 +14,7 @@ def config():
     }
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def siamclient(config):
     client = auth.siam.client.Client(
         base_url=config['SIAM_BASE_URL'],
