@@ -21,22 +21,16 @@ jwt_secret = app.config['JWT_SECRET']
 jwt_lifetime = app.config['JWT_LIFETIME']
 
 # Load the SIAM request handler
-request_handler = siam.request_handler(siam_base_url, siam_app_id,
-                                       siam_aselect_server, siam_shared_secret,
-                                       jwt_secret, jwt_lifetime)
+siam_handler = siam.request_handler(siam_base_url, siam_app_id,
+                                    siam_aselect_server, siam_shared_secret,
+                                    jwt_secret, jwt_lifetime)
 
-# Test whether our SIAM config is correct
+# Fail fast if SIAM config is incorrect
 try:
-    request_handler.client.get_authn_link(True, 'http://test')
+    siam_handler.confcheck()
 except Exception as e:
-    app.logger.critical("Could not verify that the config is correct")
+    app.logger.critical("Could not verify that the SIAM config is correct")
     raise e
 
-# Setup the SIAM routes
-app.add_url_rule('{}/authenticate'.format(siam_route_base),
-                 view_func=request_handler.authenticate,
-                 methods=('GET',))
-
-app.add_url_rule('{}/token'.format(siam_route_base),
-                 view_func=request_handler.token,
-                 methods=('GET', 'POST'))
+# Register the request handler blueprint
+app.register_blueprint(siam_handler.app, url_prefix=siam_route_base)

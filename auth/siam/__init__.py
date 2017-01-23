@@ -2,5 +2,4 @@
     Authentication flow for SIAM
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
-import requests
-from .request import request_handler
+from .request import handler as request_handler
