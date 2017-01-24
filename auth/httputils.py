@@ -14,7 +14,7 @@ def assert_acceptable(*mimetypes):
     Usage:
 
         @app.route('/')
-        @auth.http.assert_acceptable('text/plain', 'application/json')
+        @httputils.assert_acceptable('text/plain', 'application/json')
         def handle():
             data = ... # create some response data
             best_mimetype = request.accept_mimetypes.best_match(
@@ -49,7 +49,7 @@ def assert_mimetypes(*mimetypes):
     Usage:
 
         @app.route('/')
-        @auth.http.assert_mimetypes('text/plain', 'application/json')
+        @httputils.assert_mimetypes('text/plain', 'application/json')
         def handle():
             if request.mimetype == 'text/plain':
                 # read text/plain
@@ -68,5 +68,55 @@ def assert_mimetypes(*mimetypes):
                     'Resouce only accepts: {}'.format(acceptable)
                 )
             return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def assert_req_args(*required):
+    """ Decorator to check the presence of required request arguments. Raises a
+    400 if the request is not valid.
+
+    Usage:
+
+        @app.route('/')
+        @httputils.assert_req_args('uid', 'callback')
+        def handle():
+            # these are now guaranteed to be present
+            uid = request.args.get('uid')
+            callback = request.args.get('callback')
+
+    :param required_args: sequence of strings
+    """
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            missing = tuple(a for a in required if a not in request.args)
+            if missing:
+                raise werkzeug.exceptions.BadRequest(
+                    'Resouce requires query parameters: {}'.format(required)
+                )
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def response_mimetype(mimetype):
+    """ Decorator that sets the mimetype of the response to the one given.
+
+    Usage:
+
+        @app.route('/')
+        @httputils.response_mimetype('application/json')
+        def handle():
+            make_response({"msg": "hello world"})
+
+    :param mimetype: A mimetype string
+    """
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            response = f(*args, **kwargs)
+            response.mimetype = mimetype
+            return response
         return wrapper
     return decorator

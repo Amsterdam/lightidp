@@ -13,13 +13,15 @@
     - `SIAM_A_SELECT_SERVER`: The a-select server (whatever that is)
     - `SIAM_APP_ID`: Your application ID
     - `SIAM_SHARED_SECRET`: Your shared secret
-    - `JWT_KEY`: The seed for your JWTs
-    - `JWT_LIFETIME`: The lifetime of your JWTs (in seconds)
+    - `JWT_SHARED_SECRET_KEY`: The seed for access tokens
 
     You _MAY_ override:
 
     - `DEBUG`: Run Flask in debug mode (default False)
-    - `PREFERRED_URL_SCHEME`: http or https (default https)
+    - `JWT_ALGORITHM`: The algorithm to use for JWT encryption (default HS256)
+    - `JWT_SECRET_KEY`: The seed for refresh tokens (default JWT_SHARED_SECRET_KEY)
+    - `JWT_EXPIRATION_DELTA`: Expiration for access tokens (default 300 seconds)
+    - `JWT_REFRESH_EXPIRATION_DELTA`: Expiration for access tokens (default 1 week)
 
     If you use a separate configuration file with `AUTHN_SIAM_SETTINGS`, you
     can also override other Flask configuration parameters. See
@@ -43,6 +45,8 @@ SIAM_APP_ID = os.getenv('SIAM_APP_ID')
 SIAM_SHARED_SECRET = os.getenv('SIAM_SHARED_SECRET')
 
 # JWT config
-JWT_SHARED_SECRET_KEY = os.getenv('JWT_SHARED_SECRET_KEY')
-# make lifetime an int but only if it exists
-JWT_LIFETIME = os.getenv('JWT_LIFETIME') and int(os.getenv('JWT_LIFETIME'))
+JWT_ALGORITHM = 'HS256'
+JWT_AT_SECRET = os.getenv('JWT_SHARED_SECRET_KEY')
+JWT_RT_SECRET = os.getenv('JWT_SECRET_KEY', JWT_AT_SECRET)
+JWT_AT_LIFETIME = int(os.getenv('JWT_EXPIRATION_DELTA', 300))
+JWT_RT_LIFETIME = int(os.getenv('JWT_REFRESH_EXPIRATION_DELTA', 3600*24*7))

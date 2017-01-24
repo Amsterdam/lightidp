@@ -5,6 +5,7 @@
 import collections
 import logging
 import requests
+import time
 import urllib
 
 logger = logging.getLogger(__name__)
@@ -12,6 +13,12 @@ logger = logging.getLogger(__name__)
 # wrappers to keep the dependency on requests limited
 Timeout = requests.Timeout
 RequestException = requests.RequestException
+
+
+class ResponseException(Exception):
+    """ Exception for errors in the response format.
+    """
+
 
 # Base class for Client, to make sure it's immutable after construction
 _Client = collections.namedtuple(
@@ -83,15 +90,26 @@ class Client(_Client):
             giving up, as a float, or a (connect timeout, read timeout) tuple.
         :see: http://docs.python-requests.org/en/master/user/advanced/#timeouts
         """
-        params = {
+        request_params = {
             'request': 'verify_credentials',
             'a-select-server': self.aselect_server,
             'shared_secret': self.shared_secret,
             'aselect_credentials': aselect_credentials,
             'rid': rid,
         }
-        r = self._request(params, timeout)
-        return urllib.parse.parse_qs(r.text)
+        r = self._request(request_params, timeout)
+        parsed = urllib.parse.parse_qs(r.text)
+        expected_param_keys = {'result_code', 'tgt_exp_time', 'uid'}
+        result = {k: parsed[k][0] for k in expected_param_keys if k in parsed}
+        am_missing_params = len(expected_param_keys) - len(result)
+        if result['result_code'] == self.RESULT_OK and am_missing_params:
+            raise ResponseException(
+                'Didn\'t get a valid response: {}'.format(parsed)
+            )
+        now = int(time.time())
+        if now > int(result['tgt_exp_time']):
+            raise ResponseException('tgt_exp_time expired')
+        return result
 
     def renew_session(self, aselect_credentials, timeout=(3.05, 1)):
         params = {
