@@ -12,15 +12,16 @@ app.config.from_object('auth.settings')
 app.config.from_envvar('AUTHN_SIAM_SETTINGS', silent=True)
 
 # load configuration
+app_root = app.config['APP_ROOT']
 siam_base_url = app.config['SIAM_URL']
-siam_route_base = app.config['SIAM_ROUTE_BASE']
+siam_root = app.config['SIAM_ROOT']
 siam_app_id = app.config['SIAM_APP_ID']
 siam_aselect_server = app.config['SIAM_A_SELECT_SERVER']
 siam_shared_secret = app.config['SIAM_SHARED_SECRET']
-jwt_secret = app.config['JWT_SECRET']
+jwt_secret = app.config['JWT_SHARED_SECRET_KEY']
 jwt_lifetime = app.config['JWT_LIFETIME']
 
-# Load the SIAM request handler
+# Load the SIAM blueprint
 siam_handler = siam.request_handler(siam_base_url, siam_app_id,
                                     siam_aselect_server, siam_shared_secret,
                                     jwt_secret, jwt_lifetime)
@@ -33,4 +34,6 @@ except Exception as e:
     raise e
 
 # Register the request handler blueprint
-app.register_blueprint(siam_handler.app, url_prefix=siam_route_base)
+app.register_blueprint(
+    siam_handler.app, url_prefix="{}{}".format(app_root, siam_root)
+)

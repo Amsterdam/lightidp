@@ -31,16 +31,18 @@ import os
 # Flask config. See documentation at
 # http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values
 DEBUG = os.getenv('DEBUG', False) and True  # convert truthy / falsey to bool
-PREFERRED_URL_SCHEME = os.getenv('PREFERRED_URL_SCHEME', 'https')
+
+# Application config
+APP_ROOT = '/auth'
 
 # SIAM config
-SIAM_ROUTE_BASE = '/siam'
+SIAM_ROOT = '/siam'
 SIAM_URL = os.getenv('SIAM_URL')
 SIAM_A_SELECT_SERVER = os.getenv('SIAM_A_SELECT_SERVER')
 SIAM_APP_ID = os.getenv('SIAM_APP_ID')
 SIAM_SHARED_SECRET = os.getenv('SIAM_SHARED_SECRET')
 
 # JWT config
-JWT_SECRET = os.getenv('JWT_SECRET')
+JWT_SHARED_SECRET_KEY = os.getenv('JWT_SHARED_SECRET_KEY')
 # make lifetime an int but only if it exists
 JWT_LIFETIME = os.getenv('JWT_LIFETIME') and int(os.getenv('JWT_LIFETIME'))
