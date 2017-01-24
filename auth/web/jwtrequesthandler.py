@@ -21,7 +21,7 @@ def assert_valid_jwt(f):
     return wrapper
 
 
-def handler(tokenbuilder):
+def blueprint(tokenbuilder):
     # Create the Flask blueprint
     app = Blueprint('jwt_app', __name__)
 

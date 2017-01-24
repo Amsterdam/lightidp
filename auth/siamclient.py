@@ -86,6 +86,12 @@ class Client(_Client):
     def verify_creds(self, aselect_credentials, rid, timeout=(3.05, 1)):
         """ Make a credential verification request to the IdP.
 
+        This method also reports malformed responses from SIAM. A response is
+        considered correct if it contains:
+
+        1. a result_code other than 0000
+        2. a result_code 0000, a uid and a tgt_exp_time that is larger than now
+
         :param timeout: How long to wait for the server to send data before
             giving up, as a float, or a (connect timeout, read timeout) tuple.
         :see: http://docs.python-requests.org/en/master/user/advanced/#timeouts
@@ -101,13 +107,16 @@ class Client(_Client):
         parsed = urllib.parse.parse_qs(r.text)
         expected_param_keys = {'result_code', 'tgt_exp_time', 'uid'}
         result = {k: parsed[k][0] for k in expected_param_keys if k in parsed}
-        am_missing_params = len(expected_param_keys) - len(result)
-        if result['result_code'] == self.RESULT_OK and am_missing_params:
-            raise ResponseException(
-                'Didn\'t get a valid response: {}'.format(parsed)
-            )
-        now = int(time.time())
-        if now > int(result['tgt_exp_time']):
+        has_missing_params = len(expected_param_keys) - len(result)
+        resultcode = result.get('result_code')
+        valid_exp = int(time.time()) < int(result.get('tgt_exp_time', 0))
+        if has_missing_params:
+            malformed = resultcode is None or resultcode == self.RESULT_OK
+            if malformed:
+                raise ResponseException(
+                    'Malformed response: {}'.format(parsed)
+                )
+        elif resultcode == self.RESULT_OK and not valid_exp:
             raise ResponseException('tgt_exp_time expired')
         return result
 
@@ -118,7 +127,10 @@ class Client(_Client):
             'crypted_credentials': aselect_credentials,
         }
         r = self._request(params, timeout)
-        return urllib.parse.parse_qs(r.text)
+        parsed = urllib.parse.parse_qs(r.text)
+        if 'result_code' not in parsed:
+            raise ResponseException('Malformed response: {}'.format(parsed))
+        return parsed['result_code'][0] == self.RESULT_OK
 
     def end_session(self, aselect_credentials, timeout=(3.05, 1)):
         params = {

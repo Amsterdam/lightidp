@@ -2,7 +2,7 @@
     auth.jwt.api
     ~~~~~~~~~~~~
 
-    This modeul maintains the base structure for our JWTs
+    This module maintains the base structure for our JWTs
 """
 import collections
 import functools
@@ -11,6 +11,7 @@ import types
 import jwt
 
 
+# Use a namedtuple to emphasize the immutability of the config
 _TokenBuilder = collections.namedtuple('_TokenBuilder', (
     'rt_secret', 'at_secret', 'rt_lifetime', 'at_lifetime', 'algorithm'
 ))
@@ -27,9 +28,13 @@ class TokenBuilder(_TokenBuilder):
             return self._td
         except AttributeError:
             pass
-        td_ns = {
-            'encode': functools.partialmethod(jwt.encode, self.at_secret, algorithm=self.algorithm)
-        }
+        # wrap the secret and algortihm in a partial
+        encode = functools.partialmethod(
+            jwt.encode, self.at_secret, algorithm=self.algorithm
+        )
+        # create the namespace structure
+        td_ns = {'encode': encode}
+        # create a class TokenData that bases dict & includes the encode method
         self._td = types.new_class(
             'TokenData', bases=(dict,), exec_body=lambda ns: ns.update(td_ns)
         )
