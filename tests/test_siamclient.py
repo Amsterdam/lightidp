@@ -1,10 +1,6 @@
 """
-    Tests for the SIAM client
-    ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Note that this only tests :meth:`~auth.siam.client.Client._request` and
-    :meth:`~auth.siam.client.Client.get_authn_link`. The other methods are just
-    convenient wrappers for :meth:`~auth.siam.client.Client._request`.
+    auth.tests.test_siamclient
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 import pytest
 import responses
@@ -17,15 +13,11 @@ uenc = urllib.parse.urlencode
 
 
 @pytest.mark.usefixtures('config', 'client')
-@responses.activate
 def test_siam_server_error(config, client):
-    responses.add(responses.GET, config['SIAM_BASE_URL'], status=500)
-    try:
-        client._request({}, 1.0)
-    except siamclient.RequestException:
-        pass
-    else:
-        assert False, 'Client should have raised an exception'
+    with responses.RequestsMock() as rsps:
+        rsps.add(rsps.GET, config['SIAM_BASE_URL'], status=500)
+        with pytest.raises(siamclient.RequestException):
+            client._request({}, 1.0)
 
 
 @pytest.mark.usefixtures('config', 'client')
@@ -87,7 +79,6 @@ def test_verify_creds(config, client):
 
 
 @pytest.mark.usefixtures('config', 'client')
-@responses.activate
 def test_renew_session(config, client):
     # 1. Test success
     with responses.RequestsMock() as rsps:
@@ -103,7 +94,7 @@ def test_renew_session(config, client):
 
 
 @pytest.mark.usefixtures('config', 'client')
-@responses.activate
 def test_end_session(config, client):
-    responses.add(responses.GET, config['SIAM_BASE_URL'], status=307)
-    assert client.end_session('aselect_credentials') == 307
+    with responses.RequestsMock() as rsps:
+        rsps.add(rsps.GET, config['SIAM_BASE_URL'], status=307)
+        assert client.end_session('aselect_credentials') == 307
