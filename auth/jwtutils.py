@@ -10,6 +10,9 @@ import time
 import types
 import jwt
 
+# Reference
+InvalidTokenError = jwt.exceptions.InvalidTokenError
+
 # Use a namedtuple to emphasize the immutability of the config
 _TokenBuilder = collections.namedtuple('_TokenBuilder', (
     'rt_secret', 'at_secret', 'rt_lifetime', 'at_lifetime', 'algorithm'

@@ -57,7 +57,7 @@ if not app.debug:
 # Check whether we can generate a JWT
 try:
     tokenbuilder.accesstoken_for('test').encode()
-except (jwtutils.InvalidKeyError, jwtutils.InvalidTokenError):
+except (NotImplementedError, jwtutils.InvalidTokenError):
     app.logger.critical('Couldn\'t verify that the JWT config is correct')
     raise
 except Exception:
