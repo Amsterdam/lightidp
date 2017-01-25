@@ -22,7 +22,7 @@ def assert_siam_connection(f):
     return wrapper
 
 
-def blueprint(base_url, app_id, ass, secret, tokenbuilder, check_conf=True):
+def blueprint(client, tokenbuilder):
     """ Wrapper for a SIAM request handler.
 
     This function generates a SIAM request handler for the given config.
@@ -35,13 +35,6 @@ def blueprint(base_url, app_id, ass, secret, tokenbuilder, check_conf=True):
     :param jwt_lt: The JWT lifetime
     :return: RequestHandler
     """
-
-    # Create the SIAM client
-    client = siamclient.Client(base_url, app_id, ass, secret)
-
-    if check_conf:
-        # let's do a conf check
-        client.get_authn_link(False, 'http://test')
 
     # Create the Flask blueprint
     app = Blueprint('siam_app', __name__)

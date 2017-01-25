@@ -1,5 +1,5 @@
 """
-    auth.jwt.api
+    auth.jwtutils
     ~~~~~~~~~~~~
 
     This module maintains the base structure for our JWTs
@@ -9,7 +9,6 @@ import functools
 import time
 import types
 import jwt
-
 
 # Use a namedtuple to emphasize the immutability of the config
 _TokenBuilder = collections.namedtuple('_TokenBuilder', (
