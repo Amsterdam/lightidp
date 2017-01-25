@@ -2,10 +2,10 @@ auth-acc:
   build: ../
   environment:
     - DEBUG=true
-    - SIAM_URL
-    - SIAM_A_SELECT_SERVER
-    - SIAM_APP_ID
-    - SIAM_SHARED_SECRET
-    - JWT_SHARED_SECRET_KEY
-    - JWT_LIFETIME
+    - SIAM_URL=http://someurl
+    - SIAM_A_SELECT_SERVER=someserver
+    - SIAM_APP_ID=someapp
+    - SIAM_SHARED_SECRET=somesecret
+    - JWT_SHARED_SECRET_KEY=anothersecret
+    - JWT_LIFETIME=300
 
