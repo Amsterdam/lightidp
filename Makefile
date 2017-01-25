@@ -10,7 +10,7 @@ test:
 	py.test tests
 
 coverage:
-	py.test --verbose --cov-report term --cov=auth tests
+	py.test --verbose --cov-report term --cov=auth --cov-config .coveragerc tests
 
 pep8:
 	# we make pep8 ignores the following rules
