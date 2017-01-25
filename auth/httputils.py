@@ -30,6 +30,7 @@ def assert_acceptable(*mimetypes):
     def decorator(f):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
+            print(request)
             capable = set(mimetypes)
             acceptable = {r[0] for r in request.accept_mimetypes}
             if not capable & acceptable:
