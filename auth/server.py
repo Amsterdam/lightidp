@@ -33,7 +33,7 @@ tokenbuilder = jwtutils.TokenBuilder(
 # Create the SIAM blueprint
 siam_bp = siamrequesthandler.blueprint(siam_base_url, siam_app_id,
                                        siam_aselect_server, siam_shared_secret,
-                                       tokenbuilder)
+                                       tokenbuilder, check_conf=app.debug)
 
 # Register the blueprint
 app.register_blueprint(siam_bp, url_prefix="{}{}".format(app_root, siam_root))

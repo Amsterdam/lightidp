@@ -1,16 +1,12 @@
-tests:
-  build: ../
-  command: make -C /app test
-
-auth:
+auth-acc:
   build: ../
   environment:
-    - DEBUG
+    - DEBUG=true
     - SIAM_URL
     - SIAM_A_SELECT_SERVER
     - SIAM_APP_ID
     - SIAM_SHARED_SECRET
     - JWT_SHARED_SECRET_KEY
     - JWT_LIFETIME
-  command: /bin/sh /app/docker-entrypoint.sh
+  command: make -C /app test
 
