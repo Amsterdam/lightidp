@@ -1,6 +1,6 @@
 [run]
 branch = True
-data_file = ${TMPDIR}/.coverage
+data_file = /tmp/.coverage
 
 [report]
 show_missing = True
