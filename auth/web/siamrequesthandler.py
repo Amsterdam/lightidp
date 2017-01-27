@@ -5,7 +5,7 @@
 import functools
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
-from auth import httputils, siamclient
+from auth import httputils, siam
 
 
 def assert_siam_connection(f):
@@ -15,9 +15,9 @@ def assert_siam_connection(f):
     def wrapper(*args, **kwargs):
         try:
             return f(*args, **kwargs)
-        except siamclient.Timeout:
+        except siam.Timeout:
             raise werkzeug.exceptions.GatewayTimeout()
-        except (siamclient.RequestException, siamclient.ResponseException):
+        except (siam.RequestException, siam.ResponseException):
             raise werkzeug.exceptions.BadGateway()
     return wrapper
 

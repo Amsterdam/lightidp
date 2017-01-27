@@ -5,7 +5,7 @@
 from flask import Flask
 
 from .web import siamrequesthandler
-from . import jwtutils, siamclient
+from . import jwtutils, siam
 
 
 # ====== 0. CREATE FLASK WSGI APP AND LOAD SETTINGS
@@ -35,7 +35,7 @@ jwt_rt_lifetime = app.config['JWT_RT_LIFETIME']
 # Create the JWT token builder
 tokenbuilder = jwtutils.TokenBuilder(jwt_rt_secret, jwt_at_secret, jwt_rt_lifetime, jwt_at_lifetime, jwt_algorithm)
 # Create a siam client
-siamclient = siamclient.Client(siam_base_url, siam_app_id, siam_aselect_server, siam_shared_secret)
+siamclient = siam.Client(siam_base_url, siam_app_id, siam_aselect_server, siam_shared_secret)
 # Create the SIAM blueprint
 siam_bp = siamrequesthandler.blueprint(siamclient, tokenbuilder)
 
@@ -47,7 +47,7 @@ if not app.debug:
     # Check whether we can get a authn link from SIAM
     try:
         siamclient.get_authn_link(False, 'http://test')
-    except (siamclient.RequestException, siamclient.ResponseException):
+    except (siam.RequestException, siam.ResponseException):
         app.logger.critical('Couldn\'t verify that the SIAM config is correct')
         raise
     except Exception:

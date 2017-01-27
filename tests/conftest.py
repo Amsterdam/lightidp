@@ -1,5 +1,5 @@
 import pytest
-import auth.siamclient
+import auth.siam
 
 
 @pytest.fixture(scope='session')
@@ -16,7 +16,7 @@ def config():
 
 @pytest.fixture(scope='session')
 def client(config):
-    client = auth.siamclient.Client(
+    client = auth.siam.Client(
         base_url=config['SIAM_BASE_URL'],
         app_id=config['SIAM_APP_ID'],
         aselect_server=config['SIAM_ASELECT_SERVER'],
