@@ -17,3 +17,6 @@ pep8:
 	# E501 line too long
 	pep8 --ignore=E501 auth
 
+run:
+	FLASK_APP=auth.server python -m flask run -p 8109 --reload
+
