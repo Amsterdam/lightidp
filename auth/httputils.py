@@ -13,6 +13,8 @@ def assert_acceptable(*mimetypes):
 
     Usage:
 
+    ::
+
         @app.route('/')
         @httputils.assert_acceptable('text/plain', 'application/json')
         def handle():
@@ -49,6 +51,8 @@ def assert_mimetypes(*mimetypes):
 
     Usage:
 
+    ::
+
         @app.route('/')
         @httputils.assert_mimetypes('text/plain', 'application/json')
         def handle():
@@ -79,6 +83,8 @@ def assert_req_args(*required):
 
     Usage:
 
+    ::
+
         @app.route('/')
         @httputils.assert_req_args('uid', 'callback')
         def handle():
@@ -105,6 +111,8 @@ def response_mimetype(mimetype):
     """ Decorator that sets the mimetype of the response to the one given.
 
     Usage:
+
+    ::
 
         @app.route('/')
         @httputils.response_mimetype('application/json')
