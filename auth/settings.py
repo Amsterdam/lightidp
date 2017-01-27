@@ -36,6 +36,7 @@ DEBUG = os.getenv('DEBUG', False) and True  # convert truthy / falsey to bool
 
 # Application config
 APP_ROOT = '/auth'
+SKIP_CONF_CHECK = os.getenv('AUTH_SKIP_CONF_CHECK', False) and True
 
 # SIAM config
 SIAM_ROOT = '/siam'

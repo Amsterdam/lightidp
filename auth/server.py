@@ -17,34 +17,38 @@ app.config.from_envvar('AUTHN_SIAM_SETTINGS', silent=True)
 
 # ====== 1. PARSE SETTINGS (todo: validate semantics somewhere else)
 
+skip_conf_check = app.config['SKIP_CONF_CHECK']
 app_root = app.config['APP_ROOT']
-siam_base_url = app.config['SIAM_URL']
 siam_root = app.config['SIAM_ROOT']
-siam_app_id = app.config['SIAM_APP_ID']
-siam_aselect_server = app.config['SIAM_A_SELECT_SERVER']
-siam_shared_secret = app.config['SIAM_SHARED_SECRET']
-jwt_algorithm = app.config['JWT_ALGORITHM']
-jwt_at_secret = app.config['JWT_AT_SECRET']
-jwt_rt_secret = app.config['JWT_RT_SECRET']
-jwt_at_lifetime = app.config['JWT_AT_LIFETIME']
-jwt_rt_lifetime = app.config['JWT_RT_LIFETIME']
+siamclient_settings = {
+    'base_url': app.config['SIAM_URL'],
+    'app_id': app.config['SIAM_APP_ID'],
+    'aselect_server': app.config['SIAM_A_SELECT_SERVER'],
+    'shared_secret': app.config['SIAM_SHARED_SECRET']
+}
+tokenbuilder_settings = {
+    'rt_secret': app.config['JWT_RT_SECRET'],
+    'at_secret': app.config['JWT_AT_SECRET'],
+    'rt_lifetime': app.config['JWT_RT_LIFETIME'],
+    'at_lifetime': app.config['JWT_AT_LIFETIME'],
+    'algorithm': app.config['JWT_ALGORITHM']
+}
 
 
 # ====== 2. CREATE FLASK BLUEPRINTS AND SUPPORTING OBJECTS
 
 # Create the JWT token builder
-tokenbuilder = jwtutils.TokenBuilder(jwt_rt_secret, jwt_at_secret, jwt_rt_lifetime, jwt_at_lifetime, jwt_algorithm)
+tokenbuilder = jwtutils.TokenBuilder(**tokenbuilder_settings)
 # Create a siam client
-siamclient = siam.Client(siam_base_url, siam_app_id, siam_aselect_server, siam_shared_secret)
+siamclient = siam.Client(**siamclient_settings)
 # Create the SIAM blueprint
 siam_bp = siamrequesthandler.blueprint(siamclient, tokenbuilder)
 
 
 # ====== 3. RUN CONFIGURATION CHECKS
 
-# Do SIAM configuration checks ONLY if we're not in debug mode
-if not app.debug:
-    # Check whether we can get a authn link from SIAM
+if not skip_conf_check:
+    # 3.1 Check whether we can get a authn link from SIAM
     try:
         siamclient.get_authn_link(False, 'http://test')
     except (siam.RequestException, siam.ResponseException):
@@ -54,15 +58,15 @@ if not app.debug:
         app.logger.critical('An unknown error occurred during startup')
         raise
 
-# Check whether we can generate a JWT
-try:
-    tokenbuilder.accesstoken_for('test').encode()
-except (NotImplementedError, jwtutils.InvalidTokenError):
-    app.logger.critical('Couldn\'t verify that the JWT config is correct')
-    raise
-except Exception:
-    app.logger.critical('An unknown error occurred during startup')
-    raise
+    # 3.2 Check whether we can generate a JWT
+    try:
+        tokenbuilder.accesstoken_for('test').encode()
+    except (NotImplementedError, jwtutils.InvalidTokenError):
+        app.logger.critical('Couldn\'t verify that the JWT config is correct')
+        raise
+    except Exception:
+        app.logger.critical('An unknown error occurred during startup')
+        raise
 
 
 # ====== 4. REGISTER FLASK BLUEPRINTS

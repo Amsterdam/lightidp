@@ -13,3 +13,4 @@ reports/
 .coverage
 coverage.xml
 settings_test.*
+docs/_build
