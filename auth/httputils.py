@@ -5,6 +5,7 @@
 import functools
 from flask import request
 import werkzeug.exceptions
+from auth import exceptions
 
 
 def assert_acceptable(*mimetypes):
@@ -105,6 +106,33 @@ def assert_req_args(*required):
             return f(*args, **kwargs)
         return wrapper
     return decorator
+
+
+def assert_gateway(f):
+    """ Decorator that translates gateway exceptions into 502/504 server errors.
+
+    Usage:
+
+    ::
+
+        @app.rout('/')
+        @httputils.assert_gateway
+        def handle():
+            # this may raise a gateway error that will be translated into a 50X
+            siamclient.renew_session(...)
+
+    """
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except exceptions.GatewayTimeoutException as e:
+            raise werkzeug.exceptions.GatewayTimeout() from e
+        except (exceptions.GatewayRequestException,
+                exceptions.GatewayResponseException,
+                exceptions.GatewayConnectionException) as e:
+            raise werkzeug.exceptions.BadGateway() from e
+    return wrapper
 
 
 def response_mimetype(mimetype):

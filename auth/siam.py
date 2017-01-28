@@ -1,6 +1,6 @@
 """
-    The SIAM client
-    ~~~~~~~~~~~~~~~
+    auth.siam
+    ~~~~~~~~~
 """
 import collections
 import logging
@@ -8,17 +8,9 @@ import requests
 import time
 import urllib
 
+from auth import exceptions
+
 logger = logging.getLogger(__name__)
-
-# wrappers to keep the dependency on requests limited
-Timeout = requests.Timeout
-RequestException = requests.RequestException
-
-
-class ResponseException(Exception):
-    """ Exception for errors in the response format.
-    """
-
 
 # Base class for Client, to make sure it's immutable after construction
 _Client = collections.namedtuple(
@@ -50,11 +42,18 @@ class Client(_Client):
         :see: http://docs.python-requests.org/en/master/user/advanced/#timeouts
         """
         url = '{}?{}'.format(self.base_url, urllib.parse.urlencode(params))
-        r = requests.get(url, timeout=timeout)
+        try:
+            r = requests.get(url, timeout=timeout)
+        except requests.Timeout as e:
+            raise exceptions.GatewayTimeoutException() from e
+        except requests.RequestException as e:
+            raise exceptions.GatewayRequestException() from e
+        except requests.ConnectionError as e:
+            raise exceptions.GatewayConnectionException() from e
         if r.status_code >= 400:
             logger.critical('HTTP {} response from '
                             'SIAM for {}'.format(r.status_code, url))
-            raise requests.RequestException()
+            raise exceptions.GatewayRequestException()
         return r
 
     def get_authn_link(self, passive, callback_url, timeout=(3.05, 1)):
@@ -113,11 +112,11 @@ class Client(_Client):
         if has_missing_params:
             malformed = resultcode is None or resultcode == self.RESULT_OK
             if malformed:
-                raise ResponseException(
+                raise exceptions.GatewayResponseException(
                     'Malformed response: {}'.format(parsed)
                 )
         elif resultcode == self.RESULT_OK and not valid_exp:
-            raise ResponseException('tgt_exp_time expired')
+            raise exceptions.GatewayResponseException('tgt_exp_time expired')
         return result
 
     def renew_session(self, aselect_credentials, timeout=(3.05, 1)):
@@ -129,7 +128,8 @@ class Client(_Client):
         r = self._request(params, timeout)
         parsed = urllib.parse.parse_qs(r.text)
         if 'result_code' not in parsed:
-            raise ResponseException('Malformed response: {}'.format(parsed))
+            raise exceptions.GatewayResponseException(
+                'Malformed response: {}'.format(parsed))
         return parsed['result_code'][0] == self.RESULT_OK
 
     def end_session(self, aselect_credentials, timeout=(3.05, 1)):

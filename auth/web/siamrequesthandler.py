@@ -2,24 +2,9 @@
     auth.siam.requesthandler
     ~~~~~~~~~~~~~~~~~~~~~~~~
 """
-import functools
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
-from auth import httputils, siam
-
-
-def assert_siam_connection(f):
-    """ Decorator that translates SIAM exceptions into 502/504 server errors.
-    """
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except siam.Timeout:
-            raise werkzeug.exceptions.GatewayTimeout()
-        except (siam.RequestException, siam.ResponseException):
-            raise werkzeug.exceptions.BadGateway()
-    return wrapper
+from auth import httputils
 
 
 def blueprint(client, tokenbuilder):
@@ -37,11 +22,11 @@ def blueprint(client, tokenbuilder):
     """
 
     # Create the Flask blueprint
-    app = Blueprint('siam_app', __name__)
+    blueprint = Blueprint('siam_app', __name__)
 
-    @app.route('/authenticate', methods=('GET',))
+    @blueprint.route('/authenticate', methods=('GET',))
     @httputils.assert_req_args('callback')
-    @assert_siam_connection
+    @httputils.assert_gateway
     def authenticate():
         """ Route for authn requests
         """
@@ -50,11 +35,11 @@ def blueprint(client, tokenbuilder):
         )
         return redirect(response, code=307)
 
-    @app.route('/token', methods=('GET',))
+    @blueprint.route('/token', methods=('GET',))
     @httputils.assert_acceptable('text/plain')
     @httputils.assert_req_args('aselect_credentials', 'rid', 'a-select-server')
+    @httputils.assert_gateway
     @httputils.response_mimetype('text/plain')
-    @assert_siam_connection
     def token():
         """ Route for getting a new token
         """
@@ -73,4 +58,4 @@ def blueprint(client, tokenbuilder):
         basetoken['rid'] = rid
         return make_response((basetoken.encode(), 200))
 
-    return app
+    return blueprint

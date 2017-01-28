@@ -6,7 +6,7 @@ import pytest
 import responses
 import time
 import urllib.parse
-from auth import siam
+from auth import exceptions, siam
 
 # shorthand
 uenc = urllib.parse.urlencode
@@ -16,7 +16,7 @@ uenc = urllib.parse.urlencode
 def test_siam_server_error(config, client):
     with responses.RequestsMock() as rsps:
         rsps.add(rsps.GET, config['SIAM_BASE_URL'], status=500)
-        with pytest.raises(siam.RequestException):
+        with pytest.raises(exceptions.GatewayRequestException):
             client._request({}, 1.0)
 
 
@@ -59,13 +59,13 @@ def test_verify_creds(config, client):
     with responses.RequestsMock() as rsps:
         result = {'result_code': client.RESULT_OK}
         rsps.add(rsps.GET, config['SIAM_BASE_URL'], body=uenc(result))
-        with pytest.raises(siam.ResponseException):
+        with pytest.raises(exceptions.GatewayResponseException):
             client.verify_creds('aselect_credentials', 'rid')
     # 4. Test malformed response II
     with responses.RequestsMock() as rsps:
         result = {}
         rsps.add(rsps.GET, config['SIAM_BASE_URL'], body=uenc(result))
-        with pytest.raises(siam.ResponseException):
+        with pytest.raises(exceptions.GatewayResponseException):
             client.verify_creds('aselect_credentials', 'rid')
     # 5. Test malformed response III
     with responses.RequestsMock() as rsps:
@@ -74,7 +74,7 @@ def test_verify_creds(config, client):
             'tgt_exp_time': '{}'.format(now-10),
             'uid': 'evert'}
         rsps.add(rsps.GET, config['SIAM_BASE_URL'], body=uenc(result))
-        with pytest.raises(siam.ResponseException):
+        with pytest.raises(exceptions.GatewayResponseException):
             client.verify_creds('aselect_credentials', 'rid')
 
 
@@ -89,7 +89,7 @@ def test_renew_session(config, client):
     with responses.RequestsMock() as rsps:
         body = uenc({'other param': 'some value'})
         rsps.add(rsps.GET, config['SIAM_BASE_URL'], status=200, body=body)
-        with pytest.raises(siam.ResponseException):
+        with pytest.raises(exceptions.GatewayResponseException):
             client.renew_session('aselect_credentials')
 
 

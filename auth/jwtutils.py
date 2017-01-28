@@ -10,8 +10,7 @@ import time
 import types
 import jwt
 
-# Reference
-InvalidTokenError = jwt.exceptions.InvalidTokenError
+from auth import exceptions
 
 # Use a namedtuple to emphasize the immutability of the config
 _TokenBuilder = collections.namedtuple('_TokenBuilder', (
@@ -50,6 +49,8 @@ class TokenBuilder(_TokenBuilder):
 
         Usage:
 
+        ::
+
             basetoken = tokenbuilder.basetoken_for('userID')
             basetoken['myproperty'] = 42
             jwt = basetoken.encode()
@@ -65,5 +66,12 @@ class TokenBuilder(_TokenBuilder):
         return self._tokendata(data)
 
     def decode_accesstoken(self, encoded_token):
-        data = jwt.decode(encoded_token, key=self.at_secret)
+        try:
+            data = jwt.decode(encoded_token, key=self.at_secret)
+        except jwt.exceptions.DecodeError as e:
+            raise exceptions.JWTDecodeException() from e
+        except jwt.exceptions.ExpiredSignatureError as e:
+            raise exceptions.JWTExpiredSignatureException from e
+        except jwt.exceptions.InvalidTokenError as e:
+            raise exceptions.JWTException from e
         return self._tokendata(data)

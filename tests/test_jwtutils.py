@@ -2,9 +2,8 @@
     auth.tests.test_jwtutils
     ~~~~~~~~~~~~~~~~~~~~~~~~
 """
-import jwt
 import pytest
-from auth import jwtutils
+from auth import exceptions, jwtutils
 
 
 def test_tokenbuilder_success():
@@ -37,5 +36,5 @@ def test_tokenbuilder_invalid_algorithm():
 def test_tokenbuilder_decode_error():
     builder1 = jwtutils.TokenBuilder(None, 'key1', None, 300, 'HS256')
     builder2 = jwtutils.TokenBuilder(None, 'key2', None, 300, 'HS256')
-    with pytest.raises(jwt.exceptions.DecodeError):
+    with pytest.raises(exceptions.JWTDecodeException):
         builder2.decode_accesstoken(builder1.accesstoken_for('sub').encode())

@@ -5,7 +5,7 @@
 from flask import Flask
 
 from .web import siamrequesthandler
-from . import jwtutils, siam
+from . import exceptions, jwtutils, siam
 
 
 # ====== 0. CREATE FLASK WSGI APP AND LOAD SETTINGS
@@ -51,7 +51,7 @@ if not skip_conf_check:
     # 3.1 Check whether we can get a authn link from SIAM
     try:
         siamclient.get_authn_link(False, 'http://test')
-    except (siam.RequestException, siam.ResponseException):
+    except exceptions.AuthException:
         app.logger.critical('Couldn\'t verify that the SIAM config is correct')
         raise
     except Exception:
@@ -60,8 +60,8 @@ if not skip_conf_check:
 
     # 3.2 Check whether we can generate a JWT
     try:
-        tokenbuilder.accesstoken_for('test').encode()
-    except (NotImplementedError, jwtutils.InvalidTokenError):
+        tokenbuilder.decode_accesstoken(tokenbuilder.accesstoken_for('test').encode())
+    except exceptions.JWTException:
         app.logger.critical('Couldn\'t verify that the JWT config is correct')
         raise
     except Exception:
