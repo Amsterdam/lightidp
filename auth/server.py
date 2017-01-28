@@ -4,8 +4,8 @@
 """
 from flask import Flask
 
-from .web import siamrequesthandler
-from . import exceptions, jwtutils, siam
+from .blueprints import siamblueprint
+from . import exceptions, siam, token
 
 
 # ====== 0. CREATE FLASK WSGI APP AND LOAD SETTINGS
@@ -38,11 +38,11 @@ tokenbuilder_settings = {
 # ====== 2. CREATE FLASK BLUEPRINTS AND SUPPORTING OBJECTS
 
 # Create the JWT token builder
-tokenbuilder = jwtutils.TokenBuilder(**tokenbuilder_settings)
+tokenbuilder = token.Builder(**tokenbuilder_settings)
 # Create a siam client
 siamclient = siam.Client(**siamclient_settings)
 # Create the SIAM blueprint
-siam_bp = siamrequesthandler.blueprint(siamclient, tokenbuilder)
+siam_bp = siamblueprint(siamclient, tokenbuilder)
 
 
 # ====== 3. RUN CONFIGURATION CHECKS

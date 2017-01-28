@@ -18,7 +18,7 @@ _TokenBuilder = collections.namedtuple('_TokenBuilder', (
 ))
 
 
-class TokenBuilder(_TokenBuilder):
+class Builder(_TokenBuilder):
 
     @property
     def _tokendata(self):

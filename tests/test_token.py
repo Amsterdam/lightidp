@@ -3,14 +3,14 @@
     ~~~~~~~~~~~~~~~~~~~~~~~~
 """
 import pytest
-from auth import exceptions, jwtutils
+from auth import exceptions, token
 
 
 def test_tokenbuilder_success():
-    builder = jwtutils.TokenBuilder(None, 'at_secret', None, 300, 'HS256')
-    token = builder.accesstoken_for('sub').encode()
-    assert token
-    data = builder.decode_accesstoken(token)
+    builder = token.Builder(None, 'at_secret', None, 300, 'HS256')
+    jwt = builder.accesstoken_for('sub').encode()
+    assert jwt
+    data = builder.decode_accesstoken(jwt)
     # make sure we have something
     assert data
     # make sure we have an encode property
@@ -24,17 +24,17 @@ def test_tokenbuilder_success():
     assert data['sub'] == 'sub'
     assert data['exp'] - data['iat'] == 300
     # make sure the same data encodes the same jwt
-    assert data.encode() == token
+    assert data.encode() == jwt
 
 
 def test_tokenbuilder_invalid_algorithm():
-    builder = jwtutils.TokenBuilder(None, 'at_secret', None, 300, 'invalid')
+    builder = token.Builder(None, 'at_secret', None, 300, 'invalid')
     with pytest.raises(NotImplementedError):
         builder.accesstoken_for('sub').encode()
 
 
 def test_tokenbuilder_decode_error():
-    builder1 = jwtutils.TokenBuilder(None, 'key1', None, 300, 'HS256')
-    builder2 = jwtutils.TokenBuilder(None, 'key2', None, 300, 'HS256')
+    builder1 = token.Builder(None, 'key1', None, 300, 'HS256')
+    builder2 = token.Builder(None, 'key2', None, 300, 'HS256')
     with pytest.raises(exceptions.JWTDecodeException):
         builder2.decode_accesstoken(builder1.accesstoken_for('sub').encode())
