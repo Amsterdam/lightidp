@@ -1,6 +1,6 @@
 """
-    auth.jwt.requesthandler
-    ~~~~~~~~~~~~~~~~~~~~~~~~
+    auth.blueprints.token
+    ~~~~~~~~~~~~~~~~~~~~~
 """
 from flask import Blueprint, request, make_response
 import werkzeug.exceptions

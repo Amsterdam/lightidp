@@ -1,6 +1,6 @@
 """
-    auth.siam.requesthandler
-    ~~~~~~~~~~~~~~~~~~~~~~~~
+    auth.blueprints.siam
+    ~~~~~~~~~~~~~~~~~~~~
 """
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
