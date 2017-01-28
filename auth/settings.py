@@ -1,32 +1,49 @@
 """
-    Authn / authz settings
-    ~~~~~~~~~~~~~~~~~~~~~~
+    Configuration
+    ~~~~~~~~~~~~~
 
-    See below all available settings. Override by setting the corresponsing
-    environment variables. Optionally you can override these parameters in a
-    separate settings file, and point to that in env var `AUTHN_SIAM_SETTINGS`.
-    This may be useful during development.
+    Required settings
+    -----------------
 
-    You _MUST_ override:
+    To run the service you must configure it for the IdPs you support.
 
-    - `SIAM_URL`: The URL endpoint for SIAM
-    - `SIAM_A_SELECT_SERVER`: The a-select server (whatever that is)
-    - `SIAM_APP_ID`: Your application ID
-    - `SIAM_SHARED_SECRET`: Your shared secret
-    - `JWT_SHARED_SECRET_KEY`: The seed for access tokens
+    For SIAM you need the following:
 
-    You _MAY_ override:
+    - ``SIAM_URL``: The URL endpoint for SIAM
+    - ``SIAM_A_SELECT_SERVER``: The a-select server (whatever that is)
+    - ``SIAM_APP_ID``: Your application ID
+    - ``SIAM_SHARED_SECRET``: Your shared secret
 
-    - `DEBUG`: Run Flask in debug mode (default False)
-    - `JWT_ALGORITHM`: The algorithm to use for JWT encryption (default HS256)
-    - `JWT_SECRET_KEY`: The seed for refresh tokens (default JWT_SHARED_SECRET_KEY)
-    - `JWT_EXPIRATION_DELTA`: Expiration for access tokens (default 300 seconds)
-    - `JWT_REFRESH_EXPIRATION_DELTA`: Expiration for access tokens (default 1 week)
+    You'll also have to provide a shared key for access tokens:
 
-    If you use a separate configuration file with `AUTHN_SIAM_SETTINGS`, you
-    can also override other Flask configuration parameters. See
-    http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values for
-    an overview.
+    - ``JWT_SHARED_SECRET_KEY``: The seed for access tokens
+
+    Optional settings
+    -----------------
+
+    Other settings you may (but don't need to) override:
+
+    - ``DEBUG``: Run Flask in debug mode (default False)
+    - ``JWT_ALGORITHM``: The algorithm to use for JWT encryption (default HS256)
+    - ``JWT_SECRET_KEY``: The seed for refresh tokens (default JWT_SHARED_SECRET_KEY)
+    - ``JWT_EXPIRATION_DELTA``: Expiration for access tokens (default 300 seconds)
+    - ``JWT_REFRESH_EXPIRATION_DELTA``: Expiration for access tokens (default 1 week)
+
+    How to configure the service
+    ----------------------------
+
+    The settings are `loaded using Flask
+    <http://flask.pocoo.org/docs/0.12/config/>`_. Strictly speaking you have
+    two ways of configuring the service:
+
+    1. The way you should do it: *as environment variables*. You can define
+       variables in a file and export them using set -a / set +a, ie ``set -a
+       && source settings.env && set+a``. You should go this route if you
+       intend to run the service in Docker.
+    2. The way you probably shouldn't do it: point to a Flask config file in a
+       ``AUTH_SETTINGS`` environment variable. This will also allow you to
+       override `other Flask specific settings
+       <http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values>`_.
 """
 import os
 

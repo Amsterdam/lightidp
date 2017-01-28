@@ -14,6 +14,23 @@ The AA service authenticates users through external identity providers (IdP's),
 manages user permissions and creates access and refresh tokens in the form of
 `JSON Web Tokens <https://tools.ietf.org/html/rfc7519>`_ (JWTs).
 
+Using the service
+-----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   usage
+
+Running the service
+-------------------
+
+.. toctree::
+  :maxdepth: 2
+
+  settings
+  running
+
 API Documentation
 -----------------
 

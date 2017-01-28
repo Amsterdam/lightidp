@@ -12,7 +12,7 @@ from . import exceptions, siam, token
 
 app = Flask(__name__)
 app.config.from_object('auth.settings')
-app.config.from_envvar('AUTHN_SIAM_SETTINGS', silent=True)
+app.config.from_envvar('AUTH_SETTINGS', silent=True)
 
 
 # ====== 1. PARSE SETTINGS (todo: validate semantics somewhere else)
