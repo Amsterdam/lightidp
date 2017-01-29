@@ -2,6 +2,7 @@
 *.pyo
 .idea
 .settings
+.venv
 *.iml
 batch.log
 .env

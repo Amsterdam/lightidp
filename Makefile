@@ -1,26 +1,31 @@
 .PHONY: docs
 
 init:
-	pip install -r requirements.txt
+	pip install pipenv==3.1.9
+	pipenv lock
+	pipenv install --dev
 
 test:
 	# This runs all of the tests. To run an individual test, run py.test with
 	# the -k flag, like "py.test -k test_path_is_not_double_encoded"
-	py.test -p no:cacheprovider tests
+	AUTH_SKIP_CONF_CHECK=1 pipenv run py.test -p no:cacheprovider tests
 
 coverage:
-	py.test -p no:cacheprovider --verbose --cov-report term --cov=auth --cov-config .coveragerc tests
+	AUTH_SKIP_CONF_CHECK=1 pipenv run py.test -p no:cacheprovider --verbose --cov-report term --cov=auth --cov-config .coveragerc tests
 
 pep8:
 	# we make pep8 ignores the following rules
 	# E501 line too long
 	pep8 --ignore=E501 auth
 
-run:
+run-dev:
+	# WARNING: only use this for development purposes
 	@set -e; \
-	FLASK_APP=auth.server python -m flask run -p 8109 --reload
+	FLASK_APP=auth.server pipenv run python -m flask run -p 8109 --reload
 
-run-uwsgi:
+run:
+	# NOTICE: running with uWSGI
+	# This needs the auth module to be installed in the current environment
 	@set -e; \
 	uwsgi --ini uwsgi.ini
 

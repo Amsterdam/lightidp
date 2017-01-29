@@ -6,3 +6,10 @@ Dockerfile
 *.iml
 .project
 .pydevproject
+.venv
+.coveragerc
+.settings
+__pycache__
+docs
+settings_test.env
+

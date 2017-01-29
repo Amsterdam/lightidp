@@ -11,4 +11,4 @@ auth:
     - SIAM_SHARED_SECRET
     - JWT_SHARED_SECRET_KEY
     - JWT_LIFETIME
-  command: make -C /app run-uwsgi
+  command: make -C /app run

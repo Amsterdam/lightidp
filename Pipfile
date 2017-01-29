@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+
+[packages]
+Flask = ">=0.12"
+PyJWT = ">=1.4.2"
+requests = ">=2.12.4"
+uwsgi = ">=2.0.14"
+
+[dev-packages]
+Sphinx = "*"
+pep8 = "*"
+pytest = "*"
+pytest_cov = "*"
+responses = "*"
