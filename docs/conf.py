@@ -40,8 +40,7 @@ sys.path.insert(0, os.path.abspath('..'))
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -164,11 +163,10 @@ texinfo_documents = [
 ]
 
 
-
-
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'https://docs.python.org/': None,
-    'urllib3': ('http://urllib3.readthedocs.io/en/latest', None),
+    'python': ('https://docs.python.org/3.6', None),
     'requests': ('http://docs.python-requests.org/en/master/', None),
-    'flask': ('http://flask.readthedocs.io/en/latest/', None)}
+    'flask': ('https://flask.readthedocs.io/en/latest/', None),
+    'jwt': ('https://pyjwt.readthedocs.io/en/latest/', None)
+}

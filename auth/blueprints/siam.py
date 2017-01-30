@@ -8,17 +8,17 @@ from auth import httputils
 
 
 def blueprint(client, tokenbuilder):
-    """ Wrapper for a SIAM request handler.
+    """ `Flask blueprint <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for
+    SIAM IdP related requests.
 
-    This function generates a SIAM request handler for the given config.
+    This function returns a blueprint with two routes configured:
 
-    :param base_url: The base url of the SIAM server
-    :param app_id: The application ID of our app
-    :param aselectserver: The aselect server ID
-    :param secret: The shared secret for authn with SIAM
-    :param jwt_secret: The JWT seed
-    :param jwt_lt: The JWT lifetime
-    :return: RequestHandler
+    - GET /authenticate: get a SIAM authn URL
+    - GET /token: get a JWT after a succesful authentication
+
+    :param siam.Client client: The client for the SIAM server
+    :param token.Builder tokenbuilder: The JWT builder
+    :return: :class:`flask.Blueprint`
     """
 
     # Create the Flask blueprint

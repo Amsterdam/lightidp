@@ -44,7 +44,18 @@ _TokenBuilder = collections.namedtuple('_TokenBuilder', (
 
 
 class Builder(_TokenBuilder):
-    """ Builder allows you to encode and decode tokens.
+    """ Builder allows you to encode and decode JSON Web Tokens (JWTs).
+
+    NOTE: needs Python >= 3.4
+
+    The key-value datastucture in the tokens is a dictionary that provides an
+    additional method ``encode()``. Under water, ``encode()`` will call
+    :func:`jwt.encode` with all but the ``data`` argument passed in. It does
+    so by using the convenient fact that :func:`jwt.encode` takes a `dict` as
+    its first argument; it can use :func:`functools.partialmethod` to create a
+    partial and then bind that method to a dynamically created ``dict``
+    subclass. The result is a ``dict`` with an ``encode()`` method that, when
+    called, will return a JWT based on ``self``.
     """
 
     @property
@@ -71,18 +82,14 @@ class Builder(_TokenBuilder):
     def accesstoken_for(self, sub):
         """ Create a new accesstoken as a dict.
 
-        This method creates a dictionary subclass that wraps :func:`jwt.encode`
-        including the jwt secret and other arguments.
-
         Usage:
 
         ::
 
-            basetoken = tokenbuilder.basetoken_for('userID')
-            basetoken['myproperty'] = 42
-            jwt = basetoken.encode()
+            accesstoken = tokenbuilder.accesstoken_for('userID')
+            accesstoken['myproperty'] = 42
+            jwt = accesstoken.encode()
 
-        .. todo:: creating an accesstoken should require a refresh token
         """
         now = int(time.time())
         data = {
@@ -93,6 +100,20 @@ class Builder(_TokenBuilder):
         return self._tokendata(data)
 
     def decode_accesstoken(self, encoded_token):
+        """ Decode an accesstoken into a dict. The resulting dict will be an
+        instance of the dynamically created dict subclass that contains the
+        ``encode()`` method.
+
+        Usage:
+
+        ::
+
+            tokendata = tokenbuilder.decode_accesstoken(accesstoken)
+            assert tokendata['myproperty'] == 42
+            tokendata['myproperty'] += 1
+            jwt = tokendata.encode()
+
+        """
         try:
             data = jwt.decode(encoded_token, key=self.at_secret)
         except jwt.exceptions.DecodeError as e:

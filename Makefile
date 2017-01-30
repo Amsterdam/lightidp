@@ -20,7 +20,7 @@ coverage-noenv:
 pep8:
 	# we make pep8 ignores the following rules
 	# E501 line too long
-	pep8 --ignore=E501 auth
+	pipenv run pep8 --ignore=E501 auth
 
 pep8-noenv:
 	# WARNING: The *-noenv targets exist because we cannot get pipenv to work propoerly under Jenkins (no tty). This should be fixed in the future.

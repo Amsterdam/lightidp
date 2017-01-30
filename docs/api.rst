@@ -1,11 +1,17 @@
 .. _api:
 
+.. toctree::
+   :maxdepth: 1
+
 API Docs
 ========
 
 .. module:: auth
 
-The auth service exports its HTTP endpoints through Flask blueprints.
+Flask blueprints (views)
+------------------------
+
+.. autofunction:: auth.blueprints.siam.blueprint
 
 HTTP utilities
 --------------
@@ -20,6 +26,13 @@ SIAM client
 -----------
 
 .. autoclass:: auth.siam.Client
+   :members:
+
+JSON Web Tokens
+---------------
+
+.. automodule:: auth.token
+   :members:
 
 Exceptions
 ----------

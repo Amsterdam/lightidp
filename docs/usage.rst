@@ -2,7 +2,7 @@ REST API
 ========
 
 .. toctree::
-    :maxdepth: 3
+   :maxdepth: 3
 
 GET ``/auth/siam/authenticate``
 -------------------------------
