@@ -73,3 +73,11 @@ if not skip_conf_check:
 
 # SIAM
 app.register_blueprint(siam_bp, url_prefix="{}{}".format(app_root, siam_root))
+
+
+# ====== 5. ENABLE SIMPLE CORS
+
+@app.after_request
+def add_header(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response

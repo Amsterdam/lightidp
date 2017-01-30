@@ -20,6 +20,7 @@ Features:
 
 Future work:
 
+- CORS beyond simple requests?
 - A better README?
 - Support IP-based authentication
 - Support access and refresh tokens
