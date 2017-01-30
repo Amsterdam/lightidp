@@ -21,3 +21,9 @@ SIAM client
 
 .. autoclass:: auth.siam.Client
 
+Exceptions
+----------
+
+.. automodule:: auth.exceptions
+   :members:
+

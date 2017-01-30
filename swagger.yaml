@@ -21,7 +21,7 @@ paths:
         -
           name: active
           in: query
-          description: If present, 
+          description: If present, ask IdP to show user a login screen if she is not authenticated.
           required: false
           default: false
           type: boolean

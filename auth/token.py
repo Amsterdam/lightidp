@@ -1,8 +1,33 @@
 """
-    auth.jwtutils
-    ~~~~~~~~~~~~
+    auth.token
+    ~~~~~~~~~~
 
-    This module maintains the base structure for our JWTs
+    This module maintains the base structure for our JWTs and wraps all jwt
+    configuration.
+
+    Usage:
+
+    ::
+
+        from auth import token
+
+        # Create a builder that contains the config
+        tokenbuilder = token.builder(**jwtconfig)
+        # Create accesstoken data
+        data = tokenbuilder.accesstoken_for('some subject')
+        # data is a dict! add some property
+        data['someprop'] = 'something the IdP gave us'
+        # now create a JWT
+        jwt = data.encode()
+
+        # we can also decode the jwt the same way
+        decoded = tokenbuilder.decode_accesstoken(jwt)
+        # this is a dict again
+        assert decoded['someprop'] == 'something the IdP gave us'
+        # we could change something
+        decoded['someprop'] = 'something else altogether'
+        # and create a JWT again
+        decoded.encode()
 """
 import collections
 import functools
@@ -19,6 +44,8 @@ _TokenBuilder = collections.namedtuple('_TokenBuilder', (
 
 
 class Builder(_TokenBuilder):
+    """ Builder allows you to encode and decode tokens.
+    """
 
     @property
     def _tokendata(self):

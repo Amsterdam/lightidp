@@ -25,13 +25,10 @@ If you have all settings in your environment and a running Docker daemon, then y
 Running it in your shell
 ------------------------
 
-This mode is useful during development. You should always run *in a virtualenv*.
-
-First make sure you have all requirements installed:
+Initialize the project with Pipenv:
 
 ::
 
-   # this will install all requirements in your virtualenv
    $ make init
 
 Make sure all :doc:`required settings </settings>` are available.
@@ -40,27 +37,20 @@ Now you can run the service either as a Flask application:
 
 ::
 
-   $ make run
+   $ make run-dev
 
-... or you can run it using uwsgi:
-
-::
-
-   $ make run-uwsgi
 
 Running tests
 -------------
 
-Auth comes with a testsuite. If you set ``AUTH_SKIP_CONF_CHECK`` in your shell you don't need to provide any of the settings to run the tests.
-
-You can run tests in your shell (assuming you have all dependencies installed in your virtualenv):
+Run tests like this:
 
 ::
 
-   $ AUTH_SKIP_CONF_CHECK=1 make test
+   $ make coverage
 
-... or you can run it in Docker:
+... or run tests in Docker:
 
 ::
 
-   $ AUTH_SKIP_CONF_CHECK=1 docker-compose run auth make -C /app test
+   $ AUTH_SKIP_CONF_CHECK=1 docker-compose run auth make coverage
