@@ -1,0 +1,74 @@
+swagger: '2.0'
+
+info:
+  version: "0.1.0.dev1"
+  title: "datapunt-auth"
+
+paths:
+  /auth/siam/authenticate:
+    get:
+      description: |
+        Gets SIAM authentication redirect.
+        Required query param callback specifies the URL the user should be redirected to by the IdP after succesful authentication.
+        Optional query param active determines whether we want the user to see a login screen if she is not authenticated.
+      parameters:
+        -
+          name: callback
+          in: query
+          description: IdP will redirect to this URL after authentication
+          required: true
+          type: string
+        -
+          name: active
+          in: query
+          description: If present, 
+          required: false
+          default: false
+          type: boolean
+      responses:
+        307:
+          description: Redirect to generated authentication url
+        400:
+          description: Query param callback is not present
+        502:
+          description: Problem communicating with the SIAM server
+        504:
+          description: Communication with SIAM server timed out
+
+  /auth/siam/token:
+    get:
+      description: |
+        Gets JSON Web Token for the current user.
+      produces:
+        - text/plain
+      parameters:
+        -
+          name: aselect_credentials
+          in: query
+          description: The credentials as provided by SIAM
+          required: true
+          type: string
+        -
+          name: rid
+          in: query
+          description: The request ID associated with this authentication attempt, provided by SIAM
+          required: true
+          type: string
+        -
+          name: a-select-server
+          in: query
+          description: The a-select-server used for this authentication attempt, as provided by SIAM
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success
+        400:
+          description: Required query param is not present
+        406:
+          description: Requested content-type (Accept header) cannot be produced
+        502:
+          description: Problem communicating with the SIAM server
+        504:
+          description: Communication with SIAM server timed out
+        
