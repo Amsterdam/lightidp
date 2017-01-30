@@ -1,5 +1,6 @@
 auth-test:
   build: ../
+  tty: true
   environment:
     - AUTH_SKIP_CONF_CHECK=true
 
