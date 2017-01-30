@@ -1,34 +1,40 @@
 Datapunt Authentication & Authorization service
 ===============================================
 
+.. image:: https://img.shields.io/badge/python-3.4%2C%203.5%2C%203.6-blue.svg
+    :target: https://www.python.org/
+
+.. image:: https://img.shields.io/badge/license-MPLv2.0-blue.svg
+    :target: https://www.mozilla.org/en-US/MPL/2.0/
+
+---------------------
+
 Features:
 
-- Support for authentication with SIAM in :module:`auth.blueprints.siam`
+- Support for authentication with SIAM in `auth.blueprints.siam <auth/blueprints/siam.py>`_.
+- Support for access tokens
 - Support for Pipenv in the Makefile
 - Pep8 compliant (without E501, lines <= 80)
 - Fair test coverage (missing the blueprints)
 - Support for setuptools, so it can run without needing test / dev dependencies (which it does; see ``Dockerfile`` and ``Jenkinsfile``)
 
-Running the service
--------------------
+Future work:
 
-Required settings
-^^^^^^^^^^^^^^^^^
+- A better README?
+- Support IP-based authentication
+- Support access and refresh tokens
+- Support claims / permission based authorization with a Postgres backend
 
-Refer to the documentation in :module:`auth.settings`.
+Documentation
+-------------
 
-The docs provide info on:
+Pending a better README, an online version of the docs can be found `at readthedocs <http://datapunt-auth.readthedocs.io/en/latest/>`_.
+Note that we haven't configured github to trigger documentation builds on readthedocs.
+We may not use readthedocs (or Sphinx, for that matter) at all in the future. 
 
-- Using the service, with a specification of the REST API
-- Running the service, explaining how to configure it and run it in different modes
-- The internal API
-
-Create nice looking docs with:
+View the most recent docs locally with:
 
 ::
 
-   $ git clone https://github.com/DatapuntAmsterdam/auth.git
-   $ cd auth
    $ make init docs
    $ open docs/_build/html/index.html
-
