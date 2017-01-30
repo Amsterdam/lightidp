@@ -1,5 +1,7 @@
 *.pyc
 *.pyo
+.eggs
+*.egg-info
 .idea
 .settings
 .venv

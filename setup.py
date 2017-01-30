@@ -61,8 +61,8 @@ setup(
     cmdclass={'test': PyTest},
     packages=packages,
     install_requires=requires,
+    tests_require=requires_test,
     extras_require={
         'dev': ['check-manifest'],
-        'test': requires_test,
     },
 )

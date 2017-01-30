@@ -13,6 +13,9 @@ test:
 coverage:
 	AUTH_SKIP_CONF_CHECK=1 pipenv run py.test -p no:cacheprovider --verbose --cov-report term --cov=auth --cov-config .coveragerc tests
 
+coverage-noenv:
+	AUTH_SKIP_CONF_CHECK=1 python setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
+
 pep8:
 	# we make pep8 ignores the following rules
 	# E501 line too long
