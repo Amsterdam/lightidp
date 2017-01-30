@@ -46,7 +46,7 @@ def blueprint(client, tokenbuilder):
         creds = request.args.get('aselect_credentials') or None
         rid = request.args.get('rid') or None
         ass = request.args.get('a-select-server') or None
-        if ass != ass:
+        if ass != client.aselect_server:
             raise werkzeug.exceptions.BadRequest('Unsupported a-select-server')
         verification = client.verify_creds(creds, rid)
         if verification['result_code'] != client.RESULT_OK:
