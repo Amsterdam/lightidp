@@ -1,6 +1,7 @@
 auth-test:
   build: ../
   tty: true
+  stdin_open: true
   environment:
     - AUTH_SKIP_CONF_CHECK=true
 
