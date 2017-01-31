@@ -25,7 +25,7 @@ pep8:
 pep8-noenv:
 	# WARNING: The *-noenv targets exist because we cannot get pipenv to work propoerly under Jenkins (no tty). This should be fixed in the future.
 	pip install pep8; \
-	make pep8
+	pep8 --ignore=E501 auth
 
 run-dev:
 	# WARNING: only use this for development purposes
