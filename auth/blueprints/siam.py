@@ -4,7 +4,7 @@
 """
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
-from auth import httputils
+from auth import authz, httputils
 
 
 def blueprint(client, tokenbuilder):
@@ -56,6 +56,8 @@ def blueprint(client, tokenbuilder):
         basetoken['orig_iat'] = basetoken['iat']
         basetoken['aselect_credentials'] = creds
         basetoken['rid'] = rid
+        basetoken['uid'] = verification['uid']
+        basetoken['authz_level'] = authz.level_for(verification['uid'])
         return make_response((basetoken.encode(), 200))
 
     return blueprint

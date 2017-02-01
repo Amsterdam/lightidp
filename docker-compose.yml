@@ -12,3 +12,12 @@ auth:
     - JWT_SHARED_SECRET_KEY
     - JWT_LIFETIME
   command: make -C /app run
+
+database:
+  image: postgres:9.5
+  ports:
+    - "5432:5432"
+  environment:
+    - POSTGRES_BD=authz
+    - POSTGRES_USER=authuser
+    - POSTGRES_PASSWORD=authpassword
