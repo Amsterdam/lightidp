@@ -7,6 +7,7 @@ Flask = ">=0.12"
 PyJWT = ">=1.4.2"
 requests = ">=2.12.4"
 uwsgi = ">=2.0.14"
+psycopg2 = ">=2.6.2"
 
 [dev-packages]
 Sphinx = "*"

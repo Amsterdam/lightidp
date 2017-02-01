@@ -5,7 +5,7 @@
 from flask import Flask
 
 from .blueprints import siamblueprint
-from . import exceptions, siam, token
+from . import authz, exceptions, siam, token
 
 
 # ====== 0. CREATE FLASK WSGI APP AND LOAD SETTINGS
@@ -39,6 +39,10 @@ tokenbuilder_settings = {
 
 # Create the JWT token builder
 tokenbuilder = token.Builder(**tokenbuilder_settings)
+# Create a database connection pool
+connpool = None
+# Create the User -> Authz map
+user_authz_map = authz.UserAuthzMap(connpool)
 # Create a siam client
 siamclient = siam.Client(**siamclient_settings)
 # Create the SIAM blueprint

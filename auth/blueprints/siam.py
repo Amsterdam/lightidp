@@ -4,10 +4,10 @@
 """
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
-from auth import authz, httputils
+from auth import httputils
 
 
-def blueprint(client, tokenbuilder):
+def blueprint(client, tokenbuilder, user_authz_map):
     """ `Flask blueprint <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for
     SIAM IdP related requests.
 
@@ -57,7 +57,7 @@ def blueprint(client, tokenbuilder):
         basetoken['aselect_credentials'] = creds
         basetoken['rid'] = rid
         basetoken['uid'] = verification['uid']
-        basetoken['authz_level'] = authz.level_for(verification['uid'])
+        basetoken['authz_level'] = user_authz_map[verification['uid']]
         return make_response((basetoken.encode(), 200))
 
     return blueprint
