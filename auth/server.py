@@ -33,20 +33,25 @@ tokenbuilder_settings = {
     'at_lifetime': app.config['JWT_AT_LIFETIME'],
     'algorithm': app.config['JWT_ALGORITHM']
 }
+postgres_settings = {
+    'host': app.config['PG_HOST'],
+    'port': app.config['PG_PORT'],
+    'dbname': app.config['PG_DB'],
+    'user': app.config['PG_USER'],
+    'password': app.config['PG_PASS'],
+}
 
 
 # ====== 2. CREATE FLASK BLUEPRINTS AND SUPPORTING OBJECTS
 
 # Create the JWT token builder
 tokenbuilder = token.Builder(**tokenbuilder_settings)
-# Create a database connection pool
-connpool = None
 # Create the User -> Authz map
-user_authz_map = authz.UserAuthzMap(connpool)
+authz_get = authz.authz_getter(**postgres_settings)
 # Create a siam client
 siamclient = siam.Client(**siamclient_settings)
 # Create the SIAM blueprint
-siam_bp = siamblueprint(siamclient, tokenbuilder)
+siam_bp = siamblueprint(siamclient, tokenbuilder, authz_get)
 
 
 # ====== 3. RUN CONFIGURATION CHECKS

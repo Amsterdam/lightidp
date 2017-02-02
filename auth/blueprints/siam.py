@@ -7,7 +7,7 @@ from flask import Blueprint, request, make_response, redirect
 from auth import httputils
 
 
-def blueprint(client, tokenbuilder, user_authz_map):
+def blueprint(client, tokenbuilder, authz_get):
     """ `Flask blueprint <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for
     SIAM IdP related requests.
 
@@ -57,7 +57,7 @@ def blueprint(client, tokenbuilder, user_authz_map):
         basetoken['aselect_credentials'] = creds
         basetoken['rid'] = rid
         basetoken['uid'] = verification['uid']
-        basetoken['authz_level'] = user_authz_map[verification['uid']]
+        basetoken['authz_level'] = authz_get(verification['uid'])
         return make_response((basetoken.encode(), 200))
 
     return blueprint

@@ -68,3 +68,10 @@ JWT_AT_SECRET = os.getenv('JWT_SHARED_SECRET_KEY')
 JWT_RT_SECRET = os.getenv('JWT_SECRET_KEY', JWT_AT_SECRET)
 JWT_AT_LIFETIME = int(os.getenv('JWT_EXPIRATION_DELTA', 300))
 JWT_RT_LIFETIME = int(os.getenv('JWT_REFRESH_EXPIRATION_DELTA', 3600 * 24 * 7))
+
+# Postgres config
+PG_HOST = os.getenv('PG_HOST')
+PG_PORT = os.getenv('PG_PORT')
+PG_USER = os.getenv('PG_USER')
+PG_PASS = os.getenv('PG_PASS')
+PG_DB = os.getenv('PG_DB')
