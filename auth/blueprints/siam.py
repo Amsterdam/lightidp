@@ -6,6 +6,10 @@ import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
 from auth import httputils
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 def blueprint(client, tokenbuilder):
     """ `Flask blueprint <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for
@@ -30,8 +34,8 @@ def blueprint(client, tokenbuilder):
     def authenticate():
         """ Route for authn requests
         """
-        print(request.remote_addr)
-        print(request.environ['REMOTE_ADDR'])
+        _logger.info(request.remote_addr)
+        _logger.info(request.environ['REMOTE_ADDR'])
         response = client.get_authn_link(
             'active' not in request.args, request.args['callback']
         )
