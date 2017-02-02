@@ -30,6 +30,8 @@ def blueprint(client, tokenbuilder):
     def authenticate():
         """ Route for authn requests
         """
+        print(request.remote_addr)
+        print(request.environ['REMOTE_ADDR'])
         response = client.get_authn_link(
             'active' not in request.args, request.args['callback']
         )
