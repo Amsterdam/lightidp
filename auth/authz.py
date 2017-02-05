@@ -117,16 +117,16 @@ class _AuthzMap(collections.abc.MutableMapping):
             return cur.fetchone()[0]
 
 # singleton instance
-_udb = None
+_authzmap = None
 
 
 def authz_getter(psycopg2conf):
-    global _udb
-    if not _udb:
-        _udb = _AuthzMap(**psycopg2conf)
+    global _authzmap
+    if not _authzmap:
+        _authzmap = _AuthzMap(**psycopg2conf)
 
     def getter(username):
-        return _udb.get(username, LEVEL_CITIZEN)
+        return _authzmap.get(username, LEVEL_CITIZEN)
 
     return getter
 
@@ -136,30 +136,30 @@ def is_authorized(granted, needed):
 
 
 if __name__ == '__main__':
-    udb = _AuthzMap(**{
+    authzmap = _AuthzMap(**{
         'host': 'localhost',
         'port': 5432,
         'dbname': 'authz',
         'user': 'authuser',
         'password': 'authpassword'})
     try:
-        udb.create()
+        authzmap.create()
     except psycopg2.ProgrammingError:
         pass
-    udb['evert'] = LEVEL_EMPLOYEE
-    udb['pieter'] = LEVEL_EMPLOYEE_PLUS
-    udb['evert'] = LEVEL_EMPLOYEE_PLUS
-    udb['pieter'] = LEVEL_EMPLOYEE
-    udb['pieter'] = LEVEL_EMPLOYEE
+    authzmap['evert'] = LEVEL_EMPLOYEE
+    authzmap['pieter'] = LEVEL_EMPLOYEE_PLUS
+    authzmap['evert'] = LEVEL_EMPLOYEE_PLUS
+    authzmap['pieter'] = LEVEL_EMPLOYEE
+    authzmap['pieter'] = LEVEL_EMPLOYEE
     try:
-        udb['evert'] = LEVEL_CITIZEN
+        authzmap['evert'] = LEVEL_CITIZEN
         raise AssertionError('Expected ValueError')
     except ValueError:
         pass
-    for u in udb:
-        assert udb[u]
-    assert len(udb) == 2
-    del udb['pieter']
-    assert len(udb) == 1
-    del udb['evert']
-    assert len(udb) == 0
+    for u in authzmap:
+        assert authzmap[u]
+    assert len(authzmap) == 2
+    del authzmap['pieter']
+    assert len(authzmap) == 1
+    del authzmap['evert']
+    assert len(authzmap) == 0
