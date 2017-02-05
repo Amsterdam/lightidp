@@ -17,10 +17,7 @@ manages user permissions and creates access and refresh tokens in the form of
 About
 -----
 
-.. toctree::
-   :maxdepth: 2
-
-   authz
+... provide info on AAA
 
 Using the service
 -----------------
