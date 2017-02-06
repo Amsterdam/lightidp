@@ -7,7 +7,7 @@ from flask import Blueprint, request, make_response, redirect
 from auth import httputils
 
 
-def blueprint(client, tokenbuilder):
+def blueprint(client, tokenbuilder, authz_flow):
     """ `Flask blueprint <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for
     SIAM IdP related requests.
 
@@ -54,8 +54,7 @@ def blueprint(client, tokenbuilder):
         # all checks done, now create and return the JWT
         basetoken = tokenbuilder.accesstoken_for(verification['uid'])
         basetoken['orig_iat'] = basetoken['iat']
-        basetoken['aselect_credentials'] = creds
-        basetoken['rid'] = rid
+        basetoken['authz'] = authz_flow(verification['uid'])
         basetoken['uid'] = verification['uid']
         return make_response((basetoken.encode(), 200))
 

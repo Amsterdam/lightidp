@@ -2,6 +2,7 @@
     Authentication & authorization service
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
+import authz
 from flask import Flask
 
 from .blueprints import siamblueprint
@@ -44,12 +45,14 @@ postgres_settings = {
 
 # ====== 2. CREATE FLASK BLUEPRINTS AND SUPPORTING OBJECTS
 
+# Create the authz flow
+authz_flow = authz.authz_mapper(**postgres_settings)
 # Create the JWT token builder
 tokenbuilder = token.Builder(**tokenbuilder_settings)
 # Create a siam client
 siamclient = siam.Client(**siamclient_settings)
 # Create the SIAM blueprint
-siam_bp = siamblueprint(siamclient, tokenbuilder)
+siam_bp = siamblueprint(siamclient, tokenbuilder, authz_flow)
 
 
 # ====== 3. RUN CONFIGURATION CHECKS
