@@ -2,16 +2,20 @@
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 
+[dev-packages]
+pep8 = "*"
+pytest = "*"
+responses = "*"
+sphinx = "*"
+pytest-cov = "*"
+
 [packages]
-Flask = ">=0.12"
-PyJWT = ">=1.4.2"
 requests = ">=2.12.4"
 uwsgi = ">=2.0.14"
 psycopg2 = ">=2.6.2"
+flask = ">=0.12"
+pyjwt = ">=1.4.2"
 
-[dev-packages]
-Sphinx = "*"
-pep8 = "*"
-pytest = "*"
-pytest_cov = "*"
-responses = "*"
+[packages.datapunt_authz]
+ref = "0.1.0.dev1"
+git = "https://github.com/DatapuntAmsterdam/authz.git"
