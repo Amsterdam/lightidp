@@ -5,15 +5,16 @@
 import types
 import werkzeug.exceptions
 import pytest
-from auth import server, httputils
-
-app = server.app
+from auth import httputils
 
 
 def test_assert_acceptable():
     @httputils.assert_acceptable('text/plain')
     def accept_text():
         pass
+
+    from auth import server
+    app = server.app
     # 1. Request without Accept header fails
     with app.test_request_context():
         with pytest.raises(werkzeug.exceptions.NotAcceptable):
@@ -32,6 +33,9 @@ def test_assert_mimetypes():
     @httputils.assert_mimetypes('text/plain', 'application/json')
     def accept_text_and_json():
         pass
+
+    from auth import server
+    app = server.app
     # 1. Request without Content-type fails
     with app.test_request_context():
         with pytest.raises(werkzeug.exceptions.UnsupportedMediaType):
@@ -49,6 +53,9 @@ def test_assert_req_args():
     @httputils.assert_req_args('arg1', 'arg2')
     def accept_arg1_arg2():
         pass
+
+    from auth import server
+    app = server.app
     # 1. Request without params fails
     with app.test_request_context():
         with pytest.raises(werkzeug.exceptions.BadRequest):

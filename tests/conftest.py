@@ -1,5 +1,20 @@
 import pytest
 import auth.siam
+import authorization
+import authorization_levels
+
+
+@pytest.fixture(autouse=True)
+def no_database(monkeypatch):
+    authzmap = {
+        'employee': authorization_levels.LEVEL_EMPLOYEE,
+        'employeeplus': authorization_levels.LEVEL_EMPLOYEE_PLUS,
+    }
+
+    def authz_mapper(*args, **kwargs):
+        def get(username):
+            return authzmap.get(username, authorization_levels.LEVEL_DEFAULT)
+    monkeypatch.setattr(authorization, 'authz_mapper', authz_mapper)
 
 
 @pytest.fixture(scope='session')

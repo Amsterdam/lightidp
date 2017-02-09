@@ -11,7 +11,7 @@ def test_tokenbuilder_success():
     builder = token.AccessTokenBuilder('secret', 300, 'HS256')
     jwt = builder.create(authorization_levels.LEVEL_DEFAULT).encode()
     assert jwt
-    data = builder.decode_accesstoken(jwt)
+    data = builder.decode(jwt)
     # make sure we have something
     assert data
     # make sure we have an encode property
@@ -20,9 +20,9 @@ def test_tokenbuilder_success():
     assert 'iat' in data
     # make sure exp and sub are in there
     assert 'exp' in data
-    assert 'sub' in data
+    assert 'authz' in data
     # make sure the data is what we want it to be
-    assert data['sub'] == 'sub'
+    assert data['authz'] == authorization_levels.LEVEL_DEFAULT
     assert data['exp'] - data['iat'] == 300
     # make sure the same data encodes the same jwt
     assert data.encode() == jwt
@@ -37,6 +37,6 @@ def test_tokenbuilder_invalid_algorithm():
 def test_tokenbuilder_decode_error():
     builder1 = token.AccessTokenBuilder('secret1', 300, 'HS256')
     builder2 = token.AccessTokenBuilder('secret2', 300, 'HS256')
-    jwt = builder1.accesstoken_for(authorization_levels.LEVEL_DEFAULT).encode()
+    jwt = builder1.create(authorization_levels.LEVEL_DEFAULT).encode()
     with pytest.raises(exceptions.JWTDecodeException):
-        builder2.decode_accesstoken(jwt)
+        builder2.decode(jwt)

@@ -5,7 +5,7 @@ test:
 	# the -k flag, like "py.test -k test_path_is_not_double_encoded"
 	AUTH_SKIP_CONF_CHECK=1 python setup.py test -a "-p no:cacheprovider tests"
 
-coverage-noenv:
+coverage:
 	AUTH_SKIP_CONF_CHECK=1 python setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
 
 run-dev:
