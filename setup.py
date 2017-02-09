@@ -33,8 +33,9 @@ with open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
 
 packages = ['auth']
-requires = ['Flask>=0.12', 'PyJWT>=1.4.2', 'requests>=2.12.4', 'uwsgi>=2.0.14']
-requires_test = ['responses==0.5.1', 'pytest>=3.0.5', 'pytest-cov>=2.4.0', 'pep8']
+requires = ['datapunt-authorization', 'datapunt-authorization-levels',
+            'Flask>=0.12', 'PyJWT>=1.4.2', 'requests>=2.12.4', 'uwsgi>=2.0.14']
+requires_test = ['responses==0.5.1', 'pytest>=3.0.5', 'pytest-cov>=2.4.0']
 
 setup(
     name='datapunt-auth',

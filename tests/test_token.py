@@ -1,14 +1,15 @@
 """
-    auth.tests.test_jwtutils
-    ~~~~~~~~~~~~~~~~~~~~~~~~
+    auth.tests.test_token
+    ~~~~~~~~~~~~~~~~~~~~~
 """
+import authorization_levels
 import pytest
 from auth import exceptions, token
 
 
 def test_tokenbuilder_success():
-    builder = token.Builder(None, 'at_secret', None, 300, 'HS256')
-    jwt = builder.accesstoken_for('sub').encode()
+    builder = token.AccessTokenBuilder('secret', 300, 'HS256')
+    jwt = builder.create(authorization_levels.LEVEL_DEFAULT).encode()
     assert jwt
     data = builder.decode_accesstoken(jwt)
     # make sure we have something
@@ -28,13 +29,14 @@ def test_tokenbuilder_success():
 
 
 def test_tokenbuilder_invalid_algorithm():
-    builder = token.Builder(None, 'at_secret', None, 300, 'invalid')
+    builder = token.AccessTokenBuilder('secret', 300, 'invalid')
     with pytest.raises(NotImplementedError):
-        builder.accesstoken_for('sub').encode()
+        builder.create(authorization_levels.LEVEL_DEFAULT).encode()
 
 
 def test_tokenbuilder_decode_error():
-    builder1 = token.Builder(None, 'key1', None, 300, 'HS256')
-    builder2 = token.Builder(None, 'key2', None, 300, 'HS256')
+    builder1 = token.AccessTokenBuilder('secret1', 300, 'HS256')
+    builder2 = token.AccessTokenBuilder('secret2', 300, 'HS256')
+    jwt = builder1.accesstoken_for(authorization_levels.LEVEL_DEFAULT).encode()
     with pytest.raises(exceptions.JWTDecodeException):
-        builder2.decode_accesstoken(builder1.accesstoken_for('sub').encode())
+        builder2.decode_accesstoken(jwt)

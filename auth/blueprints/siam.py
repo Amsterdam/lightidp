@@ -52,9 +52,9 @@ def blueprint(client, tokenbuilder, authz_flow):
         if verification['result_code'] != client.RESULT_OK:
             raise werkzeug.exceptions.BadRequest("Couldn't verify credentials")
         # all checks done, now create and return the JWT
-        basetoken = tokenbuilder.accesstoken_for(verification['uid'])
+        authz_level = authz_flow(verification['uid'])
+        basetoken = tokenbuilder.create(authz_level)
         basetoken['orig_iat'] = basetoken['iat']
-        basetoken['authz'] = authz_flow(verification['uid'])
         basetoken['uid'] = verification['uid']
         return make_response((basetoken.encode(), 200))
 

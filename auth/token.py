@@ -1,6 +1,6 @@
 """
     auth.token
-    ~~~~~~~~~~
+    ~~~~~~~~~~~
 
     This module maintains the base structure for our JWTs and wraps all jwt
     configuration.
@@ -12,16 +12,16 @@
         from auth import token
 
         # Create a builder that contains the config
-        tokenbuilder = token.builder(**jwtconfig)
+        accesstokens = token.AccessTokenBuilder(**config)
         # Create accesstoken data
-        data = tokenbuilder.accesstoken_for('some subject')
+        data = accesstokens.create(authz.levels.LEVEL_EMPLOYEE)
         # data is a dict! add some property
         data['someprop'] = 'something the IdP gave us'
         # now create a JWT
-        jwt = data.encode()
+        accesstoken_jwt = data.encode()
 
         # we can also decode the jwt the same way
-        decoded = tokenbuilder.decode_accesstoken(jwt)
+        decoded = accesstokens.decode(accesstoken_jwt)
         # this is a dict again
         assert decoded['someprop'] == 'something the IdP gave us'
         # we could change something
@@ -35,15 +35,15 @@ import time
 import types
 import jwt
 
-from auth import exceptions
+from . import exceptions
 
 # Use a namedtuple to emphasize the immutability of the config
-_TokenBuilder = collections.namedtuple('_TokenBuilder', (
-    'rt_secret', 'at_secret', 'rt_lifetime', 'at_lifetime', 'algorithm'
-))
+_TokenBuilder = collections.namedtuple(
+    '_TokenBuilder', ('secret', 'lifetime', 'algorithm')
+)
 
 
-class Builder(_TokenBuilder):
+class _BaseBuilder(_TokenBuilder):
     """ Builder allows you to encode and decode JSON Web Tokens (JWTs).
 
     NOTE: needs Python >= 3.4
@@ -69,7 +69,7 @@ class Builder(_TokenBuilder):
             pass
         # wrap the secret and algortihm in a partial
         encode = functools.partialmethod(
-            jwt.encode, self.at_secret, algorithm=self.algorithm
+            jwt.encode, self.secret, algorithm=self.algorithm
         )
         # create the namespace structure
         td_ns = {'encode': encode}
@@ -79,28 +79,8 @@ class Builder(_TokenBuilder):
         )
         return self._td
 
-    def accesstoken_for(self, sub):
-        """ Create a new accesstoken as a dict.
-
-        Usage:
-
-        ::
-
-            accesstoken = tokenbuilder.accesstoken_for('userID')
-            accesstoken['myproperty'] = 42
-            jwt = accesstoken.encode()
-
-        """
-        now = int(time.time())
-        data = {
-            'iat': now,
-            'exp': now + self.at_lifetime,
-            'sub': sub
-        }
-        return self._tokendata(data)
-
-    def decode_accesstoken(self, encoded_token):
-        """ Decode an accesstoken into a dict. The resulting dict will be an
+    def decode(self, encoded_token):
+        """ Decode a token into a dict. The resulting dict will be an
         instance of the dynamically created dict subclass that contains the
         ``encode()`` method.
 
@@ -108,14 +88,14 @@ class Builder(_TokenBuilder):
 
         ::
 
-            tokendata = tokenbuilder.decode_accesstoken(accesstoken)
-            assert tokendata['myproperty'] == 42
+            data = accesstokens.decode(accesstoken_jwt)
+            assert data['myproperty'] == 42
             tokendata['myproperty'] += 1
-            jwt = tokendata.encode()
+            new_jwt = accesstokens.encode()
 
         """
         try:
-            data = jwt.decode(encoded_token, key=self.at_secret)
+            data = jwt.decode(encoded_token, key=self.secret)
         except jwt.exceptions.DecodeError as e:
             raise exceptions.JWTDecodeException() from e
         except jwt.exceptions.ExpiredSignatureError as e:
@@ -123,3 +103,37 @@ class Builder(_TokenBuilder):
         except jwt.exceptions.InvalidTokenError as e:
             raise exceptions.JWTException from e
         return self._tokendata(data)
+
+    def create(self, *args, **kwargs):
+        """ Create a new token. Subclasses should implement this method.
+        """
+        raise NotImplementedError()
+
+
+class AccessTokenBuilder(_BaseBuilder):
+    """ Token builder that creates access tokens.
+    """
+
+    def create(self, authz_level):
+        """ Create a new accesstoken as a dict.
+
+        Usage:
+
+        ::
+
+            accesstoken = tokenbuilder.create(auth.levels.LEVEL_DEFAULT)
+            accesstoken['myproperty'] = 42
+            jwt = accesstoken.encode()
+
+        """
+        now = int(time.time())
+        data = {
+            'iat': now,
+            'exp': now + self.lifetime,
+            'authz': authz_level
+        }
+        return self._tokendata(data)
+
+
+class RefreshTokenBuilder(_BaseBuilder):
+    ...

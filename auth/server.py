@@ -2,11 +2,12 @@
     Authentication & authorization service
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
-import authz
+import authorization
 from flask import Flask
 
 from .blueprints import siamblueprint
 from . import exceptions, siam, token
+import authorization_levels
 
 
 # ====== 0. CREATE FLASK WSGI APP AND LOAD SETTINGS
@@ -27,11 +28,14 @@ siamclient_settings = {
     'aselect_server': app.config['SIAM_A_SELECT_SERVER'],
     'shared_secret': app.config['SIAM_SHARED_SECRET']
 }
-tokenbuilder_settings = {
-    'rt_secret': app.config['JWT_RT_SECRET'],
-    'at_secret': app.config['JWT_AT_SECRET'],
-    'rt_lifetime': app.config['JWT_RT_LIFETIME'],
-    'at_lifetime': app.config['JWT_AT_LIFETIME'],
+accesstokenbuilder_settings = {
+    'secret': app.config['JWT_AT_SECRET'],
+    'lifetime': app.config['JWT_AT_LIFETIME'],
+    'algorithm': app.config['JWT_ALGORITHM']
+}
+refreshtokenbuilder_settings = {
+    'secret': app.config['JWT_RT_SECRET'],
+    'lifetime': app.config['JWT_RT_LIFETIME'],
     'algorithm': app.config['JWT_ALGORITHM']
 }
 postgres_settings = {
@@ -46,9 +50,9 @@ postgres_settings = {
 # ====== 2. CREATE FLASK BLUEPRINTS AND SUPPORTING OBJECTS
 
 # Create the authz flow
-authz_flow = authz.authz_mapper(**postgres_settings)
+authz_flow = authorization.authz_mapper(**postgres_settings)
 # Create the JWT token builder
-tokenbuilder = token.Builder(**tokenbuilder_settings)
+tokenbuilder = token.AccessTokenBuilder(**accesstokenbuilder_settings)
 # Create a siam client
 siamclient = siam.Client(**siamclient_settings)
 # Create the SIAM blueprint
@@ -70,7 +74,7 @@ if not skip_conf_check:
 
     # 3.2 Check whether we can generate a JWT
     try:
-        tokenbuilder.decode_accesstoken(tokenbuilder.accesstoken_for('test').encode())
+        tokenbuilder.decode(tokenbuilder.create(authorization_levels.LEVEL_DEFAULT).encode())
     except exceptions.JWTException:
         app.logger.critical('Couldn\'t verify that the JWT config is correct')
         raise
