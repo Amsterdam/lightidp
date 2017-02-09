@@ -26,8 +26,7 @@ node {
     stage('Test') {
         tryStep "Test", {
             sh "docker-compose -f .jenkins/docker-compose.yml build --pull"
-            sh "docker-compose -f .jenkins/docker-compose.yml run --user root --rm auth-test make coverage-noenv"
-            sh "docker-compose -f .jenkins/docker-compose.yml run --user root --rm auth-test make pep8-noenv"
+            sh "docker-compose -f .jenkins/docker-compose.yml run --user root --rm auth-test make coverage"
 	      }, {}
     }
 
