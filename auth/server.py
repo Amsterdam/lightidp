@@ -7,7 +7,6 @@ from flask import Flask
 
 from .blueprints import siamblueprint
 from . import exceptions, siam, token
-import authorization_levels
 
 
 # ====== 0. CREATE FLASK WSGI APP AND LOAD SETTINGS
@@ -74,7 +73,7 @@ if not skip_conf_check:
 
     # 3.2 Check whether we can generate a JWT
     try:
-        tokenbuilder.decode(tokenbuilder.create(authorization_levels.LEVEL_DEFAULT).encode())
+        tokenbuilder.decode(tokenbuilder.create(0).encode())
     except exceptions.JWTException:
         app.logger.critical('Couldn\'t verify that the JWT config is correct')
         raise
