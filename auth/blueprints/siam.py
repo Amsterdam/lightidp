@@ -54,6 +54,7 @@ def blueprint(client, tokenbuilder, authz_flow):
         # all checks done, now create and return the JWT
         authz_level = authz_flow(verification['uid'])
         basetoken = tokenbuilder.create(authz_level)
+        basetoken['username'] = verification['uid']
         basetoken['orig_iat'] = basetoken['iat']
         basetoken['uid'] = verification['uid']
         return make_response((basetoken.encode(), 200))
