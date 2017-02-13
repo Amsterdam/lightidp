@@ -53,9 +53,8 @@ def blueprint(client, tokenbuilder):
             raise werkzeug.exceptions.BadRequest("Couldn't verify credentials")
         # all checks done, now create and return the JWT
         basetoken = tokenbuilder.accesstoken_for(verification['uid'])
+        basetoken['username'] = verification['uid']
         basetoken['orig_iat'] = basetoken['iat']
-        basetoken['aselect_credentials'] = creds
-        basetoken['rid'] = rid
         return make_response((basetoken.encode(), 200))
 
     return blueprint
