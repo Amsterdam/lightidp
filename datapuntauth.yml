@@ -1,0 +1,28 @@
+app:
+  host: localhost
+  port: 8109
+  root: /auth
+  confcheck: true
+
+siam:
+  base_url: $SIAM_URL
+  aselect_server: $SIAM_A_SELECT_SERVER
+  app_id: $SIAM_APP_ID
+  shared_secret: $SIAM_SHARED_SECRET
+
+jwt:
+  refreshtokens:
+    secret: $JWT_SHARED_SECRET_KEY
+    algorithm: HS256
+    lifetime: 2592000  # 30 x 24 x 3600
+  accesstokens:
+    secret: $JWT_SHARED_SECRET_KEY
+    algorithm: HS256
+    lifetime: 300
+
+postgres:
+  host: $PG_HOST
+  port: $PG_PORT
+  user: $PG_USER
+  password: $PG_PASS
+  database: $PG_DB

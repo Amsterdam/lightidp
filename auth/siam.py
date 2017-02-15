@@ -76,6 +76,9 @@ class Client(_Client):
         }
         r = self._request(params, timeout)
         response = urllib.parse.parse_qs(r.text)
+        resultcode = response.get('result_code', ['no result code'])[0]
+        if resultcode != self.RESULT_OK:
+            raise exceptions.GatewayRequestException('Bad request ({})'.format(resultcode))
         passive_authn_link = '{}&a-select-server={}&rid={}'.format(
             response['as_url'][0],
             response['a-select-server'][0],
@@ -118,25 +121,3 @@ class Client(_Client):
         elif resultcode == self.RESULT_OK and not valid_exp:
             raise exceptions.GatewayResponseException('tgt_exp_time expired')
         return result
-
-    def renew_session(self, aselect_credentials, timeout=(3.05, 1)):
-        params = {
-            'request': 'upgrade_tgt',
-            'a-select-server': self.aselect_server,
-            'crypted_credentials': aselect_credentials,
-        }
-        r = self._request(params, timeout)
-        parsed = urllib.parse.parse_qs(r.text)
-        if 'result_code' not in parsed:
-            raise exceptions.GatewayResponseException(
-                'Malformed response: {}'.format(parsed))
-        return parsed['result_code'][0] == self.RESULT_OK
-
-    def end_session(self, aselect_credentials, timeout=(3.05, 1)):
-        params = {
-            'request': 'kill_tgt',
-            'a-select-server': self.aselect_server,
-            'tgt_blob': aselect_credentials
-        }
-        r = self._request(params, timeout)
-        return r.status_code

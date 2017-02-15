@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "config_schema_v1.json",
+  "type": "object",
+  "required": ["app", "siam", "jwt", "postgres"],
+
+  "properties": {
+    "app": {
+  	  "type": "object",
+  	  "required": ["host", "port", "root", "confcheck"],
+
+      "properties": {
+        "host": {"type": "string"},
+
+        "port": {"type": "integer"},
+
+        "root": {"type": "string"},
+        
+        "confcheck": {"type": "boolean"}
+      },
+
+      "additionalProperties": false
+    },
+
+    "siam": {
+  	  "type": "object",
+      "required": ["base_url", "aselect_server", "app_id", "shared_secret"],
+
+      "properties": {
+        "base_url": {"type": "string"},
+
+        "aselect_server": {"type": "string"},
+
+        "app_id": {"type": "string"},
+
+        "shared_secret": {"type": "string"}
+      },
+
+      "additionalProperties": false
+    },
+
+    "jwt": {
+  	  "type": "object",
+  	  "required": ["refreshtokens", "accesstokens"],
+
+  	  "properties": {
+  	    "refreshtokens": {"$ref": "#/definitions/jwtconfig"},
+
+  	    "accesstokens": {"$ref": "#/definitions/jwtconfig"}
+  	  },
+
+  	  "additionalProperties": false
+    },
+
+    "postgres": {
+  	  "type": "object",
+      "required": ["host", "port", "user", "password", "database"],
+
+      "properties": {
+        "host": {"type": "string"},
+
+        "port": {"type": "integer"},
+
+        "user": {"type": "string"},
+
+        "password": {"type": "string"},
+
+        "database": {"type": "string"}
+      },
+
+      "additionalProperties": false
+    }
+  },
+
+  "additionalProperties": false,
+
+  "definitions": {
+    "jwtconfig": {
+      "id": "#/definitions/jwtconfig",
+      "type": "object",
+      "required": ["secret", "lifetime", "algorithm"],
+
+      "properties": {
+        "secret": {"type": "string"},
+        "lifetime": {
+          "type": "integer",
+          "minimum": 0,
+          "exclusiveMinimum": true
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": ["HS256"]
+        }
+      }
+    }
+  }
+}
