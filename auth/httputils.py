@@ -155,3 +155,37 @@ def response_mimetype(mimetype):
             return response
         return wrapper
     return decorator
+
+
+def insert_jwt(f):
+    """ Decorator that provides the JWT that must be present in the
+    Authorization header. Will return a 400 if the JWT is missing or the
+    Authorization header is malformed.
+
+    Usage:
+
+    ::
+
+        @app.route('/')
+        @httputils.insert_jwt
+        def handle(jwt):
+            # jwt containes the JWT
+    """
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        if 'Authorization' not in request.headers:
+            raise werkzeug.exceptions.BadRequest(
+                'Must provide a JWT in the Authorization header')
+
+        try:
+            prefix, jwt = request.headers['Authorization'].split()
+        except ValueError:
+            raise werkzeug.exceptions.BadRequest(
+                'Authorization header must have format: Bearer [JWT]')
+
+        if prefix != 'Bearer':
+            error_msg = 'Authorization header prefix must be: Bearer, not {}'
+            raise werkzeug.exceptions.BadRequest(error_msg.format(prefix))
+
+        return f(jwt, *args, **kwargs)
+    return wrapper

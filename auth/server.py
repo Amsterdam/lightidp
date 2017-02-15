@@ -2,12 +2,15 @@
     Authentication & authorization service
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
+import logging
+
 import authorization
 from flask import Flask
 
-from .blueprints import siamblueprint
 from . import exceptions, siam, token
+from .blueprints import siamblueprint, jwtblueprint
 
+logging.basicConfig(level=logging.DEBUG)
 
 # ====== 0. CREATE FLASK WSGI APP AND LOAD SETTINGS
 
@@ -50,12 +53,16 @@ postgres_settings = {
 
 # Create the authz flow
 authz_flow = authorization.authz_mapper(**postgres_settings)
-# Create the JWT token builder
-tokenbuilder = token.AccessTokenBuilder(**accesstokenbuilder_settings)
+# Create the JWT refreshtoken builder
+refreshtokenbuilder = token.RefreshTokenBuilder(**refreshtokenbuilder_settings)
+# Create the JWT accesstoken builder
+accesstokenbuilder = token.AccessTokenBuilder(**accesstokenbuilder_settings)
 # Create a siam client
 siamclient = siam.Client(**siamclient_settings)
+# Create the JWT blueprint
+jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow)
 # Create the SIAM blueprint
-siam_bp = siamblueprint(siamclient, tokenbuilder, authz_flow)
+siam_bp = siamblueprint(siamclient, refreshtokenbuilder, authz_flow)
 
 
 # ====== 3. RUN CONFIGURATION CHECKS
@@ -63,7 +70,7 @@ siam_bp = siamblueprint(siamclient, tokenbuilder, authz_flow)
 if not skip_conf_check:
     # 3.1 Check whether we can get a authn link from SIAM
     try:
-        siamclient.get_authn_link(False, 'http://test')
+        siamclient.get_authn_redirect(False, 'http://test')
     except exceptions.AuthException:
         app.logger.critical('Couldn\'t verify that the SIAM config is correct')
         raise
@@ -71,9 +78,9 @@ if not skip_conf_check:
         app.logger.critical('An unknown error occurred during startup')
         raise
 
-    # 3.2 Check whether we can generate a JWT
+    # 3.2 Check whether we can generate accesstokens
     try:
-        tokenbuilder.decode(tokenbuilder.create(0).encode())
+        accesstokenbuilder.decode(accesstokenbuilder.create(0).encode())
     except exceptions.JWTException:
         app.logger.critical('Couldn\'t verify that the JWT config is correct')
         raise
@@ -83,6 +90,9 @@ if not skip_conf_check:
 
 
 # ====== 4. REGISTER FLASK BLUEPRINTS
+
+# JWT
+app.register_blueprint(jwt_bp, url_prefix="{}".format(app_root))
 
 # SIAM
 app.register_blueprint(siam_bp, url_prefix="{}{}".format(app_root, siam_root))

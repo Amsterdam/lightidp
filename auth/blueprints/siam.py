@@ -4,10 +4,11 @@
 """
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
-from auth import httputils
+
+from auth import audit, httputils
 
 
-def blueprint(client, tokenbuilder, authz_flow):
+def blueprint(client, refreshtokenbuilder, authz_flow):
     """ `Flask blueprint <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for
     SIAM IdP related requests.
 
@@ -30,7 +31,7 @@ def blueprint(client, tokenbuilder, authz_flow):
     def authenticate():
         """ Route for authn requests
         """
-        response = client.get_authn_link(
+        response = client.get_authn_redirect(
             'active' not in request.args, request.args['callback']
         )
         return redirect(response, code=307)
@@ -48,15 +49,12 @@ def blueprint(client, tokenbuilder, authz_flow):
         ass = request.args.get('a-select-server') or None
         if ass != client.aselect_server:
             raise werkzeug.exceptions.BadRequest('Unsupported a-select-server')
-        verification = client.verify_creds(creds, rid)
-        if verification['result_code'] != client.RESULT_OK:
+        user_attrs = client.get_user_attributes(creds, rid)
+        if user_attrs['result_code'] != client.RESULT_OK:
             raise werkzeug.exceptions.BadRequest("Couldn't verify credentials")
-        # all checks done, now create and return the JWT
-        authz_level = authz_flow(verification['uid'])
-        basetoken = tokenbuilder.create(authz_level)
-        basetoken['username'] = verification['uid']
-        basetoken['orig_iat'] = basetoken['iat']
-        basetoken['uid'] = verification['uid']
-        return make_response((basetoken.encode(), 200))
+        # all checks done, now create, log and return the JWT
+        jwt = refreshtokenbuilder.create(user_attrs['uid']).encode()
+        audit.log_refreshtoken(jwt)
+        return make_response((jwt, 200))
 
     return blueprint

@@ -136,4 +136,27 @@ class AccessTokenBuilder(_BaseBuilder):
 
 
 class RefreshTokenBuilder(_BaseBuilder):
-    ...
+    """ Token builder that creates refresh tokens.
+    """
+
+    def create(self, sub=None):
+        """ Create a new refreshtoken as a dict.
+
+        :param sub: The subject claim (may be None)
+
+        Usage:
+
+        ::
+
+            refreshtoken = tokenbuilder.create('I@Amsterdam.nl')
+            jwt = refreshtoken.encode()
+
+        """
+        now = int(time.time())
+        data = {
+            'iat': now,
+            'exp': now + self.lifetime,
+            'sub': sub.lower(),
+            'username': sub.lower(),  # temporary, will be removed
+        }
+        return self._tokendata(data)

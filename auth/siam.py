@@ -56,7 +56,7 @@ class Client(_Client):
             raise exceptions.GatewayRequestException()
         return r
 
-    def get_authn_link(self, passive, callback_url, timeout=(3.05, 1)):
+    def get_authn_redirect(self, passive, callback_url, timeout=(3.05, 1)):
         """ Request an authn url from the IdP, either passive or not.
 
         :param passive: whether or not to request a passive URL
@@ -82,7 +82,7 @@ class Client(_Client):
             response['rid'][0])
         return passive_authn_link
 
-    def verify_creds(self, aselect_credentials, rid, timeout=(3.05, 1)):
+    def get_user_attributes(self, aselect_credentials, rid, timeout=(3.05, 1)):
         """ Make a credential verification request to the IdP.
 
         This method also reports malformed responses from SIAM. A response is

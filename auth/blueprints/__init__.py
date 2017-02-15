@@ -4,4 +4,4 @@
 """
 
 from .siam import blueprint as siamblueprint
-from .token import blueprint as tokenblueprint
+from .jwt import blueprint as jwtblueprint
