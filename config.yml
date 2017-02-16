@@ -25,5 +25,3 @@ postgres:
   user: $PG_USER
   password: $PG_PASS
   dbname: $PG_DB
-  # not required
-  autocommit: false
