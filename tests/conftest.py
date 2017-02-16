@@ -3,6 +3,26 @@ import auth.siam
 import authorization
 import authorization_levels
 
+CONFIG = {
+    'SIAM_URL': 'http://www.google.com',
+    'SIAM_APP_ID': 'fake',
+    'SIAM_A_SELECT_SERVER': 'fake.siam',
+    'SIAM_SHARED_SECRET': 'fake.secret',
+    'JWT_REFRESH_SECRET': 'refreshsecret',
+    'JWT_ACCESS_SECRET': 'refreshsecret',
+    'PG_HOST': 'localhost',
+    'PG_PORT': 5432,
+    'PG_USER': 'user',
+    'PG_PASS': 'password',
+    'PG_DB': 'database',
+}
+
+
+@pytest.fixture(autouse=True)
+def settings(monkeypatch):
+    for key in CONFIG:
+        monkeypatch.setenv(key, CONFIG[key])
+
 
 @pytest.fixture(autouse=True)
 def no_database(monkeypatch):
@@ -19,22 +39,15 @@ def no_database(monkeypatch):
 
 @pytest.fixture(scope='session')
 def config():
-    return {
-        'SIAM_BASE_URL': 'http://www.google.com',
-        'SIAM_APP_ID': 'fake',
-        'SIAM_ASELECT_SERVER': 'fake.siam',
-        'SIAM_SHARED_SECRET': 'fake.secret',
-        'JWT_SECRET': 'jwt secret',
-        'JWT_LIFETIME': 300
-    }
+    return CONFIG
 
 
 @pytest.fixture(scope='session')
 def client(config):
     client = auth.siam.Client(
-        base_url=config['SIAM_BASE_URL'],
+        base_url=config['SIAM_URL'],
         app_id=config['SIAM_APP_ID'],
-        aselect_server=config['SIAM_ASELECT_SERVER'],
+        aselect_server=config['SIAM_A_SELECT_SERVER'],
         shared_secret=config['SIAM_SHARED_SECRET']
     )
     return client

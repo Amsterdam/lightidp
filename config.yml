@@ -2,7 +2,6 @@ app:
   host: localhost
   port: 8109
   root: /auth
-  confcheck: true
 
 siam:
   base_url: $SIAM_URL
@@ -12,11 +11,11 @@ siam:
 
 jwt:
   refreshtokens:
-    secret: $JWT_SHARED_SECRET_KEY
+    secret: $JWT_REFRESH_SECRET
     algorithm: HS256
     lifetime: 2592000  # 30 x 24 x 3600
   accesstokens:
-    secret: $JWT_SHARED_SECRET_KEY
+    secret: $JWT_ACCESS_SECRET
     algorithm: HS256
     lifetime: 300
 

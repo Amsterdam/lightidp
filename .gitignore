@@ -16,5 +16,6 @@ reports/
 .pydevproject
 .coverage
 coverage.xml
-settings_test.*
 docs/_build
+config.dev.yml
+config.env

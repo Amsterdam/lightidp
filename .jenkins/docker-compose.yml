@@ -1,5 +1,15 @@
 auth-test:
   build: ../
   environment:
-    - AUTH_SKIP_CONF_CHECK=true
+    SIAM_URL: http://localhost
+    SIAM_A_SELECT_SERVER: localhost
+    SIAM_APP_ID: app_id
+    SIAM_SHARED_SECRET: secret
+    JWT_REFRESH_SECRET: refreshsecret
+    JWT_ACCESS_SECRET: accesssecret
+    PG_HOST: localhost
+    PG_PORT: 5432
+    PG_USER: user
+    PG_PASS: password
+    PG_DB: database
 

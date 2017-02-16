@@ -11,5 +11,4 @@ Dockerfile
 .settings
 __pycache__
 docs
-settings_test.env
 

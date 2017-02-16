@@ -7,16 +7,14 @@
   "properties": {
     "app": {
   	  "type": "object",
-  	  "required": ["host", "port", "root", "confcheck"],
+  	  "required": ["host", "port", "root"],
 
       "properties": {
         "host": {"type": "string"},
 
         "port": {"type": "integer"},
 
-        "root": {"type": "string"},
-        
-        "confcheck": {"type": "boolean"}
+        "root": {"type": "string"}
       },
 
       "additionalProperties": false

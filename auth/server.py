@@ -12,6 +12,7 @@ from . import config, exceptions, siam, token
 from .blueprints import siamblueprint, jwtblueprint
 
 logging.basicConfig(level=logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 # ====== 1. LOAD CONFIGURATION SETTINGS
 
@@ -24,48 +25,44 @@ refreshtokenbuilder = token.RefreshTokenBuilder(**settings['jwt']['refreshtokens
 accesstokenbuilder = token.AccessTokenBuilder(**settings['jwt']['accesstokens'])
 siamclient = siam.Client(**settings['siam'])
 
-# ====== 3. CREATE FLASK WSGI APP AND BLUEPRINTS
+# ====== 3. RUN CONFIGURATION CHECKS
+
+# 3.1 Check whether we can get a authn link from SIAM
+try:
+    siamclient.get_authn_redirect(False, 'http://test')
+except exceptions.AuthException:
+    _logger.critical('Couldn\'t verify the SIAM config')
+    raise
+except Exception:
+    _logger.critical('An unknown error occurred during startup')
+    raise
+
+# 3.2 Check whether we can generate accesstokens
+try:
+    refreshtokenbuilder.decode(refreshtokenbuilder.create('sub').encode())
+except exceptions.JWTException:
+    _logger.critical('Couldn\'t verify the refreshtoken config')
+    raise
+except Exception:
+    _logger.critical('An unknown error occurred during startup')
+    raise
+
+# 3.3 Check whether we can generate accesstokens
+try:
+    accesstokenbuilder.decode(accesstokenbuilder.create(0).encode())
+except exceptions.JWTException:
+    _logger.critical('Couldn\'t verify the accesstoken config')
+    raise
+except Exception:
+    _logger.critical('An unknown error occurred during startup')
+    raise
+
+
+# ====== 4. CREATE FLASK WSGI APP AND BLUEPRINTS
 
 app = Flask(__name__)
 jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow)
 siam_bp = siamblueprint(siamclient, refreshtokenbuilder, authz_flow)
-
-
-# ====== 4. RUN CONFIGURATION CHECKS IF REQUESTED
-
-if settings['app']['confcheck']:
-    # 4.1 Check whether we can get a authn link from SIAM
-    try:
-        siamclient.get_authn_redirect(False, 'http://test')
-    except exceptions.AuthException:
-        app.logger.critical('Couldn\'t verify the SIAM config')
-        raise
-    except Exception:
-        app.logger.critical('An unknown error occurred during startup')
-        raise
-
-    # 4.2 Check whether we can generate accesstokens
-    try:
-        refreshtokenbuilder.decode(refreshtokenbuilder.create('sub').encode())
-    except exceptions.JWTException:
-        app.logger.critical('Couldn\'t verify the refreshtoken config')
-        raise
-    except Exception:
-        app.logger.critical('An unknown error occurred during startup')
-        raise
-
-    # 4.3 Check whether we can generate accesstokens
-    try:
-        accesstokenbuilder.decode(accesstokenbuilder.create(0).encode())
-    except exceptions.JWTException:
-        app.logger.critical('Couldn\'t verify the accesstoken config')
-        raise
-    except Exception:
-        app.logger.critical('An unknown error occurred during startup')
-        raise
-
-
-# ====== 4. REGISTER FLASK BLUEPRINTS
 
 # JWT
 app.register_blueprint(jwt_bp, url_prefix="{}".format(settings['app']['root']))

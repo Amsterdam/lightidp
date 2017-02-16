@@ -3,14 +3,17 @@ auth:
   ports:
     - "8109:8000"
   environment:
-    - DEBUG
-    - AUTH_SKIP_CONF_CHECK
     - SIAM_URL
     - SIAM_A_SELECT_SERVER
     - SIAM_APP_ID
     - SIAM_SHARED_SECRET
-    - JWT_SHARED_SECRET_KEY
-    - JWT_LIFETIME
+    - JWT_REFRESH_SECRET
+    - JWT_ACCESS_SECRET
+    - PG_HOST
+    - PG_PORT
+    - PG_USER
+    - PG_PASS
+    - PG_DB
   command: make -C /app run
 
 database:

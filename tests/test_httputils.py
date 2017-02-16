@@ -5,9 +5,22 @@
 import types
 import werkzeug.exceptions
 import pytest
+
+import auth.siam
 from auth import httputils
 
 
+@pytest.fixture()
+def no_siam_check(monkeypatch):
+
+    def get_authn_redirect(*args, **kwargs):
+        pass
+
+    monkeypatch.setattr(
+        auth.siam.Client, 'get_authn_redirect', get_authn_redirect)
+
+
+@pytest.mark.usefixtures('no_siam_check')
 def test_assert_acceptable():
     @httputils.assert_acceptable('text/plain')
     def accept_text():
@@ -29,6 +42,7 @@ def test_assert_acceptable():
         accept_text()
 
 
+@pytest.mark.usefixtures('no_siam_check')
 def test_assert_mimetypes():
     @httputils.assert_mimetypes('text/plain', 'application/json')
     def accept_text_and_json():
@@ -49,6 +63,7 @@ def test_assert_mimetypes():
         accept_text_and_json()
 
 
+@pytest.mark.usefixtures('no_siam_check')
 def test_assert_req_args():
     @httputils.assert_req_args('arg1', 'arg2')
     def accept_arg1_arg2():
@@ -69,6 +84,7 @@ def test_assert_req_args():
         accept_arg1_arg2()
 
 
+@pytest.mark.usefixtures('no_siam_check')
 def test_response_mimetype():
 
     @httputils.response_mimetype('application/json')
