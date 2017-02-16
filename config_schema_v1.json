@@ -52,7 +52,7 @@
 
     "postgres": {
   	  "type": "object",
-      "required": ["host", "port", "user", "password", "database"],
+      "required": ["host", "port", "user", "password", "dbname"],
 
       "properties": {
         "host": {"type": "string"},
@@ -63,10 +63,9 @@
 
         "password": {"type": "string"},
 
-        "database": {"type": "string"}
-      },
+        "dbname": {"type": "string"}
+      }
 
-      "additionalProperties": false
     }
   },
 

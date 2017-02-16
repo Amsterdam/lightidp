@@ -24,4 +24,6 @@ postgres:
   port: $PG_PORT
   user: $PG_USER
   password: $PG_PASS
-  database: $PG_DB
+  dbname: $PG_DB
+  # not required
+  autocommit: false
