@@ -21,8 +21,8 @@ import yaml
 _module_path = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 
 DEFAULT_CONFIG_PATHS = [
-    _module_path.parent / 'datapuntauth.yml',
-    pathlib.Path('/etc') / 'datapuntauth.yml',
+    _module_path.parent / 'config.yml',
+    pathlib.Path('/etc') / 'config.yml',
 ]
 
 CONFIG_SCHEMA_V1_PATH = _module_path.parent / 'config_schema_v1.json'
