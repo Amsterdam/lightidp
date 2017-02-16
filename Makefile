@@ -3,10 +3,10 @@
 test:
 	# This runs all of the tests. To run an individual test, run py.test with
 	# the -k flag, like "py.test -k test_path_is_not_double_encoded"
-	AUTH_SKIP_CONF_CHECK=1 python setup.py test -a "-p no:cacheprovider tests"
+	python setup.py test -a "-p no:cacheprovider tests"
 
 coverage:
-	AUTH_SKIP_CONF_CHECK=1 python setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
+	python setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
 
 run-dev:
 	# WARNING: running with Flask server, *only* use this for development purposes
