@@ -59,6 +59,12 @@ class _BaseBuilder(_TokenBuilder):
     """
 
     @property
+    def keys(self):
+        """ A sequence of keys that subclasses require.
+        """
+        raise NotImplementedError()
+
+    @property
     def _tokendata(self):
         """ TokenData type as a property. This is a dynamically created class
         that wraps this namedtuple's instance data and the jwt.encode function
@@ -102,60 +108,39 @@ class _BaseBuilder(_TokenBuilder):
             raise exceptions.JWTExpiredSignatureException from e
         except jwt.exceptions.InvalidTokenError as e:
             raise exceptions.JWTException from e
+        self._check_integrity(data)
         return self._tokendata(data)
 
-    def create(self, *args, **kwargs):
-        """ Create a new token. Subclasses should implement this method.
+    def create(self, **kwargs):
+        """ Create a new token.
         """
-        raise NotImplementedError()
+        now = int(time.time())
+        data = self._tokendata({
+            'iat': now,
+            'exp': now + self.lifetime,
+        })
+        data.update(kwargs)
+        self._check_integrity(data)
+        return data
+
+    def _check_integrity(self, data):
+        """ Make sure all expected keys are present.
+        """
+        missing = (set(self.keys) | {'iat', 'exp'}) - set(data.keys())
+        if missing:
+            raise exceptions.JWTException(
+                'missing required fields {}'.format(missing))
 
 
 class AccessTokenBuilder(_BaseBuilder):
     """ Token builder that creates access tokens.
     """
 
-    def create(self, authz_level):
-        """ Create a new accesstoken as a dict.
-
-        Usage:
-
-        ::
-
-            accesstoken = tokenbuilder.create(auth.levels.LEVEL_DEFAULT)
-            accesstoken['myproperty'] = 42
-            jwt = accesstoken.encode()
-
-        """
-        now = int(time.time())
-        data = {
-            'iat': now,
-            'exp': now + self.lifetime,
-            'authz': authz_level
-        }
-        return self._tokendata(data)
+    keys = ('authz',)
 
 
 class RefreshTokenBuilder(_BaseBuilder):
     """ Token builder that creates refresh tokens.
     """
 
-    def create(self, sub=None):
-        """ Create a new refreshtoken as a dict.
-
-        :param sub: The subject claim (may be None)
-
-        Usage:
-
-        ::
-
-            refreshtoken = tokenbuilder.create('I@Amsterdam.nl')
-            jwt = refreshtoken.encode()
-
-        """
-        now = int(time.time())
-        data = {
-            'iat': now,
-            'exp': now + self.lifetime,
-            'sub': sub and sub.lower(),
-        }
-        return self._tokendata(data)
+    keys = ('sub',)

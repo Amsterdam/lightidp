@@ -24,7 +24,7 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow):
         except exceptions.JWTException as e:
             raise werkzeug.exceptions.BadRequest('Refreshtoken invalid') from e
         authz_level = authz_flow(refreshtoken['sub'])
-        accesstoken = accesstokenbuilder.create(authz_level)
+        accesstoken = accesstokenbuilder.create(authz=authz_level)
         accessjwt = accesstoken.encode()
         audit.log_accesstoken(refreshjwt, accessjwt)
         return make_response((accessjwt, 200))
@@ -33,9 +33,9 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow):
     @httputils.assert_acceptable('text/plain')
     @httputils.response_mimetype('text/plain')
     def refreshtoken():
-        """ Route for creating a refreshtoken
+        """ Route for creating an anonymous refreshtoken
         """
-        refreshtoken = refreshtokenbuilder.create()
+        refreshtoken = refreshtokenbuilder.create(sub=None)
         refreshjwt = refreshtoken.encode()
         audit.log_refreshtoken(refreshjwt)
         return make_response((refreshjwt, 200))

@@ -9,7 +9,7 @@ from auth import exceptions, token
 
 def test_tokenbuilder_success():
     builder = token.AccessTokenBuilder('secret', 300, 'HS256')
-    jwt = builder.create(authorization_levels.LEVEL_DEFAULT).encode()
+    jwt = builder.create(authz=authorization_levels.LEVEL_DEFAULT).encode()
     assert jwt
     data = builder.decode(jwt)
     # make sure we have something
@@ -31,12 +31,12 @@ def test_tokenbuilder_success():
 def test_tokenbuilder_invalid_algorithm():
     builder = token.AccessTokenBuilder('secret', 300, 'invalid')
     with pytest.raises(NotImplementedError):
-        builder.create(authorization_levels.LEVEL_DEFAULT).encode()
+        builder.create(authz=authorization_levels.LEVEL_DEFAULT).encode()
 
 
 def test_tokenbuilder_decode_error():
     builder1 = token.AccessTokenBuilder('secret1', 300, 'HS256')
     builder2 = token.AccessTokenBuilder('secret2', 300, 'HS256')
-    jwt = builder1.create(authorization_levels.LEVEL_DEFAULT).encode()
+    jwt = builder1.create(authz=authorization_levels.LEVEL_DEFAULT).encode()
     with pytest.raises(exceptions.JWTDecodeException):
         builder2.decode(jwt)

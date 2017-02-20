@@ -39,7 +39,7 @@ except Exception:
 
 # 3.2 Check whether we can generate accesstokens
 try:
-    refreshtokenbuilder.decode(refreshtokenbuilder.create('sub').encode())
+    refreshtokenbuilder.decode(refreshtokenbuilder.create(sub='sub').encode())
 except exceptions.JWTException:
     _logger.critical('Couldn\'t verify the refreshtoken config')
     raise
@@ -49,7 +49,7 @@ except Exception:
 
 # 3.3 Check whether we can generate accesstokens
 try:
-    accesstokenbuilder.decode(accesstokenbuilder.create(0).encode())
+    accesstokenbuilder.decode(accesstokenbuilder.create(authz=0).encode())
 except exceptions.JWTException:
     _logger.critical('Couldn\'t verify the accesstoken config')
     raise
