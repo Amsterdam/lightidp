@@ -25,8 +25,6 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow):
             raise werkzeug.exceptions.BadRequest('Refreshtoken invalid') from e
         authz_level = authz_flow(refreshtoken['sub'])
         accesstoken = accesstokenbuilder.create(authz_level)
-        # todo: remove username from accesstoken
-        accesstoken['username'] = refreshtoken['sub']
         accessjwt = accesstoken.encode()
         audit.log_accesstoken(refreshjwt, accessjwt)
         return make_response((accessjwt, 200))
