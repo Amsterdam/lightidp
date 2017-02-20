@@ -156,7 +156,7 @@ class RefreshTokenBuilder(_BaseBuilder):
         data = {
             'iat': now,
             'exp': now + self.lifetime,
-            'sub': sub.lower(),
-            'username': sub.lower(),  # temporary, will be removed
+            'sub': sub and sub.lower(),
+            'username': sub and sub.lower(),  # temporary, will be removed
         }
         return self._tokendata(data)

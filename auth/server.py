@@ -69,3 +69,10 @@ app.register_blueprint(jwt_bp, url_prefix="{}".format(settings['app']['root']))
 
 # SIAM
 app.register_blueprint(siam_bp, url_prefix="{}/siam".format(settings['app']['root']))
+
+
+@app.after_request
+def add_header(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization'
+    return response
