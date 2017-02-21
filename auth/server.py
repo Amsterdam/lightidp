@@ -2,7 +2,7 @@
     Authentication & authorization service
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
-import logging
+import logging.config
 import os
 
 import authorization
@@ -11,12 +11,13 @@ from flask import Flask
 from . import config, exceptions, siam, token
 from .blueprints import siamblueprint, jwtblueprint
 
-logging.basicConfig(level=logging.DEBUG)
-_logger = logging.getLogger(__name__)
-
-# ====== 1. LOAD CONFIGURATION SETTINGS
+# ====== 1. LOAD CONFIGURATION SETTINGS AND INITIALIZE LOGGING
 
 settings = config.load(configpath=os.getenv('CONFIG'))
+
+logging.config.dictConfig(settings['logging'])
+
+_logger = logging.getLogger(__name__)
 
 # ====== 2. CREATE SIAM CLIENT, TOKENBUILDERS AND AUTHZ FLOW
 
@@ -60,7 +61,7 @@ except Exception:
 
 # ====== 4. CREATE FLASK WSGI APP AND BLUEPRINTS
 
-app = Flask(__name__)
+app = Flask('authserver')
 jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow)
 siam_bp = siamblueprint(siamclient, refreshtokenbuilder, authz_flow)
 
