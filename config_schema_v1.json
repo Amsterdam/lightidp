@@ -66,7 +66,9 @@
         "dbname": {"type": "string"}
       }
 
-    }
+    },
+
+    "logging": {"$ref": "#/definitions/logging.dictconfig"}
   },
 
   "additionalProperties": false,
@@ -79,15 +81,138 @@
 
       "properties": {
         "secret": {"type": "string"},
+
         "lifetime": {
           "type": "integer",
           "minimum": 0,
           "exclusiveMinimum": true
         },
+
         "algorithm": {
           "type": "string",
           "enum": ["HS256"]
         }
+      }
+    },
+
+    "logging.dictconfig": {
+      "id": "#/definitions/logging.dictconfig",
+      "type": "object",
+      "required": ["version"],
+
+      "properties": {
+        "version": {"type": "integer", "enum": [1]},
+
+        "formatters": {
+          "type": "object",
+
+          "patternProperties": {
+            "^[a-zA-Z0-9._-]+$": {
+              "type": "object",
+
+              "properties": {
+                "format": {"type": "string"},
+
+                "datefmt": {"type": "string"}
+              },
+
+              "additionalProperties": false
+            }
+          }
+        },
+
+        "filters": {
+          "type": "object",
+
+          "patternProperties": {
+            "^[a-zA-Z0-9._-]+$": {
+              "type": "object",
+
+              "properties": {
+                "name": {"type": "string"}
+              },
+
+              "additionalProperties": false
+            }
+          }
+        },
+
+        "handlers": {
+          "type": "object",
+
+          "patternProperties": {
+            "^[a-zA-Z0-9._-]+$": {
+              "type": "object",
+              "required": ["class"],
+
+              "properties": {
+                "class": {"type": "string"},
+
+                "level": {"type": "string"},
+
+                "formatter": {"type": "string"},
+
+                "filters": {
+                  "type": "array",
+                  "items": {"type": "string"},
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        },
+
+        "loggers": {
+          "type": "object",
+
+          "patternProperties": {
+            "^[a-zA-Z0-9._-]+$": {
+              "type": "object",
+
+              "properties": {
+                "level": {"type": "string"},
+
+                "propagate": {"type": "boolean"},
+
+                "filters": {
+                  "type": "array",
+                  "items": {"type": "string"},
+                  "uniqueItems": true
+                },
+
+                "handlers": {
+                  "type": "array",
+                  "items": {"type": "string"},
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        },
+
+        "root": {
+          "type": "object",
+
+          "properties": {
+            "level": {"type": "string"},
+
+            "filters": {
+              "type": "array",
+              "items": {"type": "string"},
+              "uniqueItems": true
+            },
+
+            "handlers": {
+              "type": "array",
+              "items": {"type": "string"},
+              "uniqueItems": true
+            }
+          }
+        },
+
+        "incremental": {"type": "boolean"},
+
+        "disable_existing_loggers": {"type": "boolean"}
       }
     }
   }
