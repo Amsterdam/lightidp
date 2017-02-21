@@ -1,6 +1,7 @@
 auth-test:
   build: ../
   environment:
+    LOGLEVEL: DEBUG
     SIAM_URL: http://localhost
     SIAM_A_SELECT_SERVER: localhost
     SIAM_APP_ID: app_id

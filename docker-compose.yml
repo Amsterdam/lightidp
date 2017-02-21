@@ -2,18 +2,21 @@ auth:
   build: .
   ports:
     - "8109:8000"
+  links:
+    - database
   environment:
+    - LOGLEVEL=DEBUG
     - SIAM_URL
     - SIAM_A_SELECT_SERVER
     - SIAM_APP_ID
     - SIAM_SHARED_SECRET
     - JWT_REFRESH_SECRET
     - JWT_ACCESS_SECRET
-    - PG_HOST
-    - PG_PORT
-    - PG_USER
-    - PG_PASS
-    - PG_DB
+    - PG_HOST=database
+    - PG_PORT=5432
+    - PG_USER=authuser
+    - PG_PASS=authpassword
+    - PG_DB=authz
   command: make -C /app run
 
 database:
