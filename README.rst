@@ -9,36 +9,53 @@ Datapunt Authentication & Authorization service
 
 ---------------------
 
-Features:
-
-- Support for authentication with SIAM in `auth.blueprints.siam <auth/blueprints/siam.py>`_.
-- Support for access tokens
-- Support for Pipenv in the Makefile
-- Pep8 compliant (without E501, lines <= 80)
-- Fair test coverage (missing the blueprints)
-- Support for setuptools, so it can run without needing test / dev dependencies (which it does; see ``Dockerfile`` and ``Jenkinsfile``)
+Have a look at the `documentation on ReadTheDocs <https://datapunt-auth.readthedocs.io/>`_.
 
 Future work:
+- Move to an async framework; apart from encoding/decoding tokens (HMAC +
+  SHA256) this service does nothing significant, it may as well do I/O async so
+  it can handle more incoming connections. A possible stack could be (asyncio
+  uvloop aiohttp) | tornado + asyncpg + requests-futures.
 
-- CORS beyond simple requests?
-- Support IP-based authentication
-- Support access and refresh tokens
-- Support claims / permission based authorization with a Postgres backend
-- A better README
+Contributing
+------------
 
-Wishful thinking:
-- Move to an async framework; apart from encoding/decoding tokens (HMAC + SHA256) this service does nothing significant, it may as well do I/O async so it can handle more incoming connections. A possible stack could be (asyncio uvloop aiohttp) | tornado + asyncpg + requests-futures.
-
-Documentation
--------------
-
-Pending a better README, an online version of the docs can be found `at readthedocs <http://datapunt-auth.readthedocs.io/en/latest/>`_.
-Note that we haven't configured github to trigger documentation builds on readthedocs.
-We may not use readthedocs (or Sphinx, for that matter) at all in the future. 
-
-View the most recent docs locally with:
+1. Install the dev dependencies in your virtual environment
+###########################################################
 
 ::
 
-   $ make init docs
-   $ open docs/_build/html/index.html
+    $ pip install -e .[dev]
+
+Note: the ``[dev]`` refers to extra requirements for development and is
+specified in ``setup.py``. You don't need to install them as the ``make test``
+and ``make coverage`` targets work fine without having them in the virtualenv.
+The only reason you might want to install them is so for example ``pytest`` and
+``responses`` can be resolved in you IDE.
+
+2. Create a configuration or environment file
+#############################################
+
+In ``config.yml`` you can see an example configuration. You can either:
+
+- make a copy of ``config.yml``, adjust it to your needs and point to it using
+  export CONFIG=`pwd`/my_config.yml
+- or export values for the environment variables referenced in ``config.yml``.
+
+3. Make sure you have a database running and that the tables exist
+##################################################################
+
+If you have docker installed then you can start a Postgres instance with:
+
+::
+
+ 	$ docker-compose up -d database
+
+You can use the authorization CLI to set up a user. Note that this will also
+silently create the needed tables, if they don't exist.
+
+::
+
+ 	$ authz user [username] assign [DEFAULT | EMPLOYEE | EMPLOYEE_PLUS]
+
+Now you can develop, run and test code!
