@@ -5,13 +5,13 @@ auth:
   links:
     - database
   environment:
-    - LOGLEVEL=DEBUG
+    - LOGLEVEL=${LOGLEVEL:-DEBUG}
     - SIAM_URL
     - SIAM_A_SELECT_SERVER
     - SIAM_APP_ID
     - SIAM_SHARED_SECRET
-    - JWT_REFRESH_SECRET
-    - JWT_ACCESS_SECRET
+    - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-refreshsecret}
+    - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-accesssecret}
     - PG_HOST=database
     - PG_PORT=5432
     - PG_USER=authuser
