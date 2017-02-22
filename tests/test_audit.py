@@ -26,7 +26,7 @@ def test_log_refreshtoken_anon(caplog):
 
 
 def test_log_refreshtoken_user(caplog):
-    audit.log_refreshtoken('a.b.mac', user='user')
+    audit.log_refreshtoken('a.b.mac', sub='user')
     assert 'user' in caplog.text()
 
 

@@ -1,6 +1,6 @@
 """
-    auth.web
-    ~~~~~~~~
+    auth.blueprints
+    ~~~~~~~~~~~~~~~
 """
 
 from .siam import blueprint as siamblueprint

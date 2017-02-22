@@ -4,10 +4,28 @@
 
     Module that loads configuration settings from a yaml file.
 
-    Features:
+    Features
+    --------
 
-    - Environment interpolation
+    - Environment interpolation with defaults
     - JSON schema validation
+
+    .. _default_config_locations:
+
+    Default config file locations
+    -----------------------------
+
+    - ``/etc/datapuntauth/config.yml``
+    - ``$PROJECT/config.yml``, where ``$PROJECT`` is the parent directory of
+       :module:`auth`, which is useful during development
+
+    Example usage:
+
+    ::
+
+        from auth.config import load
+        settings = config.load()
+
 """
 import json
 import os
@@ -21,19 +39,25 @@ import yaml
 _module_path = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 
 DEFAULT_CONFIG_PATHS = [
+    pathlib.Path('/etc') / 'datapuntauth' / 'config.yml',
     _module_path.parent / 'config.yml',
-    pathlib.Path('/etc') / 'config.yml',
 ]
 
 CONFIG_SCHEMA_V1_PATH = _module_path.parent / 'config_schema_v1.json'
 
 
 class ConfigError(Exception):
-    """ Configuration errors.
+    """ Configuration errors
     """
 
 
 def load(configpath=None):
+    """ Load, parse and validate a configuration file from the given
+    ``configpath`` or one of the default locations (see
+    :ref:`_default_config_locations`)
+
+    :param configpath: path to the configuration file to load (optional)
+    """
     config = _load_yaml(configpath)
     config = _interpolate_environment(config)
     _validate(config, CONFIG_SCHEMA_V1_PATH)

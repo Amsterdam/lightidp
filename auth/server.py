@@ -21,7 +21,7 @@ _logger = logging.getLogger(__name__)
 
 # ====== 2. CREATE SIAM CLIENT, TOKENBUILDERS AND AUTHZ FLOW
 
-authz_flow = authorization.authz_mapper(**settings['postgres'])
+authz_level_for = authorization.authz_mapper(**settings['postgres'])
 refreshtokenbuilder = token.RefreshTokenBuilder(**settings['jwt']['refreshtokens'])
 accesstokenbuilder = token.AccessTokenBuilder(**settings['jwt']['accesstokens'])
 siamclient = siam.Client(**settings['siam'])
@@ -60,7 +60,7 @@ except Exception:
 
 # 3.4 Check whether we can get authorization levels
 try:
-    authz_flow('user')
+    authz_level_for('user')
 except:
     _logger.critical('Cannot check authorization levels in the database')
     raise
@@ -68,8 +68,8 @@ except:
 # ====== 4. CREATE FLASK WSGI APP AND BLUEPRINTS
 
 app = Flask('authserver')
-jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow)
-siam_bp = siamblueprint(siamclient, refreshtokenbuilder, authz_flow)
+siam_bp = siamblueprint(siamclient, refreshtokenbuilder)
+jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for)
 
 # JWT
 app.register_blueprint(jwt_bp, url_prefix="{}".format(settings['app']['root']))

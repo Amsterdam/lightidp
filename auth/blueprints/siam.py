@@ -8,9 +8,8 @@ from flask import Blueprint, request, make_response, redirect
 from auth import audit, httputils
 
 
-def blueprint(client, refreshtokenbuilder, authz_flow):
-    """ `Flask blueprint <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for
-    SIAM IdP related requests.
+def blueprint(client, refreshtokenbuilder):
+    """ SIAM IdP related resources.
 
     This function returns a blueprint with two routes configured:
 
@@ -18,7 +17,7 @@ def blueprint(client, refreshtokenbuilder, authz_flow):
     - GET /token: get a JWT after a succesful authentication
 
     :param siam.Client client: The client for the SIAM server
-    :param token.Builder tokenbuilder: The JWT builder
+    :param token.RefreshTokenBuilder refreshtokenbuilder: The JWT builder for refresh tokens
     :return: :class:`flask.Blueprint`
     """
 
@@ -54,7 +53,7 @@ def blueprint(client, refreshtokenbuilder, authz_flow):
             raise werkzeug.exceptions.BadRequest("Couldn't verify credentials")
         # all checks done, now create, log and return the JWT
         jwt = refreshtokenbuilder.create(sub=user_attrs['uid']).encode()
-        audit.log_refreshtoken(jwt, user=user_attrs['uid'])
+        audit.log_refreshtoken(jwt, sub=user_attrs['uid'])
         return make_response((jwt, 200))
 
     return blueprint

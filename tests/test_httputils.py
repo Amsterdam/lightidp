@@ -6,18 +6,20 @@ import types
 import werkzeug.exceptions
 import pytest
 
-import auth.siam
-from auth import httputils
+from auth import exceptions, httputils, siam
 
 
 @pytest.fixture()
 def no_siam_check(monkeypatch):
+    """ Fixture for tests that need to import auth.server.app. Patches siam to
+    not check whether the server is reachable.
+    """
 
     def get_authn_redirect(*args, **kwargs):
         pass
 
     monkeypatch.setattr(
-        auth.siam.Client, 'get_authn_redirect', get_authn_redirect)
+        siam.Client, 'get_authn_redirect', get_authn_redirect)
 
 
 @pytest.mark.usefixtures('no_siam_check')
@@ -84,6 +86,20 @@ def test_assert_req_args():
         accept_arg1_arg2()
 
 
+def test_assert_gateway():
+    wz = werkzeug.exceptions
+    for expected, thrown in (
+        (wz.GatewayTimeout, (exceptions.GatewayTimeoutException,)),
+        (wz.BadGateway, (exceptions.GatewayRequestException, exceptions.GatewayResponseException, exceptions.GatewayConnectionException))
+    ):
+        for e in thrown:
+            @httputils.assert_gateway
+            def gatewaytimeout():
+                raise e
+            with pytest.raises(expected):
+                gatewaytimeout()
+
+
 @pytest.mark.usefixtures('no_siam_check')
 def test_response_mimetype():
 
@@ -98,3 +114,31 @@ def test_response_mimetype():
         r.mimetype = 'text/plain'
         return r
     assert text_mimetype().mimetype == 'application/json'
+
+
+@pytest.mark.usefixtures('no_siam_check')
+def test_insert_jwt():
+    valid_jwt = 'a.b.c'
+
+    @httputils.insert_jwt
+    def get_jwt(jwt):
+        assert jwt == valid_jwt
+        return 'success'
+
+    from auth import server
+    app = server.app
+    # 1. Request without token header fails
+    with app.test_request_context():
+        response = get_jwt()
+        assert response.status_code == 401
+    # 2. Request with wrong Authz prefix fails
+    with app.test_request_context(headers={'Authorization': 'JWT a.b.c'}):
+        response = get_jwt()
+        assert response.status_code == 401
+    # 3. Request with wrong Authz format fails
+    with app.test_request_context(headers={'Authorization': 'JWT a.b.c def'}):
+        response = get_jwt()
+        assert response.status_code == 401
+    # 4. Request with wrong Authz format fails
+    with app.test_request_context(headers={'Authorization': 'Bearer ' + valid_jwt}):
+        assert get_jwt() == 'success'

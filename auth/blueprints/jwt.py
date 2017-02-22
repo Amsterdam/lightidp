@@ -8,8 +8,19 @@ import werkzeug.exceptions
 from auth import audit, httputils, exceptions
 
 
-def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow):
-    # Create the Flask blueprint
+def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
+    """ JWT-only resources.
+
+    This function returns a blueprint with two routes configured:
+
+    - GET /refreshtoken: get an anonymous refreshtoken
+    - GET /accesstoken: get an accesstoken
+
+    :param token.RefreshTokenBuilder refreshtokenbuilder: JWT builder for refreshtokens
+    :param token.AccessTokenBuilder accesstokenbuilder: JWT builder for accesstokens
+    :param func authz_level_for: callable that maps a ``subject`` to an authz level
+    :return: :class:`flask.Blueprint`
+    """
     blueprint = Blueprint('jwt_app', __name__)
 
     @blueprint.route('/accesstoken', methods=('GET',))
@@ -23,7 +34,7 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_flow):
             refreshtoken = refreshtokenbuilder.decode(refreshjwt)
         except exceptions.JWTException as e:
             raise werkzeug.exceptions.BadRequest('Refreshtoken invalid') from e
-        authz_level = authz_flow(refreshtoken['sub'])
+        authz_level = authz_level_for(refreshtoken['sub'])
         accesstoken = accesstokenbuilder.create(authz=authz_level)
         accessjwt = accesstoken.encode()
         audit.log_accesstoken(refreshjwt, accessjwt)

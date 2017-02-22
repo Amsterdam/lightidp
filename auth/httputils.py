@@ -1,9 +1,12 @@
 """
-    auth.http
-    ~~~~~~~~~
+    auth.httputils
+    ~~~~~~~~~~~~~~
+
+    This module provides several decorators that help with common HTTP
+    protocol related tasks, such as checking, parsing or setting headers.
 """
 import functools
-from flask import request
+from flask import make_response, request
 import werkzeug.exceptions
 from auth import exceptions
 
@@ -113,7 +116,7 @@ def assert_gateway(f):
 
     ::
 
-        @app.rout('/')
+        @app.route('/')
         @httputils.assert_gateway
         def handle():
             # this may raise a gateway error that will be translated into a 50X
@@ -159,8 +162,12 @@ def response_mimetype(mimetype):
 
 def insert_jwt(f):
     """ Decorator that provides the JWT that must be present in the
-    Authorization header. Will return a 400 if the JWT is missing or the
+    Authorization header. Will return a 401 if the JWT is missing or the
     Authorization header is malformed.
+
+    This function will include a ``WWW-Authenticate`` in the response detailing
+    the error code as specified in section 3 of the `OAuht2 Bearer Token Usage spec
+    <http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authn-header>`_.
 
     Usage:
 
@@ -169,23 +176,33 @@ def insert_jwt(f):
         @app.route('/')
         @httputils.insert_jwt
         def handle(jwt):
-            # jwt containes the JWT
+            # jwt contains the JWT
     """
+    header_bearer = 'Bearer realm="datapunt"'
+    header_bearer_error = header_bearer + ', error="invalid_token", error_description="{}"'
+
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         if 'Authorization' not in request.headers:
-            raise werkzeug.exceptions.BadRequest(
-                'Must provide a JWT in the Authorization header')
+            return make_response(('', 401, {'WWW-Authenticate': header_bearer}))
 
         try:
             prefix, jwt = request.headers['Authorization'].split()
         except ValueError:
-            raise werkzeug.exceptions.BadRequest(
-                'Authorization header must have format: Bearer [JWT]')
+            error_msg = 'Authorization header must have format: Bearer [JWT]'
+            return make_response(
+                ('', 401, {
+                    'WWW-Authenticate': header_bearer_error.format(error_msg)
+                })
+            )
 
         if prefix != 'Bearer':
-            error_msg = 'Authorization header prefix must be: Bearer, not {}'
-            raise werkzeug.exceptions.BadRequest(error_msg.format(prefix))
+            error_msg = 'Authorization header prefix must be Bearer'
+            return make_response(
+                ('', 401, {
+                    'WWW-Authenticate': header_bearer_error.format(error_msg)
+                })
+            )
 
         return f(jwt, *args, **kwargs)
     return wrapper

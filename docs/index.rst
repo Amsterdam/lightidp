@@ -10,8 +10,8 @@ Congratulations, you found the documentation for the authentication and
 authorization (AA) service at the heart of the city of Amsterdam's `open data
 services <https://api.datapunt.amsterdam.nl/api/>`_.
 
-The AA service authenticates users through external identity providers (IdP's),
-manages user permissions and creates access and refresh tokens in the form of
+The AA service authenticates users through external identity providers (IdP's)
+and creates refresh and access tokens in the form of
 `JSON Web Tokens <https://tools.ietf.org/html/rfc7519>`_ (JWTs).
 
 About

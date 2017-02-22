@@ -1,29 +1,32 @@
 .. _api:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 0
 
 API Docs
 ========
 
 .. module:: auth
 
-Flask blueprints (views)
-------------------------
+Blueprints (resources / views)
+------------------------------
 
-.. autofunction:: auth.blueprints.siam.blueprint
+Flask `blueprints <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for SIAM
+authentication and JWT tokens.
+
+.. autofunction:: auth.blueprints.siamblueprint
+.. autofunction:: auth.blueprints.jwtblueprint
 
 HTTP utilities
 --------------
 
-.. autofunction:: auth.httputils.assert_acceptable
-.. autofunction:: auth.httputils.assert_mimetypes
-.. autofunction:: auth.httputils.assert_req_args
-.. autofunction:: auth.httputils.assert_gateway
-.. autofunction:: auth.httputils.response_mimetype
+.. automodule:: auth.httputils
+   :members:
 
-SIAM client
------------
+SIAM (IdP) client
+-----------------
+
+The SIAM client handles all communication with the IdP.
 
 .. autoclass:: auth.siam.Client
    :members:
@@ -39,4 +42,3 @@ Exceptions
 
 .. automodule:: auth.exceptions
    :members:
-
