@@ -1,14 +1,32 @@
+# Git
 .git
 .gitignore
+
+# Docker
 docker-compose.yml
 Dockerfile
+
+# Jenkins
+.jenkins
+
+# IDEs
 .idea
-*.iml
 .project
 .pydevproject
-.venv
-.coveragerc
 .settings
+
+# Virtualenvs
+.venv
+
+# Python
+*.pyc
+*.pyo
 __pycache__
+
+# Setuptools
+.eggs
+*.egg-info
+
+# Documentation
 docs
 
