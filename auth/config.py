@@ -65,6 +65,11 @@ def load(configpath=None):
 
 
 def _load_yaml(configpath=None):
+    """ Read a yaml file from the given ``configpath`` or one of the default
+    locations (see :ref:`_default_config_locations`)
+
+    :param configpath: path to the yaml file to load (optional)
+    """
     if not configpath:
         for path in DEFAULT_CONFIG_PATHS:
             if path.exists() and path.is_file():
@@ -75,19 +80,35 @@ def _load_yaml(configpath=None):
             paths_as_string = ', '.join(str(p) for p in DEFAULT_CONFIG_PATHS)
             raise ConfigError(error_msg.format(paths_as_string))
     else:
-        conffile = pathlib.Path(configpath)
+        path = pathlib.Path(configpath)
+        if path.exists() and path.is_file():
+            conffile = path
+        else:
+            raise ConfigError('Cannot read config from {}'.format(configpath))
     with conffile.open() as f:
         parsed = yaml.load(f)
     return parsed
 
 
 def _interpolate_environment(config):
+    """ Recursively find string-type values in the given ``config``, and try to
+    substitute them with values from :data:`os.environ`.
+
+    **NOTE**: If a substituted value is a string containing only digits (i.e.
+    :func:`string.isdigit` == ``True``), then this function will cast it to an
+    integer. It does not try to do any other type conversion.
+
+    :param config: configuration mapping
+    """
 
     def interpolate(value):
         try:
             result = TemplateWithDefaults(value).substitute(os.environ)
         except KeyError as e:
-            error_msg = 'Could not resolve {}'
+            error_msg = 'Could not substitute: {}'
+            raise ConfigError(error_msg.format(value)) from e
+        except ValueError as e:
+            error_msg = 'Invalid substitution: {}'
             raise ConfigError(error_msg.format(value)) from e
         return (result.isdigit() and int(result)) or result
 
@@ -104,11 +125,23 @@ def _interpolate_environment(config):
 
 
 def _validate(config, schemafile):
-    """ Validate using JSON schema
+    """ Validate the given ``config`` using the JSON schema given in
+    ``schemafile``.
+
+    :param config: configuration mapping
+    :param str schemafile: path
     """
-    with pathlib.Path(schemafile).open() as f:
-        schema = json.load(f)
-    jsonschema.validate(config, schema)
+    try:
+        with pathlib.Path(schemafile).open() as f:
+            schema = json.load(f)
+    except FileNotFoundError as e:
+        raise ConfigError() from e
+    except json.JSONDecodeError as e:
+        raise ConfigError() from e
+    try:
+        jsonschema.validate(config, schema)
+    except jsonschema.exceptions.ValidationError as e:
+        raise ConfigError() from e
 
 
 class TemplateWithDefaults(string.Template):
