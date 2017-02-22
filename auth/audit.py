@@ -39,11 +39,11 @@ def log_accesstoken(refreshjwt, accessjwt):
     jwtlogger.info(log_msg.format(refresh_mac, access_mac))
 
 
-def log_refreshtoken(refreshjwt):
+def log_refreshtoken(refreshjwt, user='anonymous'):
     """ Logs a refreshtoken request as “Refreshtoken created: [MAC]”
 
     :param refreshjwt: The refreshtoken that was created
     """
-    log_msg = 'Refreshtoken created: {}'
+    log_msg = 'Refreshtoken created: {} | user={}'
     refresh_mac = _mac_from_jwt(refreshjwt)
-    jwtlogger.info(log_msg.format(refresh_mac))
+    jwtlogger.info(log_msg.format(refresh_mac, user))

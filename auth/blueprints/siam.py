@@ -54,7 +54,7 @@ def blueprint(client, refreshtokenbuilder, authz_flow):
             raise werkzeug.exceptions.BadRequest("Couldn't verify credentials")
         # all checks done, now create, log and return the JWT
         jwt = refreshtokenbuilder.create(sub=user_attrs['uid']).encode()
-        audit.log_refreshtoken(jwt)
+        audit.log_refreshtoken(jwt, user=user_attrs['uid'])
         return make_response((jwt, 200))
 
     return blueprint
