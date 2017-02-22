@@ -4,10 +4,10 @@ app:
   root: /auth
 
 siam:
-  base_url: $SIAM_URL
-  aselect_server: $SIAM_A_SELECT_SERVER
-  app_id: $SIAM_APP_ID
-  shared_secret: $SIAM_SHARED_SECRET
+  base_url: ${SIAM_URL:-http://localhost}
+  aselect_server: ${SIAM_A_SELECT_SERVER:-localhost}
+  app_id: ${SIAM_APP_ID:-app_id}
+  shared_secret: ${SIAM_SHARED_SECRET:-siamsecret}
 
 jwt:
   refreshtokens:
@@ -20,11 +20,11 @@ jwt:
     lifetime: 300
 
 postgres:
-  host: $PG_HOST
-  port: $PG_PORT
-  user: $PG_USER
-  password: $PG_PASS
-  dbname: $PG_DB
+  host: ${PG_HOST:-localhost}
+  port: ${PG_PORT:-5432}
+  user: ${PG_USER:-authuser}
+  password: ${PG_PASS:-authpassword}
+  dbname: ${PG_DB:-authz}
 
 logging:
   version: 1
@@ -54,5 +54,5 @@ logging:
       propagate: false
       handlers: [werkzeug]
   root:
-    level: $LOGLEVEL
+    level: ${LOGLEVEL:-DEBUG}
     handlers: [root]

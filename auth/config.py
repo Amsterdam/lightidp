@@ -61,7 +61,7 @@ def _interpolate_environment(config):
 
     def interpolate(value):
         try:
-            result = string.Template(value).substitute(os.environ)
+            result = TemplateWithDefaults(value).substitute(os.environ)
         except KeyError as e:
             error_msg = 'Could not resolve {}'
             raise ConfigError(error_msg.format(value)) from e
@@ -85,3 +85,35 @@ def _validate(config, schemafile):
     with pathlib.Path(schemafile).open() as f:
         schema = json.load(f)
     jsonschema.validate(config, schema)
+
+
+class TemplateWithDefaults(string.Template):
+    """ String template that supports Bash-style default values for
+    interpolation.
+
+    Copied from `Docker Compose <https://github.com/docker/compose/blob/master/compose/config/interpolation.py>`_
+    """
+    idpattern = r'[_a-z][_a-z0-9]*(?::?-[^}]+)?'
+
+    # Modified from python2.7/string.py
+    def substitute(self, mapping):
+        # Helper function for .sub()
+        def convert(mo):
+            # Check the most common path first.
+            named = mo.group('named') or mo.group('braced')
+            if named is not None:
+                if ':-' in named:
+                    var, _, default = named.partition(':-')
+                    return mapping.get(var) or default
+                if '-' in named:
+                    var, _, default = named.partition('-')
+                    return mapping.get(var, default)
+                val = mapping[named]
+                return '%s' % (val,)
+            if mo.group('escaped') is not None:
+                return self.delimiter
+            if mo.group('invalid') is not None:
+                self._invalid(mo)
+            raise ValueError('Unrecognized named group in pattern',
+                             self.pattern)
+        return self.pattern.sub(convert, self.template)
