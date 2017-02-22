@@ -4,6 +4,7 @@ REST API
 .. toctree::
    :maxdepth: 3
 
+
 GET ``/auth/siam/authenticate``
 -------------------------------
 
@@ -57,17 +58,63 @@ Parameters
 Request headers
 +++++++++++++++
 
-- ``Accept``: text/plain
+- ``Accept: text/plain``
 
 Responses
 +++++++++
 
 - **200**: Success
-   - ``Content-type``: text/plain
+   - ``Content-type: text/plain``
 
 - **400**: Required query param is not present
-- **406**: Requested content-type (Accept header) cannot be produced
+- **406**: Requested content-type (Accept header) cannot be produced (only ``text/plain`` is supported)
 - **502**: Problem communicating with the SIAM server
 - **504**: Communication with SIAM server timed out
 
 
+GET ``/auth/refreshtoken``
+--------------------------
+
+Description
++++++++++++
+
+Gets an anonymous refreshtoken.
+
+Request headers
++++++++++++++++
+
+- ``Accept: text/plain``
+
+Responses
++++++++++
+
+- **200**: Success
+   - ``Content-type: text/plain``
+
+- **406**: Requested content-type (Accept header) cannot be produced (only ``text/plain`` is supported)
+
+
+GET ``/auth/accesstoken``
+-------------------------
+
+Description
++++++++++++
+
+Gets an accesstoken.
+
+Request headers
++++++++++++++++
+
+- ``Accept: text/plain``
+- ``Authorization: Bearer [JWT]`` where ``JWT`` is a valid refresh token
+
+Responses
++++++++++
+
+- **200**: Success
+   - ``Content-type: text/plain``
+
+- **401**: Refreshtoken is missing or invalid
+   - ``WWW-Authenticate: Bearer realm="datapunt"[, error="invalid_token", error_description="[DESC]"]`` where ``DESC`` is a human readable description
+
+- **406**: Requested content-type (Accept header) cannot be produced (only ``text/plain`` is supported)

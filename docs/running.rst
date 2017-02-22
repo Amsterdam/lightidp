@@ -1,56 +1,61 @@
+Starting, tests and coverage
+============================
+
+Auth is a `Flask <https://flask.readthedocs.io>`_ application, and so a `WSGI
+<https://www.python.org/dev/peps/pep-3333/>`_ application.
+
+If you want to run the service you should make sure you have :ref:`configured
+<settings>` it. However, you don't need to configure anything to run the tests.
+
 Starting the service
-====================
+--------------------
 
-Auth is a `Flask <https://flask.readthedocs.io>`_ application, and so a `WSGI <https://www.python.org/dev/peps/pep-3333/>`_ application. You can run it in your current shell or in a Docker container.
+Starting a database
+###################
 
-Running it in a Docker container
---------------------------------
+Auth needs access to a Postgres instance for querying authorization information.
 
-The service comes with a ``Dockerfile`` and a ``docker-compose.yml`` file. To run the service in Docker you must have at least :doc:`all required settings </settings>` available **as environment variables**
-
-If you have all settings in your environment and a running Docker daemon, then you should be able to start it with docker-compose:
+You can optionally start an instance using the provided ``docker-compose.yml``:
 
 ::
 
-   # start the service
-   $ docker-compose up -d
+   # start the database
+   $ docker-compose up -d database
 
-   # see what it's up to
-   $ docker-compose logs -f
-   # ^C to stop watching the logs
+   # give a user some permissions (optional)
+   $ authz user some_user assign EMPLOYEE
 
-   # kill the service
-   $ docker-compose down
+Installing dependencies
+#######################
 
-Running it in your shell
+Install the dev dependencies in your virtual environment:
+
+::
+
+    $ pip install -e .[dev]
+
+Note: the ``[dev]`` refers to extra requirements for development and is
+specified in ``setup.py``. You don't need to install them as the ``make test``
+and ``make coverage`` targets work fine without having them in the virtualenv.
+The only reason you might want to install them is so for example ``pytest`` and
+``responses`` can be resolved in you IDE.
+
+Starting the service
+####################
+
+Now you can run the service in development mode:
+
+::
+
+    $ make run-dev
+
+Running tests / coverage
 ------------------------
 
-Initialize the project with Pipenv:
+For tests you don't need a virtual environment, you can just run:
 
 ::
 
-   $ make init
-
-Make sure all :doc:`required settings </settings>` are available.
-
-Now you can run the service either as a Flask application:
-
-::
-
-   $ make run-dev
-
-
-Running tests
--------------
-
-Run tests like this:
-
-::
-
+   $ make test
+   # or...
    $ make coverage
-
-... or run tests in Docker:
-
-::
-
-   $ AUTH_SKIP_CONF_CHECK=1 docker-compose run auth make coverage

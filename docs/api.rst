@@ -1,3 +1,5 @@
+:tocdepth: 2
+
 .. _api:
 
 .. toctree::
@@ -6,10 +8,14 @@
 API Docs
 ========
 
-.. module:: auth
+Auditlog
+--------
 
-Blueprints (resources / views)
-------------------------------
+.. automodule:: auth.audit
+   :members:
+
+Blueprints (views)
+------------------
 
 Flask `blueprints <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for SIAM
 authentication and JWT tokens.
@@ -17,18 +23,22 @@ authentication and JWT tokens.
 .. autofunction:: auth.blueprints.siamblueprint
 .. autofunction:: auth.blueprints.jwtblueprint
 
+Configuration
+-------------
+
+.. automodule:: auth.config
+   :members:
+
+Exceptions
+----------
+
+.. automodule:: auth.exceptions
+   :members:
+
 HTTP utilities
 --------------
 
 .. automodule:: auth.httputils
-   :members:
-
-SIAM (IdP) client
------------------
-
-The SIAM client handles all communication with the IdP.
-
-.. autoclass:: auth.siam.Client
    :members:
 
 JSON Web Tokens
@@ -37,8 +47,10 @@ JSON Web Tokens
 .. automodule:: auth.token
    :members:
 
-Exceptions
-----------
+SIAM (IdP) client
+-----------------
 
-.. automodule:: auth.exceptions
+The SIAM client handles all communication with the IdP.
+
+.. autoclass:: auth.siam.Client
    :members:

@@ -1,25 +1,25 @@
 """
+    .. _auth-config:
+
     auth.config
     ~~~~~~~~~~~
 
     Module that loads configuration settings from a yaml file.
 
-    Features
-    --------
+    **Features**
 
     - Environment interpolation with defaults
     - JSON schema validation
 
-    .. _default_config_locations:
+    .. _default-config-locations:
 
-    Default config file locations
-    -----------------------------
+    **Default config file locations**
 
     - ``/etc/datapuntauth/config.yml``
     - ``$PROJECT/config.yml``, where ``$PROJECT`` is the parent directory of
-       :module:`auth`, which is useful during development
+       :mod:`auth`, which is useful during development
 
-    Example usage:
+    **Example usage**
 
     ::
 
@@ -53,8 +53,7 @@ class ConfigError(Exception):
 
 def load(configpath=None):
     """ Load, parse and validate a configuration file from the given
-    ``configpath`` or one of the default locations (see
-    :ref:`_default_config_locations`)
+    ``configpath`` or one of the :ref:`default locations <default-config-locations>`
 
     :param configpath: path to the configuration file to load (optional)
     """
@@ -65,8 +64,8 @@ def load(configpath=None):
 
 
 def _load_yaml(configpath=None):
-    """ Read a yaml file from the given ``configpath`` or one of the default
-    locations (see :ref:`_default_config_locations`)
+    """ Read a yaml file from the given ``configpath`` or one of the
+    :ref:`default locations <default-config-locations>`
 
     :param configpath: path to the yaml file to load (optional)
     """

@@ -11,7 +11,7 @@ coverage:
 run-dev:
 	# WARNING: running with Flask server, *only* use this for development purposes
 	@set -e; \
-	FLASK_APP=auth.server python -m flask run -p 8109 --reload
+	JWT_ACCESS_SECRET=jas JWT_REFRESH_SECRET=jrs FLASK_APP=auth.server python -m flask run -p 8109 --reload
 
 run:
 	# WARNING: running with uWSGI

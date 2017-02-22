@@ -14,11 +14,6 @@ The AA service authenticates users through external identity providers (IdP's)
 and creates refresh and access tokens in the form of
 `JSON Web Tokens <https://tools.ietf.org/html/rfc7519>`_ (JWTs).
 
-About
------
-
-... provide info on AAA
-
 Using the service
 -----------------
 
