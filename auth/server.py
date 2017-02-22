@@ -28,7 +28,7 @@ siamclient = siam.Client(**settings['siam'])
 
 # ====== 3. RUN CONFIGURATION CHECKS
 
-# 3.1 Check whether we can get a authn link from SIAM
+# 3.1 Check whether we can get an authn redirect from SIAM
 try:
     siamclient.get_authn_redirect(False, 'http://test')
 except exceptions.AuthException:
@@ -38,7 +38,7 @@ except Exception:
     _logger.critical('An unknown error occurred during startup')
     raise
 
-# 3.2 Check whether we can generate accesstokens
+# 3.2 Check whether we can generate refreshtokens
 try:
     refreshtokenbuilder.decode(refreshtokenbuilder.create(sub='sub').encode())
 except exceptions.JWTException:
@@ -58,6 +58,12 @@ except Exception:
     _logger.critical('An unknown error occurred during startup')
     raise
 
+# 3.4 Check whether we can get authorization levels
+try:
+    authz_flow('user')
+except:
+    _logger.critical('Cannot check authorization levels in the database')
+    raise
 
 # ====== 4. CREATE FLASK WSGI APP AND BLUEPRINTS
 
