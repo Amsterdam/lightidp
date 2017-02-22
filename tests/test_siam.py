@@ -1,12 +1,12 @@
 """
-    auth.tests.test_siamclient
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    auth.tests.test_siam
+    ~~~~~~~~~~~~~~~~~~~~
 """
 import pytest
 import responses
 import time
 import urllib.parse
-from auth import exceptions, siam
+from auth import exceptions
 
 # shorthand
 uenc = urllib.parse.urlencode
@@ -45,7 +45,7 @@ def test_verify_creds(config, client):
     with responses.RequestsMock() as rsps:
         result = {
             'result_code': client.RESULT_OK,
-            'tgt_exp_time': '{}'.format(now+10),
+            'tgt_exp_time': '{}'.format(now + 10),
             'uid': 'evert'}
         rsps.add(rsps.GET, config['SIAM_URL'], body=uenc(result))
         response = client.get_user_attributes('aselect_credentials', 'rid')
@@ -72,7 +72,7 @@ def test_verify_creds(config, client):
     with responses.RequestsMock() as rsps:
         result = {
             'result_code': client.RESULT_OK,
-            'tgt_exp_time': '{}'.format(now-10),
+            'tgt_exp_time': '{}'.format(now - 10),
             'uid': 'evert'}
         rsps.add(rsps.GET, config['SIAM_URL'], body=uenc(result))
         with pytest.raises(exceptions.GatewayResponseException):

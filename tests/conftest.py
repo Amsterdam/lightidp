@@ -32,8 +32,9 @@ def no_database(monkeypatch):
     }
 
     def authz_mapper(*args, **kwargs):
-        def get(username):
-            return authzmap.get(username, authorization_levels.LEVEL_DEFAULT)
+        def get(sub):
+            return authzmap.get(sub, authorization_levels.LEVEL_DEFAULT)
+        return get
     monkeypatch.setattr(authorization, 'authz_mapper', authz_mapper)
 
 
