@@ -10,7 +10,7 @@ import urllib
 
 from auth import exceptions
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 # Base class for Client, to make sure it's immutable after construction
 _Client = collections.namedtuple(
@@ -51,8 +51,8 @@ class Client(_Client):
         except requests.ConnectionError as e:
             raise exceptions.GatewayConnectionException() from e
         if r.status_code >= 400:
-            logger.critical('HTTP {} response from '
-                            'SIAM for {}'.format(r.status_code, url))
+            _logger.critical('HTTP {} response from '
+                             'SIAM for {}'.format(r.status_code, url))
             raise exceptions.GatewayRequestException()
         return r
 
@@ -107,6 +107,8 @@ class Client(_Client):
         }
         r = self._request(request_params, timeout)
         parsed = urllib.parse.parse_qs(r.text)
+        _logger.warn('HELP!')
+        _logger.info(parsed)
         expected_param_keys = {'result_code', 'tgt_exp_time', 'uid'}
         result = {k: parsed[k][0] for k in expected_param_keys if k in parsed}
         has_missing_params = len(expected_param_keys) - len(result)

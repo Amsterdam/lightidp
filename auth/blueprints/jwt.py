@@ -2,10 +2,10 @@
     auth.blueprints.token
     ~~~~~~~~~~~~~~~~~~~~~
 """
+import authorization_levels
 from flask import Blueprint, make_response
-import werkzeug.exceptions
 
-from auth import audit, httputils, exceptions
+from auth import audit, httputils
 
 
 def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
@@ -26,15 +26,13 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
     @blueprint.route('/accesstoken', methods=('GET',))
     @httputils.assert_acceptable('text/plain')
     @httputils.response_mimetype('text/plain')
-    @httputils.insert_jwt
-    def accesstoken(refreshjwt):
+    @httputils.insert_jwt(refreshtokenbuilder)
+    def accesstoken(tokendata, refreshjwt):
         """ Route for creating an access token based on a refresh token
         """
-        try:
-            refreshtoken = refreshtokenbuilder.decode(refreshjwt)
-        except exceptions.JWTException as e:
-            raise werkzeug.exceptions.BadRequest('Refreshtoken invalid') from e
-        authz_level = authz_level_for(refreshtoken['sub'])
+        authz_level = authz_level_for(tokendata['sub'])
+        if authz_level == authorization_levels.LEVEL_DEFAULT and tokendata['sub']:
+            authz_level = authorization_levels.LEVEL_EMPLOYEE
         accesstoken = accesstokenbuilder.create(authz=authz_level)
         accessjwt = accesstoken.encode()
         audit.log_accesstoken(refreshjwt, accessjwt)

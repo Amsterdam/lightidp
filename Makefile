@@ -1,12 +1,12 @@
-.PHONY: docs
+.PHONY: test coverage run-dev run docs
 
 test:
 	# This runs all of the tests. To run an individual test, run py.test with
 	# the -k flag, like "py.test -k test_path_is_not_double_encoded"
-	python setup.py test -a "-p no:cacheprovider --verbose tests"
+	JWT_ACCESS_SECRET=jas JWT_REFRESH_SECRET=jrs python setup.py test -a "-p no:cacheprovider --verbose tests"
 
 coverage:
-	python setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
+	JWT_ACCESS_SECRET=jas JWT_REFRESH_SECRET=jrs python setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
 
 run-dev:
 	# WARNING: running with Flask server, *only* use this for development purposes

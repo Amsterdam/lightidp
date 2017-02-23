@@ -38,10 +38,21 @@ def assert_acceptable(*mimetypes):
         def wrapper(*args, **kwargs):
             capable = set(mimetypes)
             acceptable = {r[0] for r in request.accept_mimetypes}
-            if not capable & acceptable:
-                raise werkzeug.exceptions.NotAcceptable(
-                    'Resource can only serve: {}'.format(capable)
-                )
+            if not (capable & acceptable or '*/*' in acceptable):
+                # No literal / catchall match, lets take this apart
+                for acc in acceptable:
+                    try:
+                        (first, second) = acc.split('/')
+                    except ValueError:
+                        continue
+                    if second == '*':
+                        first = '{}/'.format(first)
+                        if {cap for cap in capable if first in cap}:
+                            break
+                else:
+                    raise werkzeug.exceptions.NotAcceptable(
+                        'Resource can only serve: {}'.format(capable)
+                    )
             return f(*args, **kwargs)
         return wrapper
     return decorator
@@ -160,14 +171,29 @@ def response_mimetype(mimetype):
     return decorator
 
 
-def insert_jwt(f):
-    """ Decorator that provides the JWT that must be present in the
-    Authorization header. Will return a 401 if the JWT is missing or the
-    Authorization header is malformed.
+def _invalid_token_401(errmsg=None):
+    """ Helper to return a 401 Unauthorized.
 
     This function will include a ``WWW-Authenticate`` in the response detailing
     the error code as specified in section 3 of the `OAuht2 Bearer Token Usage spec
     <http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authn-header>`_.
+
+    If no ``errmsg`` is given then WWW-Authenticate will not include an error at
+    all. If given, then ``error`` will be "invalid_token" and
+    ``error_description`` will be ``errmsg``.
+
+    :param str errmsg: The message to be included in error_description
+    """
+    header_value = 'Bearer realm="datapunt"'
+    if (errmsg):
+        header_value += ', error="invalid_token", error_description="{}"'.format(errmsg)
+    return make_response(('', 401, {'WWW-Authenticate': header_value}))
+
+
+def insert_jwt(refreshtokenbuilder):
+    """ Decorator that provides the JWT that must be present in the
+    Authorization header. Will return a 401 if the JWT is missing or the
+    Authorization header is malformed.
 
     Usage:
 
@@ -178,31 +204,27 @@ def insert_jwt(f):
         def handle(jwt):
             # jwt contains the JWT
     """
-    header_bearer = 'Bearer realm="datapunt"'
-    header_bearer_error = header_bearer + ', error="invalid_token", error_description="{}"'
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            if 'Authorization' not in request.headers:
+                return _invalid_token_401()
 
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        if 'Authorization' not in request.headers:
-            return make_response(('', 401, {'WWW-Authenticate': header_bearer}))
+            try:
+                prefix, jwt = request.headers['Authorization'].split()
+            except ValueError:
+                error_msg = 'Authorization header must have format: Bearer [JWT]'
+                return _invalid_token_401(errmsg=error_msg)
 
-        try:
-            prefix, jwt = request.headers['Authorization'].split()
-        except ValueError:
-            error_msg = 'Authorization header must have format: Bearer [JWT]'
-            return make_response(
-                ('', 401, {
-                    'WWW-Authenticate': header_bearer_error.format(error_msg)
-                })
-            )
+            if prefix != 'Bearer':
+                error_msg = 'Authorization header prefix must be Bearer'
+                return _invalid_token_401(errmsg=error_msg)
 
-        if prefix != 'Bearer':
-            error_msg = 'Authorization header prefix must be Bearer'
-            return make_response(
-                ('', 401, {
-                    'WWW-Authenticate': header_bearer_error.format(error_msg)
-                })
-            )
+            try:
+                tokendata = refreshtokenbuilder.decode(jwt)
+            except exceptions.JWTException:
+                return _invalid_token_401(errmsg='Refreshtoken invalid')
 
-        return f(jwt, *args, **kwargs)
-    return wrapper
+            return f(tokendata, jwt, *args, **kwargs)
+        return wrapper
+    return decorator

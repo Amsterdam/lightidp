@@ -6,30 +6,15 @@ import types
 import werkzeug.exceptions
 import pytest
 
-from auth import exceptions, httputils, siam
+from auth import exceptions, httputils, token
 
 
-@pytest.fixture()
-def no_siam_check(monkeypatch):
-    """ Fixture for tests that need to import auth.server.app. Patches siam to
-    not check whether the server is reachable.
-    """
-
-    def get_authn_redirect(*args, **kwargs):
-        pass
-
-    monkeypatch.setattr(
-        siam.Client, 'get_authn_redirect', get_authn_redirect)
-
-
-@pytest.mark.usefixtures('no_siam_check')
-def test_assert_acceptable():
+@pytest.mark.usefixtures('app')
+def test_assert_acceptable(app):
     @httputils.assert_acceptable('text/plain')
     def accept_text():
         pass
 
-    from auth import server
-    app = server.app
     # 1. Request without Accept header fails
     with app.test_request_context():
         with pytest.raises(werkzeug.exceptions.NotAcceptable):
@@ -42,16 +27,26 @@ def test_assert_acceptable():
     with app.test_request_context(headers={
             'Accept': 'application/json; q=0.6, text/plain'}):
         accept_text()
+    # 4. Request with catch-all Accept succeeds
+    with app.test_request_context(headers={
+            'Accept': '*/*'}):
+        accept_text()
+    # 5. Request with wildcard Accept succeeds
+    with app.test_request_context(headers={
+            'Accept': 'text/*'}):
+        accept_text()
+    # 6. Request with wildcard Accept among multiple succeeds
+    with app.test_request_context(headers={
+            'Accept': 'application/*; q=0.6, text/*'}):
+        accept_text()
 
 
-@pytest.mark.usefixtures('no_siam_check')
-def test_assert_mimetypes():
+@pytest.mark.usefixtures('app')
+def test_assert_mimetypes(app):
     @httputils.assert_mimetypes('text/plain', 'application/json')
     def accept_text_and_json():
-        pass
+        return 'correct'
 
-    from auth import server
-    app = server.app
     # 1. Request without Content-type fails
     with app.test_request_context():
         with pytest.raises(werkzeug.exceptions.UnsupportedMediaType):
@@ -62,17 +57,15 @@ def test_assert_mimetypes():
             accept_text_and_json()
     # 3. Request with matching Content-type succeeds
     with app.test_request_context(content_type='application/json'):
-        accept_text_and_json()
+        assert accept_text_and_json() == 'correct'
 
 
-@pytest.mark.usefixtures('no_siam_check')
-def test_assert_req_args():
+@pytest.mark.usefixtures('app')
+def test_assert_req_args(app):
     @httputils.assert_req_args('arg1', 'arg2')
     def accept_arg1_arg2():
         pass
 
-    from auth import server
-    app = server.app
     # 1. Request without params fails
     with app.test_request_context():
         with pytest.raises(werkzeug.exceptions.BadRequest):
@@ -100,7 +93,6 @@ def test_assert_gateway():
                 gatewaytimeout()
 
 
-@pytest.mark.usefixtures('no_siam_check')
 def test_response_mimetype():
 
     @httputils.response_mimetype('application/json')
@@ -116,17 +108,17 @@ def test_response_mimetype():
     assert text_mimetype().mimetype == 'application/json'
 
 
-@pytest.mark.usefixtures('no_siam_check')
-def test_insert_jwt():
-    valid_jwt = 'a.b.c'
+@pytest.mark.usefixtures('app')
+def test_insert_jwt(app):
+    tokenbuilder = token.RefreshTokenBuilder('secret', 300, 'HS256')
+    tokendata = tokenbuilder.create(sub='tester')
+    valid_jwt = str(tokendata.encode(), 'utf-8')
 
-    @httputils.insert_jwt
-    def get_jwt(jwt):
+    @httputils.insert_jwt(tokenbuilder)
+    def get_jwt(data, jwt):
         assert jwt == valid_jwt
-        return 'success'
+        assert data == tokendata
 
-    from auth import server
-    app = server.app
     # 1. Request without token header fails
     with app.test_request_context():
         response = get_jwt()
@@ -141,4 +133,4 @@ def test_insert_jwt():
         assert response.status_code == 401
     # 4. Request with wrong Authz format fails
     with app.test_request_context(headers={'Authorization': 'Bearer ' + valid_jwt}):
-        assert get_jwt() == 'success'
+        get_jwt()

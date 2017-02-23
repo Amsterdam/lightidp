@@ -1,27 +1,8 @@
 import pytest
+import auth.config
 import auth.siam
 import authorization
 import authorization_levels
-
-CONFIG = {
-    'SIAM_URL': 'http://www.google.com',
-    'SIAM_APP_ID': 'fake',
-    'SIAM_A_SELECT_SERVER': 'fake.siam',
-    'SIAM_SHARED_SECRET': 'fake.secret',
-    'JWT_REFRESH_SECRET': 'refreshsecret',
-    'JWT_ACCESS_SECRET': 'refreshsecret',
-    'PG_HOST': 'localhost',
-    'PG_PORT': 5432,
-    'PG_USER': 'user',
-    'PG_PASS': 'password',
-    'PG_DB': 'database',
-}
-
-
-@pytest.fixture(autouse=True)
-def settings(monkeypatch):
-    for key in CONFIG:
-        monkeypatch.setenv(key, CONFIG[key])
 
 
 @pytest.fixture(autouse=True)
@@ -40,15 +21,31 @@ def no_database(monkeypatch):
 
 @pytest.fixture(scope='session')
 def config():
-    return CONFIG
+    return auth.config.load()
+
+
+@pytest.fixture()
+def app(monkeypatch):
+    """ Fixture for tests that need to import auth.server.app. Patches siam to
+    not check whether the server is reachable.
+    """
+
+    def get_authn_redirect(*args, **kwargs):
+        return 'http://redirect.url'
+
+    monkeypatch.setattr(auth.siam.Client, 'get_authn_redirect', get_authn_redirect)
+
+    from auth import server
+    server.app.config['TESTING'] = True
+    return server.app
 
 
 @pytest.fixture(scope='session')
 def client(config):
     client = auth.siam.Client(
-        base_url=config['SIAM_URL'],
-        app_id=config['SIAM_APP_ID'],
-        aselect_server=config['SIAM_A_SELECT_SERVER'],
-        shared_secret=config['SIAM_SHARED_SECRET']
+        base_url=config['siam']['base_url'],
+        app_id=config['siam']['app_id'],
+        aselect_server=config['siam']['aselect_server'],
+        shared_secret=config['siam']['shared_secret']
     )
     return client
