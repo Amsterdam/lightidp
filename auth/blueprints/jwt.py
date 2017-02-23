@@ -2,7 +2,6 @@
     auth.blueprints.token
     ~~~~~~~~~~~~~~~~~~~~~
 """
-import authorization_levels
 from flask import Blueprint, make_response
 
 from auth import audit, httputils
@@ -31,8 +30,6 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
         """ Route for creating an access token based on a refresh token
         """
         authz_level = authz_level_for(tokendata['sub'])
-        if authz_level == authorization_levels.LEVEL_DEFAULT and tokendata['sub']:
-            authz_level = authorization_levels.LEVEL_EMPLOYEE
         accesstoken = accesstokenbuilder.create(authz=authz_level)
         accessjwt = accesstoken.encode()
         audit.log_accesstoken(refreshjwt, accessjwt)
