@@ -5,14 +5,14 @@
 import pytest
 
 
-def refreshtoken(app, data={}, headers={}):
+def refreshtoken(app, headers={}):
     client = app.test_client()
-    return client.get('/auth/refreshtoken', data=data, headers=headers)
+    return client.get('/auth/refreshtoken', headers=headers)
 
 
-def accesstoken(app, data={}, headers={}):
+def accesstoken(app, headers={}):
     client = app.test_client()
-    return client.get('/auth/accesstoken', data=data, headers=headers)
+    return client.get('/auth/accesstoken', headers=headers)
 
 
 @pytest.mark.usefixtures('app')

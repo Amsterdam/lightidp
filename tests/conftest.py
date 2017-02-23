@@ -33,7 +33,14 @@ def app(monkeypatch):
     def get_authn_redirect(*args, **kwargs):
         return 'http://redirect.url'
 
+    def get_user_attributes(*args, **kwargs):
+        return {
+            'result_code': auth.siam.Client.RESULT_OK,
+            'uid': 'testuser'
+        }
+
     monkeypatch.setattr(auth.siam.Client, 'get_authn_redirect', get_authn_redirect)
+    monkeypatch.setattr(auth.siam.Client, 'get_user_attributes', get_user_attributes)
 
     from auth import server
     server.app.config['TESTING'] = True
