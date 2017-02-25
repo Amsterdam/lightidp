@@ -1,6 +1,6 @@
 """
-    auth.httputils
-    ~~~~~~~~~~~~~~
+    auth.decorators
+    ~~~~~~~~~~~~~~~
 
     This module provides several decorators that help with common HTTP
     protocol related tasks, such as checking, parsing or setting headers.
@@ -20,7 +20,7 @@ def assert_acceptable(*mimetypes):
     ::
 
         @app.route('/')
-        @httputils.assert_acceptable('text/plain', 'application/json')
+        @decorators.assert_acceptable('text/plain', 'application/json')
         def handle():
             data = ... # create some response data
             best_mimetype = request.accept_mimetypes.best_match(
@@ -67,7 +67,7 @@ def assert_mimetypes(*mimetypes):
     ::
 
         @app.route('/')
-        @httputils.assert_mimetypes('text/plain', 'application/json')
+        @decorators.assert_mimetypes('text/plain', 'application/json')
         def handle():
             if request.mimetype == 'text/plain':
                 # read text/plain
@@ -99,7 +99,7 @@ def assert_req_args(*required):
     ::
 
         @app.route('/')
-        @httputils.assert_req_args('uid', 'callback')
+        @decorators.assert_req_args('uid', 'callback')
         def handle():
             # these are now guaranteed to be present
             uid = request.args.get('uid')
@@ -128,7 +128,7 @@ def assert_gateway(f):
     ::
 
         @app.route('/')
-        @httputils.assert_gateway
+        @decorators.assert_gateway
         def handle():
             # this may raise a gateway error that will be translated into a 50X
             siamclient.renew_session(...)
@@ -155,7 +155,7 @@ def response_mimetype(mimetype):
     ::
 
         @app.route('/')
-        @httputils.response_mimetype('application/json')
+        @decorators.response_mimetype('application/json')
         def handle():
             make_response({"msg": "hello world"})
 
@@ -200,7 +200,7 @@ def insert_jwt(refreshtokenbuilder):
     ::
 
         @app.route('/')
-        @httputils.insert_jwt
+        @decorators.insert_jwt
         def handle(jwt):
             # jwt contains the JWT
     """

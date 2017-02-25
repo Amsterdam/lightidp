@@ -1,17 +1,17 @@
 """
-    auth.tests.test_httputils
-    ~~~~~~~~~~~~~~~~~~~~~~~~~
+    auth.tests.test_decorators
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 import types
 import werkzeug.exceptions
 import pytest
 
-from auth import exceptions, httputils, token
+from auth import exceptions, decorators, token
 
 
 @pytest.mark.usefixtures('app')
 def test_assert_acceptable(app):
-    @httputils.assert_acceptable('text/plain')
+    @decorators.assert_acceptable('text/plain')
     def accept_text():
         pass
 
@@ -43,7 +43,7 @@ def test_assert_acceptable(app):
 
 @pytest.mark.usefixtures('app')
 def test_assert_mimetypes(app):
-    @httputils.assert_mimetypes('text/plain', 'application/json')
+    @decorators.assert_mimetypes('text/plain', 'application/json')
     def accept_text_and_json():
         return 'correct'
 
@@ -62,7 +62,7 @@ def test_assert_mimetypes(app):
 
 @pytest.mark.usefixtures('app')
 def test_assert_req_args(app):
-    @httputils.assert_req_args('arg1', 'arg2')
+    @decorators.assert_req_args('arg1', 'arg2')
     def accept_arg1_arg2():
         pass
 
@@ -86,7 +86,7 @@ def test_assert_gateway():
         (wz.BadGateway, (exceptions.GatewayRequestException, exceptions.GatewayResponseException, exceptions.GatewayConnectionException))
     ):
         for e in thrown:
-            @httputils.assert_gateway
+            @decorators.assert_gateway
             def gatewaytimeout():
                 raise e
             with pytest.raises(expected):
@@ -95,12 +95,12 @@ def test_assert_gateway():
 
 def test_response_mimetype():
 
-    @httputils.response_mimetype('application/json')
+    @decorators.response_mimetype('application/json')
     def empty_mimetype():
         return types.SimpleNamespace()
     assert empty_mimetype().mimetype == 'application/json'
 
-    @httputils.response_mimetype('application/json')
+    @decorators.response_mimetype('application/json')
     def text_mimetype():
         r = types.SimpleNamespace()
         r.mimetype = 'text/plain'
@@ -114,7 +114,7 @@ def test_insert_jwt(app):
     tokendata = tokenbuilder.create(sub='tester')
     valid_jwt = str(tokendata.encode(), 'utf-8')
 
-    @httputils.insert_jwt(tokenbuilder)
+    @decorators.insert_jwt(tokenbuilder)
     def get_jwt(data, jwt):
         assert jwt == valid_jwt
         assert data == tokendata

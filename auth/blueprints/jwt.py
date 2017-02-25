@@ -4,7 +4,7 @@
 """
 from flask import Blueprint, make_response
 
-from auth import audit, httputils
+from auth import audit, decorators
 
 
 def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
@@ -23,9 +23,9 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
     blueprint = Blueprint('jwt_app', __name__)
 
     @blueprint.route('/accesstoken', methods=('GET',))
-    @httputils.assert_acceptable('text/plain')
-    @httputils.response_mimetype('text/plain')
-    @httputils.insert_jwt(refreshtokenbuilder)
+    @decorators.assert_acceptable('text/plain')
+    @decorators.response_mimetype('text/plain')
+    @decorators.insert_jwt(refreshtokenbuilder)
     def accesstoken(tokendata, refreshjwt):
         """ Route for creating an access token based on a refresh token
         """
@@ -36,8 +36,8 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
         return make_response((accessjwt, 200))
 
     @blueprint.route('/refreshtoken', methods=('GET',))
-    @httputils.assert_acceptable('text/plain')
-    @httputils.response_mimetype('text/plain')
+    @decorators.assert_acceptable('text/plain')
+    @decorators.response_mimetype('text/plain')
     def refreshtoken():
         """ Route for creating an anonymous refreshtoken
         """

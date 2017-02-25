@@ -5,7 +5,7 @@
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
 
-from auth import audit, httputils
+from auth import audit, decorators
 
 
 def blueprint(client, refreshtokenbuilder):
@@ -25,8 +25,8 @@ def blueprint(client, refreshtokenbuilder):
     blueprint = Blueprint('siam_app', __name__)
 
     @blueprint.route('/authenticate', methods=('GET',))
-    @httputils.assert_req_args('callback')
-    @httputils.assert_gateway
+    @decorators.assert_req_args('callback')
+    @decorators.assert_gateway
     def authenticate():
         """ Route for authn requests
         """
@@ -36,10 +36,10 @@ def blueprint(client, refreshtokenbuilder):
         return redirect(response, code=307)
 
     @blueprint.route('/token', methods=('GET',))
-    @httputils.assert_acceptable('text/plain')
-    @httputils.assert_req_args('aselect_credentials', 'rid', 'a-select-server')
-    @httputils.assert_gateway
-    @httputils.response_mimetype('text/plain')
+    @decorators.assert_acceptable('text/plain')
+    @decorators.assert_req_args('aselect_credentials', 'rid', 'a-select-server')
+    @decorators.assert_gateway
+    @decorators.response_mimetype('text/plain')
     def token():
         """ Route for getting a new token
         """
