@@ -29,16 +29,16 @@ Configuration
 .. automodule:: auth.config
    :members:
 
+Decorators
+----------
+
+.. automodule:: auth.decorators
+   :members:
+
 Exceptions
 ----------
 
 .. automodule:: auth.exceptions
-   :members:
-
-HTTP utilities
---------------
-
-.. automodule:: auth.httputils
    :members:
 
 JSON Web Tokens
