@@ -24,13 +24,9 @@ def test_tokenbuilder_success():
     # make sure the data is what we want it to be
     assert data['authz'] == authorization_levels.LEVEL_DEFAULT
     assert data['exp'] - data['iat'] == 300
-    # make sure the same data encodes the same jwt
-    parts = data.encode().split(b'.')
-    jwtparts = jwt.split(b'.')
-    assert len(parts) == len(jwtparts) == 3
-    assert parts[0] == jwtparts[0]
-    assert parts[1] == jwtparts[1]
-    # the MAC may differ, it is seeded by timestamp
+    # note that encoding `data` again may not reult in the same JWT, even though
+    # it contains the same JOSE header and data. This is because we're working
+    # with dictionaries / hash sets, which don't guarantee order.
 
 
 def test_tokenbuilder_invalid_algorithm():
