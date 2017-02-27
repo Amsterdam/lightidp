@@ -20,11 +20,11 @@ jwt:
     lifetime: 300
 
 postgres:
-  host: ${PG_HOST:-localhost}
-  port: ${PG_PORT:-5432}
-  user: ${PG_USER:-authuser}
-  password: ${PG_PASS:-authpassword}
-  dbname: ${PG_DB:-authz}
+  host: ${DB_HOST:-localhost}
+  port: ${DB_PORT:-5432}
+  user: ${DB_USER:-authuser}
+  password: ${DB_PASS:-authpassword}
+  dbname: ${DB_DATABASE:-authz}
 
 logging:
   version: 1
