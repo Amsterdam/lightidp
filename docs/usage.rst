@@ -98,6 +98,8 @@ Responses
 - **406**: Requested content-type (Accept header) cannot be produced (only ``text/plain`` is supported)
 
 
+.. _rest-accesstoken:
+
 GET ``/auth/accesstoken``
 -------------------------
 

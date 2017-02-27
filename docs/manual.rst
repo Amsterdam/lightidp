@@ -1,26 +1,10 @@
+:tocdepth: 3
+
 Manual
 ======
 
-Authentication
---------------
-
-You can currently only authenticate using an accesstoken. Requests that require
-an authenticated user will respond with a ``401 Authentication Required`` and
-contain a ``WWW-Authenticate`` header.
-
-.. code-block:: shell
-
-    $ curl -H "Authorization: Bearer [ACCESS_TOKEN]" https://api.data.amsterdam.nl
-
-Authentication errors
-#####################
-
-If an ``Authorization`` header is malformed or the accesstoken is invalid, the
-``WWW-Authenticate`` header may include an ``error`` property and an
-``error_description`` property, that may help you resolve the problem.
-
-Web application flow
---------------------
+Authentication for web applications
+-----------------------------------
 
 Make authenticated requests through a 3rd party website.
 
@@ -31,15 +15,37 @@ Make authenticated requests through a 3rd party website.
    Please contact `Datapunt support <mailto:datapunt.ois@amsterdam.nl>`_ if you
    want to know more.
 
-1. Request users to TMA login screen
-####################################
+1. Redirect users to TMA login screen
+#####################################
 
-For details see the :ref:`REST API documentation <rest-siam-authenticate>`
+GET ``/auth/siam/authenticate``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: shell
+Description
++++++++++++
 
-    $ curl -D - 'https://api.data.amsterdam.nl/auth/siam/authenticate?active&callback=CALLBACK' 2> /dev/null | grep Location
-    Location: https://tma.amsterdam.nl/aselectserver/server?request=login1&a-select-server=tma.amsterdam.nl&rid=R97C46FD4FA0C09341E5A45FD8692D6BB9FEA2717
+Gets SIAM authentication redirect.
+Required query param callback specifies the URL the user should be redirected to by the IdP after succesful authentication.
+Optional query param active determines whether we want the user to see a login screen if she is not authenticated.
+
+Parameters
+++++++++++
+
+.. csv-table::
+    :delim: |
+    :header: "Name", "Located in", "Required", "Type", "Format", "Properties", "Description"
+    :widths: 20, 15, 10, 10, 10, 20, 30
+
+        callback | query | Yes | string |  |  | IdP will redirect to this URL after authentication
+        active | query | No | boolean |  |  | If present, ask IdP to show user a login screen if she is not authenticated.
+
+Responses
++++++++++
+
+- **307**: Redirect to generated authentication url
+- **400**: Query param callback is not present
+- **502**: Problem communicating with the SIAM server
+- **504**: Communication with SIAM server timed out
 
 2. TMA redirects back to your site
 ##################################
@@ -55,18 +61,85 @@ for a **refresh token**.
    Make sure you keep them safe. If you expect abuse, plase contact `Datapunt
    support <mailto:datapunt.ois@amsterdam.nl>`_
 
-For details see the :ref:`REST API documentation <rest-siam-token>`
+GET ``/auth/siam/token``
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: shell
+Description
++++++++++++
 
-    $ curl -H 'Accept: text/plain' 'https://api.data.amsterdam.nl/auth/siam/token?aselect_credentials=ASELECT_CREDENTIALS&rid=RID&a-select-server=A-SELECT-SERVER'
-    eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.dCI6MTQ4NzA3NjOm51bGwsImlhg3NjgxMjE3fQQxNywiZXhwIjoxNDeyJzdWIi.VjLY8oQGs2ZM3_UWjpORLtHZW34wa71sgvWACYRwGfQ
+Gets JSON Web Token for the current user.
+
+Parameters
+++++++++++
+
+.. csv-table::
+    :delim: |
+    :header: "Name", "Located in", "Required", "Type", "Format", "Properties", "Description"
+    :widths: 20, 15, 10, 10, 10, 20, 30
+
+        aselect_credentials | query | Yes | string |  |  | The credentials as provided by SIAM
+        rid | query | Yes | string |  |  | The request ID associated with this authentication attempt, provided by SIAM
+        a-select-server | query | Yes | string |  |  | The a-select-server used for this authentication attempt, as provided by SIAM
+
+Request headers
++++++++++++++++
+
+- ``Accept: text/plain``
+
+Responses
++++++++++
+
+- **200**: Success
+   - ``Content-type: text/plain``
+
+- **400**: Required query param is not present
+- **406**: Requested content-type (Accept header) cannot be produced (only ``text/plain`` is supported)
+- **502**: Problem communicating with the SIAM server
+- **504**: Communication with SIAM server timed out
+
 
 3. Use the Refresh token to request an access token
 ###################################################
 
+GET ``/auth/accesstoken``
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Description
++++++++++++
+
+Gets an accesstoken.
+
+Request headers
++++++++++++++++
+
+- ``Accept: text/plain``
+- ``Authorization: Bearer [JWT]`` where ``JWT`` is a valid refresh token
+
+Responses
++++++++++
+
+- **200**: Success
+   - ``Content-type: text/plain``
+
+- **401**: Refreshtoken is missing or invalid
+   - ``WWW-Authenticate: Bearer realm="datapunt"[, error="invalid_token", error_description="[DESC]"]`` where ``DESC`` is a human readable description
+
+- **406**: Requested content-type (Accept header) cannot be produced (only ``text/plain`` is supported)
+
+Making authenticated requests
+-----------------------------
+
+You can currently only authenticate using an accesstoken. Requests that require
+an authenticated user will respond with a ``401 Authentication Required`` and
+contain a ``WWW-Authenticate`` header.
+
 .. code-block:: shell
 
-    $ token='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOm51bGwsImlhdCI6MTQ4NzA3NjQxNywiZXhwIjoxNDg3NjgxMjE3fQ.VjLY8oQGs2ZM3_UW34wa71sgvWAWjpORLtHZCYRwGfQ'
-    $ curl -H 'Accept: text/plain' -H "Authorization: Bearer $token" https://api.data.amsterdam.nl/auth/accesstoken
-    eyJIUzI1NiJ9J0eXAiOiJKV1QiLCjdfgti.NjgxMjGwsImlhdCI6MTQ4NzA3NjQxNywiZXhwIjoxNE3fQeyJzdWIiOm51bDg3.QGs2ZM3_VjLY8oWjpORLtHZCYRwGfQUW34wa71sgvWA
+    $ curl -H "Authorization: Bearer [ACCESS_TOKEN]" https://api.data.amsterdam.nl
+
+Authentication errors
+#####################
+
+If an ``Authorization`` header is malformed or the accesstoken is invalid, the
+``WWW-Authenticate`` header may include an ``error`` property and an
+``error_description`` property, that may help you resolve the problem.

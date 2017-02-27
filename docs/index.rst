@@ -16,10 +16,9 @@ contact `Datapunt support <mailto:datapunt.ois@amsterdam.nl>`_.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    manual
-   usage
 
 Contributor's guide
 -------------------
