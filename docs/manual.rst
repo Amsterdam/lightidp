@@ -53,14 +53,20 @@ for a **refresh token**.
 
    Refresh tokens are long lived, and they can be used to create access tokens.
    Make sure you keep them safe. If you expect abuse, plase contact `Datapunt
-   support <mailto:datapunt.ois@amsterdam.nl>`_ 
+   support <mailto:datapunt.ois@amsterdam.nl>`_
 
 For details see the :ref:`REST API documentation <rest-siam-token>`
 
 .. code-block:: shell
 
     $ curl -H 'Accept: text/plain' 'https://api.data.amsterdam.nl/auth/siam/token?aselect_credentials=ASELECT_CREDENTIALS&rid=RID&a-select-server=A-SELECT-SERVER'
-    eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOm51bGwsImlhdCI6MTQ4NzA3NjQxNywiZXhwIjoxNDg3NjgxMjE3fQ.VjLY8oQGs2ZM3_UW34wa71sgvWAWjpORLtHZCYRwGfQ
+    eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.dCI6MTQ4NzA3NjOm51bGwsImlhg3NjgxMjE3fQQxNywiZXhwIjoxNDeyJzdWIi.VjLY8oQGs2ZM3_UWjpORLtHZW34wa71sgvWACYRwGfQ
 
 3. Use the Refresh token to request an access token
 ###################################################
+
+.. code-block:: shell
+
+    $ token='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOm51bGwsImlhdCI6MTQ4NzA3NjQxNywiZXhwIjoxNDg3NjgxMjE3fQ.VjLY8oQGs2ZM3_UW34wa71sgvWAWjpORLtHZCYRwGfQ'
+    $ curl -H 'Accept: text/plain' -H "Authorization: Bearer $token" https://api.data.amsterdam.nl/auth/accesstoken
+    eyJIUzI1NiJ9J0eXAiOiJKV1QiLCjdfgti.NjgxMjGwsImlhdCI6MTQ4NzA3NjQxNywiZXhwIjoxNE3fQeyJzdWIiOm51bDg3.QGs2ZM3_VjLY8oWjpORLtHZCYRwGfQUW34wa71sgvWA
