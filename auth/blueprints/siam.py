@@ -2,6 +2,7 @@
     auth.blueprints.siam
     ~~~~~~~~~~~~~~~~~~~~
 """
+import urllib
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
 
@@ -30,8 +31,9 @@ def blueprint(client, refreshtokenbuilder):
     def authenticate():
         """ Route for authn requests
         """
+        callback = urllib.parse.unquote(request.args['callback'])
         response = client.get_authn_redirect(
-            'active' not in request.args, request.args['callback']
+            'active' not in request.args, callback
         )
         return redirect(response, code=307)
 
