@@ -31,7 +31,7 @@ def blueprint(client, refreshtokenbuilder):
     def authenticate():
         """ Route for authn requests
         """
-        callback = urllib.parse.unquote(request.args['callback'])
+        callback = request.args['callback']
         response = client.get_authn_redirect(
             'active' not in request.args, callback
         )
