@@ -5,6 +5,8 @@ REST API
    :maxdepth: 3
 
 
+.. _rest-siam-authenticate:
+
 GET ``/auth/siam/authenticate``
 -------------------------------
 
@@ -34,6 +36,8 @@ Responses
 - **502**: Problem communicating with the SIAM server
 - **504**: Communication with SIAM server timed out
 
+
+.. _rest-siam-token:
 
 GET ``/auth/siam/token``
 ------------------------

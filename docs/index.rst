@@ -6,38 +6,31 @@
 Datapunt: Authentication & Authorization service
 ================================================
 
-Congratulations, you found the documentation for the authentication and
-authorization (AA) service at the heart of the city of Amsterdam's `open data
-services <https://api.datapunt.amsterdam.nl/api/>`_.
+User's guide
+------------
 
-The AA service authenticates users through external identity providers (IdP's)
-and creates refresh and access tokens in the form of
-`JSON Web Tokens <https://tools.ietf.org/html/rfc7519>`_ (JWTs).
+This section describes how you can make authenticated / authorized requests to
+the city of Amsterdam's `open data services
+<https://api.datapunt.amsterdam.nl/api/>`_. If you have any problems, please
+contact `Datapunt support <mailto:datapunt.ois@amsterdam.nl>`_.
 
-Using the service
------------------
 
 .. toctree::
    :maxdepth: 2
 
+   manual
    usage
 
-Running the service
+Contributor's guide
 -------------------
 
+Found a bug or want to work on the code? You can branch the `repository on
+GitHub <https://github.com/DatapuntAmsterdam/auth>`_ or file an issue at its
+`issue tracker <https://github.com/DatapuntAmsterdam/auth/issues>`_.
+
 .. toctree::
   :maxdepth: 2
 
-  settings
   running
-
-API Documentation
------------------
-
-If you are looking for information on a specific function, class, or method,
-this part of the documentation is for you.
-
-.. toctree::
-  :maxdepth: 2
-
+  settings
   api

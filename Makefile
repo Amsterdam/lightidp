@@ -1,4 +1,4 @@
-.PHONY: test coverage run-dev run docs
+.PHONY: test coverage run-dev run docs showdocs
 
 test:
 	# This runs all of the tests. To run an individual test, run py.test with
@@ -21,3 +21,6 @@ run:
 docs:
 	make -C docs/ html
 	@echo "\033[95m\n\nBuild successful! View the docs homepage at docs/_build/html/index.html.\n\033[0m"
+
+showdocs:
+	open docs/_build/html/index.html
