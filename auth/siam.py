@@ -12,8 +12,6 @@ import requests
 
 from auth import exceptions
 
-_logger = logging.getLogger(__name__)
-
 # Base class for Client, to make sure it's immutable after construction
 _Client = collections.namedtuple(
     '_Client', 'base_url app_id aselect_server shared_secret'
@@ -54,9 +52,9 @@ class Client(_Client):
             raise exceptions.GatewayConnectionException() from e
         finally:
             if any(sys.exc_info()):  # an exception has been raised, lets log it
-                _logger.critical('Exception talking to SIAM', exc_info=True, stack_info=True)
+                logging.critical('Exception talking to SIAM', exc_info=True, stack_info=True)
         if r.status_code >= 400:
-            _logger.critical('HTTP {} response from SIAM'.format(r.status_code))
+            logging.critical('HTTP {} response from SIAM'.format(r.status_code))
             raise exceptions.GatewayRequestException()
         return r
 
@@ -82,7 +80,7 @@ class Client(_Client):
         response = urllib.parse.parse_qs(r.text)
         resultcode = response.get('result_code', ['no result code'])[0]
         if resultcode != self.RESULT_OK:
-            _logger.critical('Invalid SIAM response: {}'.format(r))
+            logging.critical('Invalid SIAM response: {}'.format(r))
             raise exceptions.GatewayRequestException()
         passive_authn_link = '{}&a-select-server={}&rid={}'.format(
             response['as_url'][0],
@@ -112,8 +110,6 @@ class Client(_Client):
         }
         r = self._request(request_params, timeout)
         parsed = urllib.parse.parse_qs(r.text)
-        _logger.warn('HELP!')
-        _logger.info(parsed)
         expected_param_keys = {'result_code', 'tgt_exp_time', 'uid'}
         result = {k: parsed[k][0] for k in expected_param_keys if k in parsed}
         has_missing_params = len(expected_param_keys) - len(result)
