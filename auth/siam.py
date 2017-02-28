@@ -80,7 +80,7 @@ class Client(_Client):
         response = urllib.parse.parse_qs(r.text)
         resultcode = response.get('result_code', ['no result code'])[0]
         if resultcode != self.RESULT_OK:
-            logging.critical('Invalid SIAM response: {}'.format(r))
+            logging.critical('Invalid SIAM response: {}'.format(r.text))
             raise exceptions.GatewayRequestException()
         passive_authn_link = '{}&a-select-server={}&rid={}'.format(
             response['as_url'][0],
