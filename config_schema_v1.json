@@ -6,8 +6,8 @@
 
   "properties": {
     "app": {
-  	  "type": "object",
-  	  "required": ["host", "port", "root"],
+      "type": "object",
+      "required": ["host", "port", "root"],
 
       "properties": {
         "host": {"type": "string"},
@@ -21,7 +21,7 @@
     },
 
     "siam": {
-  	  "type": "object",
+      "type": "object",
       "required": ["base_url", "aselect_server", "app_id", "shared_secret"],
 
       "properties": {
@@ -38,20 +38,20 @@
     },
 
     "jwt": {
-  	  "type": "object",
-  	  "required": ["refreshtokens", "accesstokens"],
+      "type": "object",
+      "required": ["refreshtokens", "accesstokens"],
 
-  	  "properties": {
-  	    "refreshtokens": {"$ref": "#/definitions/jwtconfig"},
+      "properties": {
+        "refreshtokens": {"$ref": "#/definitions/jwtconfig"},
 
-  	    "accesstokens": {"$ref": "#/definitions/jwtconfig"}
-  	  },
+        "accesstokens": {"$ref": "#/definitions/jwtconfig"}
+      },
 
-  	  "additionalProperties": false
+      "additionalProperties": false
     },
 
     "postgres": {
-  	  "type": "object",
+      "type": "object",
       "required": ["host", "port", "user", "password", "dbname"],
 
       "properties": {
