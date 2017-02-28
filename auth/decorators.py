@@ -6,7 +6,6 @@
     protocol related tasks, such as checking, parsing or setting headers.
 """
 import functools
-import logging
 
 from flask import make_response, request
 import werkzeug.exceptions
@@ -141,12 +140,10 @@ def assert_gateway(f):
         try:
             return f(*args, **kwargs)
         except exceptions.GatewayTimeoutException as e:
-            logging.fatal('Gateway timeout talking to SIAM', exc_info=True, stack_info=True)
             raise werkzeug.exceptions.GatewayTimeout() from e
         except (exceptions.GatewayRequestException,
                 exceptions.GatewayResponseException,
                 exceptions.GatewayConnectionException) as e:
-            logging.fatal('Bad gateway talking to SIAM', exc_info=True, stack_info=True)
             raise werkzeug.exceptions.BadGateway() from e
     return wrapper
 

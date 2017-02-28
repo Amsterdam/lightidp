@@ -4,9 +4,11 @@
 """
 import collections
 import logging
-import requests
+import sys
 import time
 import urllib
+
+import requests
 
 from auth import exceptions
 
@@ -50,9 +52,11 @@ class Client(_Client):
             raise exceptions.GatewayRequestException() from e
         except requests.ConnectionError as e:
             raise exceptions.GatewayConnectionException() from e
+        finally:
+            if any(sys.exc_info()):  # an exception has been raised, lets log it
+                _logger.critical('Exception talking to SIAM', exc_info=True, stack_info=True)
         if r.status_code >= 400:
-            _logger.critical('HTTP {} response from '
-                             'SIAM for {}'.format(r.status_code, url))
+            _logger.critical('HTTP {} response from SIAM'.format(r.status_code))
             raise exceptions.GatewayRequestException()
         return r
 
@@ -78,7 +82,8 @@ class Client(_Client):
         response = urllib.parse.parse_qs(r.text)
         resultcode = response.get('result_code', ['no result code'])[0]
         if resultcode != self.RESULT_OK:
-            raise exceptions.GatewayRequestException('Bad request ({})'.format(resultcode))
+            _logger.critical('Invalid SIAM response: {}'.format(r))
+            raise exceptions.GatewayRequestException()
         passive_authn_link = '{}&a-select-server={}&rid={}'.format(
             response['as_url'][0],
             response['a-select-server'][0],
