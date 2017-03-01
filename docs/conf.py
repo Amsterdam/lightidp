@@ -13,6 +13,9 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+# I really HATE HATE HATE ReSTructured text. Could you switch to Markdown
+# instead, as per <http://www.sphinx-doc.org/en/stable/markdown.html>? --PvB
+
 import sys
 import os
 
@@ -37,10 +40,12 @@ sys.path.insert(0, os.path.abspath('..'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
+extensions = [
+    'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode']
+    'sphinx.ext.viewcode'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -103,7 +108,7 @@ html_theme = 'alabaster'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+# html_static_path = []
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -164,6 +169,7 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
+# PvB: some of these have a trailing slash, but not all. Is that ok?
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
     'requests': ('http://docs.python-requests.org/en/master/', None),
