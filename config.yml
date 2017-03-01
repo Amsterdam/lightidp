@@ -4,10 +4,10 @@ app:
   root: /auth
 
 siam:
-  base_url: ${SIAM_URL:-http://localhost}
-  aselect_server: ${SIAM_A_SELECT_SERVER:-localhost}
-  app_id: ${SIAM_APP_ID:-app_id}
-  shared_secret: ${SIAM_SHARED_SECRET:-siamsecret}
+  base_url: $SIAM_URL
+  aselect_server: $SIAM_A_SELECT_SERVER
+  app_id: $SIAM_APP_ID
+  shared_secret: $SIAM_SHARED_SECRET
 
 jwt:
   refreshtokens:

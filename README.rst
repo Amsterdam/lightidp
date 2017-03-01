@@ -12,6 +12,7 @@ Datapunt Authentication & Authorization service
 Have a look at the `documentation on ReadTheDocs <https://datapunt-auth.readthedocs.io/>`_.
 
 Future work:
+
 - Move to an async framework; apart from encoding/decoding tokens (HMAC +
   SHA256) this service does nothing significant, it may as well do I/O async so
   it can handle more incoming connections. A possible stack could be (asyncio
@@ -59,3 +60,4 @@ silently create the needed tables, if they don't exist.
  	$ authz user [username] assign [DEFAULT | EMPLOYEE | EMPLOYEE_PLUS]
 
 Now you can develop, run and test code!
+
