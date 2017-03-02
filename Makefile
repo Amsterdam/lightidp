@@ -1,12 +1,14 @@
 .PHONY: test coverage run-dev run docs showdocs
 
+PYTHON=python3
+
 test:
 	@source test.env; \
-	python setup.py test -a "-p no:cacheprovider --verbose tests"
+	$(PYTHON) setup.py test -a "-p no:cacheprovider --verbose tests"
 
 coverage:
 	@source test.env; \
-	python setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
+	$(PYTHON) setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
 
 run-dev:
 	# WARNING: running with Flask server, *only* use this for development purposes
