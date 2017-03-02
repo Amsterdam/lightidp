@@ -1,5 +1,9 @@
 .PHONY: test coverage run-dev run docs showdocs
 
+# Set the default shell
+SHELL=/bin/bash
+
+# Set python 3 explicitly so we don't need a virtualenv to run tests
 PYTHON=python3
 
 test:
