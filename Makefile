@@ -3,11 +3,11 @@
 PYTHON=python3
 
 test:
-	@source test.env; \
+	@. test.env; \
 	$(PYTHON) setup.py test -a "-p no:cacheprovider --verbose tests"
 
 coverage:
-	@source test.env; \
+	@. test.env; \
 	$(PYTHON) setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
 
 run-dev:
