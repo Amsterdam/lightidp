@@ -1,3 +1,4 @@
+import os
 import pytest
 import auth.config
 import auth.siam
@@ -21,7 +22,7 @@ def no_database(monkeypatch):
 
 @pytest.fixture(scope='session')
 def config():
-    return auth.config.load()
+    return auth.config.load(configpath=os.getenv('CONFIG'))
 
 
 @pytest.fixture()
