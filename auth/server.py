@@ -8,23 +8,22 @@ import os
 import authorization
 from flask import Flask
 
-from . import config, exceptions, siam, token
+from . import exceptions, siam, token
+from .config import load as load_config
 from .blueprints import siamblueprint, jwtblueprint
 
 # ====== 1. LOAD CONFIGURATION SETTINGS AND INITIALIZE LOGGING
 
-settings = config.load(configpath=os.getenv('CONFIG'))
-
-logging.config.dictConfig(settings['logging'])
-
+config = config_load(configpath=os.getenv('CONFIG'))
+logging.config.dictConfig(config['logging'])
 _logger = logging.getLogger(__name__)
 
 # ====== 2. CREATE SIAM CLIENT, TOKENBUILDERS AND AUTHZ FLOW
 
-authz_level_for = authorization.authz_mapper(**settings['postgres'])
-refreshtokenbuilder = token.RefreshTokenBuilder(**settings['jwt']['refreshtokens'])
-accesstokenbuilder = token.AccessTokenBuilder(**settings['jwt']['accesstokens'])
-siamclient = siam.Client(**settings['siam'])
+authz_level_for = authorization.authz_mapper(**config['postgres'])
+refreshtokenbuilder = token.RefreshTokenBuilder(**config['jwt']['refreshtokens'])
+accesstokenbuilder = token.AccessTokenBuilder(**config['jwt']['accesstokens'])
+siamclient = siam.Client(**config['siam'])
 
 # ====== 3. RUN CONFIGURATION CHECKS
 
@@ -72,7 +71,7 @@ siam_bp = siamblueprint(siamclient, refreshtokenbuilder)
 jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for)
 
 # JWT
-app.register_blueprint(jwt_bp, url_prefix="{}".format(settings['app']['root']))
+app.register_blueprint(jwt_bp, url_prefix="{}".format(config['app']['root']))
 
 # SIAM
-app.register_blueprint(siam_bp, url_prefix="{}/siam".format(settings['app']['root']))
+app.register_blueprint(siam_bp, url_prefix="{}/siam".format(config['app']['root']))

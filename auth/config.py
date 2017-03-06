@@ -149,6 +149,8 @@ class TemplateWithDefaults(string.Template):
 
     Copied from `Docker Compose <https://github.com/docker/compose/blob/master/compose/config/interpolation.py>`_
     """
+
+    # string.Template uses cls.idpattern to define identifiers:
     idpattern = r'[_a-z][_a-z0-9]*(?::?-[^}]+)?'
 
     # Modified from python2.7/string.py

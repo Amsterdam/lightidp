@@ -1,5 +1,7 @@
 :tocdepth: 2
 
+.. The api docs page main navigation isn't nice --PvB
+
 .. _api:
 
 .. toctree::
