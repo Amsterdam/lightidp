@@ -73,11 +73,6 @@ class Client(_Client):
                 raise exceptions.GatewayResponseException(
                     'Couldn\'t decode SIAM response body: {}'.format(response.text)
                 ) from e
-            if 'result_code' in retval and retval['result_code'][0] != self.RESULT_OK:
-                raise exceptions.GatewayResponseException(
-                    'Unexpected result_code "{}" in response: "{}". Request URL: {}'.
-                    format(retval['result_code'][0], response.text, url)
-                )
         except exceptions.GatewayException:
             logging.critical('Exception talking to SIAM', exc_info=True, stack_info=True)
             raise
@@ -106,6 +101,11 @@ class Client(_Client):
         response = self._request(query_parameters, timeout)
         expected_param_keys = {'result_code', 'as_url', 'a-select-server', 'rid'}
         result = {k: response[k][0] for k in expected_param_keys if k in response}
+        if 'result_code' in result and result['result_code'] != self.RESULT_OK:
+            raise exceptions.GatewayResponseException(
+                'Unexpected result_code "{}" in response: "{}". Request URL: {}'.
+                format(retval['result_code'][0], response.text, url)
+            )
         if len(expected_param_keys) != len(result):
             raise exceptions.GatewayResponseException(
                 'Missing required parameters in response: {}'.format(str(response))
@@ -133,6 +133,7 @@ class Client(_Client):
         :param timeout: How long to wait for the server to send data before
             giving up, as a float, or a (connect timeout, read timeout) tuple.
         :see: http://docs.python-requests.org/en/master/user/advanced/#timeouts
+        :raise GatewayBadCredentialsException: if SIAM returns result_code "0007".
         """
         request_params = {
             'request': 'verify_credentials',
@@ -144,9 +145,17 @@ class Client(_Client):
         response = self._request(request_params, timeout)
         expected_param_keys = {'result_code', 'tgt_exp_time', 'uid'}
         result = {k: response[k][0] for k in expected_param_keys if k in response}
+        if 'result_code' in result:
+            if result['result_code'] == self.RESULT_INVALID_CREDENTIALS:
+                raise exceptions.GatewayBadCredentialsException()
+            elif result['result_code'] != self.RESULT_OK:
+                raise exceptions.GatewayRequestException(
+                    'SIAM returned result_code "{}" for request parameters: {}'.
+                    format(result['result_code'], str(request_params))
+                )
         if len(expected_param_keys) != len(result):
             raise exceptions.GatewayResponseException(
-                'Missing required parameters in response: {}'.format(str(response))
+                'Unexpected response: {}'.format(str(response))
             )
         if int(time.time()) >= int(result.get('tgt_exp_time', 0)):
             raise exceptions.GatewayResponseException('tgt_exp_time expired')

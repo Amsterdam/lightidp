@@ -5,7 +5,7 @@
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
 
-from auth import audit, decorators
+from auth import audit, decorators, exceptions
 
 
 def blueprint(client, refreshtokenbuilder):
@@ -48,8 +48,9 @@ def blueprint(client, refreshtokenbuilder):
         ass = request.args.get('a-select-server') or None
         if ass != client.aselect_server:
             raise werkzeug.exceptions.BadRequest('Unsupported a-select-server')
-        user_attrs = client.get_user_attributes(creds, rid)
-        if user_attrs['result_code'] != client.RESULT_OK:
+        try:
+            user_attrs = client.get_user_attributes(creds, rid)
+        except exceptions.GatewayBadCredentialsException:
             raise werkzeug.exceptions.BadRequest("Couldn't verify credentials")
         # all checks done, now create, log and return the JWT
         jwt = refreshtokenbuilder.create(sub=user_attrs['uid']).encode()

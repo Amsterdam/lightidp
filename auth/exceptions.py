@@ -40,6 +40,11 @@ class GatewayResponseException(GatewayException):
     """
 
 
+class GatewayBadCredentialsException(GatewayException):
+    """ Will be raised by siam.get_user_attributes
+    """
+
+
 class JWTException(AuthException):
     """ Base exception for all JWT errors.
 
