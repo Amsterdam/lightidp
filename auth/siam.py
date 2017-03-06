@@ -17,13 +17,12 @@ _Client = collections.namedtuple(
     '_Client', 'base_url app_id aselect_server shared_secret'
 )
 
+# Shouldn't there be a _logger object, like in server.py? --PvB
 
 class Client(_Client):
     """ Client bundles all runtime configuration parameters in it's constructor
     and provides methods for all four distinct requests supported by the
     service.
-
-    "Parameters" doesn't feel quite right. "attributes"? --PvB
 
     :param base_url: base URL of the siam service.
     :param app_id: the app id of the calling application, as configured in the
@@ -32,15 +31,15 @@ class Client(_Client):
     :param shared_secret: the siam shared secret.
     """
 
+
     RESULT_OK = '0000'
+
+    # Unused: --PvB
     RESULT_INVALID_CREDENTIALS = '0007'
+
 
     def _request(self, query_parameters, timeout):
         """ Convenience method to make a GET request to SIAM.
-
-        Missing documentation: raise --PvB
-
-        This documentation is not extracted by Sphinx --PvB
 
         :param query_parameters: GET query string parameters, as a dictionary
         :param timeout: How long to wait for the server to send data before
@@ -49,41 +48,51 @@ class Client(_Client):
         :raise exceptions.GatewayTimeoutException: TODO --PvB
         :raise exceptions.GatewayRequestException: TODO --PvB
         :raise exceptions.GatewayConnectionException: TODO --PvB
+        :return: decoded `application/x-www-form-urlencoded` response body, as a
+            dict.
         """
         url = '{}?{}'.format(self.base_url, urllib.parse.urlencode(query_parameters))
-        try:
-            r = requests.get(url, timeout=timeout)
-        except requests.Timeout as e:
-            raise exceptions.GatewayTimeoutException() from e
-        except requests.RequestException as e:
-            raise exceptions.GatewayRequestException() from e
-        except requests.ConnectionError as e:
-            raise exceptions.GatewayConnectionException() from e
-        finally:
-            # I'm not sure this will work. According to the docs, sys.exc_info
-            # gives info about the latest exception caught in an except block.
-            # This is a "finally" block. --PvB
+        try: # <-- To log any raised exceptions.
+            try: # <-- To rewrite requests.* exceptions to our own exception types.
+                response = requests.get(url, timeout=timeout)
+            except requests.Timeout as e:
+                raise exceptions.GatewayTimeoutException() from e
+            except requests.RequestException as e:
+                raise exceptions.GatewayRequestException() from e
+            except requests.ConnectionError as e:
+                raise exceptions.GatewayConnectionException() from e
 
-            # Why not propagate this exception like above? --PvB
-            if any(sys.exc_info()):  # an exception has been raised, lets log it
-                logging.critical('Exception talking to SIAM', exc_info=True, stack_info=True)
-        # This may fail because r is undefined: --PvB
-        if r.status_code >= 400:
-            logging.critical('HTTP {} response from SIAM'.format(r.status_code))
-            raise exceptions.GatewayRequestException()
-        return r
+            # Was: >= 400   Hope this is ok? --PvB
+            if response.status_code != 200:
+                raise exceptions.GatewayRequestException(
+                    'non-200 response code from SIAM: {}'.format(response.status_code)
+                )
+            try:
+                retval = urllib.parse.parse_qs(response.text)
+            except Exception as e:
+                raise exceptions.GatewayResponseException(
+                    'Couldn\'t decode SIAM response body: {}'.format(response.text)
+                ) from e
+            if 'result_code' in retval and retval['result_code'][0] != self.RESULT_OK:
+                raise exceptions.GatewayResponseException(
+                    'Unexpected result_code "{}" in response: "{}". Request URL: {}'.
+                    format(retval['result_code'][0], response.text, url)
+                )
+        except exceptions.GatewayException:
+            logging.critical('Exception talking to SIAM', exc_info=True, stack_info=True)
+            raise
+        return retval
+
 
     def get_authn_redirect(self, passive, callback_url, timeout=(3.05, 1)):
         """ Request an authn url from the IdP, either passive or not.
 
-        Missing documentation: :raise --PvB
-
-        :param passive: whether or not to request a passive URL
-        :param timeout: How long to wait for the server to send data before
+        :param passive: whether or not to request a passive URL :param timeout:
+            How long to wait, in seconds, for the server to send data before
             giving up, as a float, or a (connect timeout, read timeout) tuple.
-            (What's the dimension of these floats? --PvB)
         :rtype: str
         :see: http://docs.python-requests.org/en/master/user/advanced/#timeouts
+        :raise exceptions.GatewayRequestException: TODO --PvB
         """
         query_parameters = {
             'request': 'authenticate',
@@ -94,23 +103,20 @@ class Client(_Client):
             'shared_secret': self.shared_secret,
             'forced_passive': passive
         }
-        r = self._request(query_parameters, timeout)
-        # parse_qs excepts a query string, but you feed it a full URL. --PvB
-        # By default, parse_qs assumes UTF-8 encoding, but we can't be sure
-        # that's true. BINARY would be safer.
-        response = urllib.parse.parse_qs(r.text)
-        resultcode = response.get('result_code', ['no result code'])[0]
-        if resultcode != self.RESULT_OK:
-            logging.critical('Invalid SIAM response: {}'.format(r.text))
-            raise exceptions.GatewayRequestException()
-        # This can't work: putting unencoded data into a query string? --PvB
-        # Should the fields below not be sanity checked as well, to prevent
-        # KeyErrors? --PvB
+        response = self._request(query_parameters, timeout)
+        expected_param_keys = {'result_code', 'as_url', 'a-select-server', 'rid'}
+        result = {k: response[k][0] for k in expected_param_keys if k in response}
+        if len(expected_param_keys) != len(result):
+            raise exceptions.GatewayResponseException(
+                'Missing required parameters in response: {}'.format(str(response))
+            )
         passive_authn_link = '{}&a-select-server={}&rid={}'.format(
-            response['as_url'][0],
-            response['a-select-server'][0],
-            response['rid'][0])
+            result['as_url'],
+            urllib.parse.quote(result['a-select-server']),
+            urllib.parse.quote(result['rid'])
+        )
         return passive_authn_link
+
 
     def get_user_attributes(self, aselect_credentials, rid, timeout=(3.05, 1)):
         """ Make a credential verification request to the IdP.
@@ -135,23 +141,13 @@ class Client(_Client):
             'aselect_credentials': aselect_credentials,
             'rid': rid,
         }
-        r = self._request(request_params, timeout)
-        # parse_qs excepts a query string, but you feed it a full URL. --PvB
-        # By default, parse_qs assumes UTF-8 encoding, but we can't be sure
-        # that's true. BINARY would be safer.
-        parsed = urllib.parse.parse_qs(r.text)
+        response = self._request(request_params, timeout)
         expected_param_keys = {'result_code', 'tgt_exp_time', 'uid'}
-        result = {k: parsed[k][0] for k in expected_param_keys if k in parsed}
-        # Dangerous: assumes 0 is falsy. Better be explicit with != --PvB
-        has_missing_params = len(expected_param_keys) - len(result)
-        resultcode = result.get('result_code')
-        valid_exp = int(time.time()) < int(result.get('tgt_exp_time', 0))
-        if has_missing_params:
-            malformed = resultcode is None or resultcode == self.RESULT_OK
-            if malformed:
-                raise exceptions.GatewayResponseException(
-                    'Malformed response: {}'.format(parsed)
-                )
-        elif resultcode == self.RESULT_OK and not valid_exp:
+        result = {k: response[k][0] for k in expected_param_keys if k in response}
+        if len(expected_param_keys) != len(result):
+            raise exceptions.GatewayResponseException(
+                'Missing required parameters in response: {}'.format(str(response))
+            )
+        if int(time.time()) >= int(result.get('tgt_exp_time', 0)):
             raise exceptions.GatewayResponseException('tgt_exp_time expired')
         return result

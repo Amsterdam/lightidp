@@ -56,3 +56,4 @@ The SIAM client handles all communication with the IdP.
 
 .. autoclass:: auth.siam.Client
    :members:
+   :private-members:

@@ -9,7 +9,7 @@ import authorization
 from flask import Flask
 
 from . import exceptions, siam, token
-from .config import load as load_config
+from .config import load as config_load
 from .blueprints import siamblueprint, jwtblueprint
 
 # ====== 1. LOAD CONFIGURATION SETTINGS AND INITIALIZE LOGGING
