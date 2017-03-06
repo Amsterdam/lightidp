@@ -57,8 +57,8 @@ def test_verify_creds(config, client):
     with responses.RequestsMock() as rsps:
         result = {'result_code': client.RESULT_INVALID_CREDENTIALS}
         rsps.add(rsps.GET, base_url, body=uenc(result))
-        response = client.get_user_attributes('aselect_credentials', 'rid')
-        assert response == result
+        with pytest.raises(exceptions.GatewayResponseException):
+            client.get_user_attributes('aselect_credentials', 'rid')
     # 3. Test malformed response I
     with responses.RequestsMock() as rsps:
         result = {'result_code': client.RESULT_OK}
