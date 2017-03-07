@@ -52,7 +52,8 @@ def blueprint(client, refreshtokenbuilder):
         if user_attrs['result_code'] != client.RESULT_OK:
             raise werkzeug.exceptions.BadRequest("Couldn't verify credentials")
         # all checks done, now create, log and return the JWT
-        jwt = refreshtokenbuilder.create(sub=user_attrs['uid']).encode()
+        sub = user_attrs['uid'] and user_attrs['uid'].lower()
+        jwt = refreshtokenbuilder.create(sub=sub).encode()
         audit.log_refreshtoken(jwt, sub=user_attrs['uid'])
         return make_response((jwt, 200))
 
