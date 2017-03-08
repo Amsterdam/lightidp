@@ -74,12 +74,12 @@ Parameters
 
 .. csv-table::
     :delim: |
-    :header: "Name", "Located in", "Required", "Type", "Format", "Properties", "Description"
-    :widths: 20, 15, 10, 10, 10, 20, 30
+    :header: "Name", "Located in", "Required", "Format", "Description"
+    :widths: 30, 20, 10, 10, 30
 
-        aselect_credentials | query | Yes | string |  |  | The credentials as provided by SIAM
-        rid | query | Yes | string |  |  | The request ID associated with this authentication attempt, provided by SIAM
-        a-select-server | query | Yes | string |  |  | The a-select-server used for this authentication attempt, as provided by SIAM
+        aselect_credentials | query | Yes | any | The credentials as provided by SIAM
+        rid | query | Yes | any | The request ID associated with this authentication attempt, provided by SIAM
+        a-select-server | query | Yes | any | The a-select-server used for this authentication attempt, as provided by SIAM
 
 Request headers
 +++++++++++++++

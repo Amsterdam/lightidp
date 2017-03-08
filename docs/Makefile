@@ -19,18 +19,5 @@ help:
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-#
-# What's the new "make mode" option? Is it something from Sphinx or from make?
-# --PvB
-#
-# Don't understand what's happening here. Why the dependency on 'Makefile'?
-# Make complains about it --PvB:
-#
-#   make[1]: Circular Makefile <- Makefile dependency dropped.
-#
-# sphinx-build option -M is undocumented. --PvB
-# What's the $@ for? --PvB
-# What's the ${O} for? --PvB
-# I don't like the documentation template for API docs. --PvB
 %: Makefile
 	$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
