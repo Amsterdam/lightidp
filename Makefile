@@ -1,17 +1,23 @@
 .PHONY: test coverage run-dev run docs showdocs
 
+# Set the default shell
+SHELL=/bin/bash
+
+# Set python 3 explicitly so we don't need a virtualenv to run tests
+PYTHON=python3
+
 test:
-	# This runs all of the tests. To run an individual test, run py.test with
-	# the -k flag, like "py.test -k test_path_is_not_double_encoded"
-	JWT_ACCESS_SECRET=jas JWT_REFRESH_SECRET=jrs python setup.py test -a "-p no:cacheprovider --verbose tests"
+	@. test.env; \
+	$(PYTHON) setup.py test -a "-p no:cacheprovider --verbose tests"
 
 coverage:
-	JWT_ACCESS_SECRET=jas JWT_REFRESH_SECRET=jrs python setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
+	@. test.env; \
+	$(PYTHON) setup.py test -a "-p no:cacheprovider --verbose --cov=auth --cov-report=term --cov-config .coveragerc tests"
 
 run-dev:
 	# WARNING: running with Flask server, *only* use this for development purposes
 	@set -e; \
-	JWT_ACCESS_SECRET=jas JWT_REFRESH_SECRET=jrs FLASK_APP=auth.server python -m flask run -p 8109 --reload
+	FLASK_APP=auth.server flask run -p 8109 --reload
 
 run:
 	# WARNING: running with uWSGI

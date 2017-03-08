@@ -33,11 +33,11 @@ Parameters
 
 .. csv-table::
     :delim: |
-    :header: "Name", "Located in", "Required", "Type", "Format", "Properties", "Description"
-    :widths: 20, 15, 10, 10, 10, 20, 30
+    :header: "Name", "Located in", "Required", "Format", "Description"
+    :widths: 30, 20, 10, 10, 30
 
-        callback | query | Yes | string |  |  | IdP will redirect to this URL after authentication
-        active | query | No | boolean |  |  | If present, ask IdP to show user a login screen if she is not authenticated.
+        callback | query | Yes | url | IdP will redirect to this URL after authentication
+        active | query | No | any | If present, ask IdP to show user a login screen if she is not authenticated.
 
 Responses
 +++++++++

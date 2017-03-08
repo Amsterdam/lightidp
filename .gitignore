@@ -3,11 +3,10 @@
 .eggs
 *.egg-info
 .idea
-.settings
-.venv
+.settings/
+*venv/
 *.iml
 batch.log
-.env
 **/__pycache__
 .jenkins/backups/
 reports/
@@ -18,4 +17,3 @@ reports/
 coverage.xml
 docs/_build
 config.dev.yml
-config.env

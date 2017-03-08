@@ -2,6 +2,7 @@
    sphinx-quickstart on Fri Jan 27 20:42:04 2017.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
+   Don't understand: there are 2 toctree directives below? --PvB
 
 Datapunt: Authentication & Authorization service
 ================================================
