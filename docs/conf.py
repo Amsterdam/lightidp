@@ -12,10 +12,6 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
-# I really HATE HATE HATE ReSTructured text. Could you switch to Markdown
-# instead, as per <http://www.sphinx-doc.org/en/stable/markdown.html>? --PvB
-
 import sys
 import os
 
