@@ -94,7 +94,7 @@ class Client(_Client):
         """
         query_parameters = {
             'request': 'authenticate',
-            'forced_logon': 'false',
+            'forced_logon': 'true',
             'app_id': self.app_id,
             'app_url': callback_url,
             'a-select-server': self.aselect_server,
