@@ -4,7 +4,6 @@
 """
 import collections
 import logging
-import sys
 import time
 import urllib
 
@@ -17,7 +16,9 @@ _Client = collections.namedtuple(
     '_Client', 'base_url app_id aselect_server shared_secret'
 )
 
-# Shouldn't there be a _logger object, like in server.py? --PvB
+
+_logger = logging.getLogger(__name__)
+
 
 class Client(_Client):
     """ Client bundles all runtime configuration parameters in it's constructor
@@ -31,12 +32,10 @@ class Client(_Client):
     :param shared_secret: the siam shared secret.
     """
 
-
     RESULT_OK = '0000'
 
     # Unused: --PvB
     RESULT_INVALID_CREDENTIALS = '0007'
-
 
     def _request(self, query_parameters, timeout):
         """ Convenience method to make a GET request to SIAM.
@@ -45,15 +44,19 @@ class Client(_Client):
         :param timeout: How long to wait for the server to send data before
             giving up, as a float, or a (connect timeout, read timeout) tuple.
         :see: http://docs.python-requests.org/en/master/user/advanced/#timeouts
-        :raise exceptions.GatewayTimeoutException: TODO --PvB
-        :raise exceptions.GatewayRequestException: TODO --PvB
-        :raise exceptions.GatewayConnectionException: TODO --PvB
+        :raise exceptions.GatewayTimeoutException: Raised when either our
+            connection, or our request to SIAM times out.
+        :raise exceptions.GatewayRequestException: Raised when there was an
+            ambiguous exception while handling our request to SIAM.
+        :raise exceptions.GatewayConnectionException: Raised when a connection
+            error occurs while talking to SIAM.
+        :raise exceptions.GatewayResponseException: Raised when
         :return: decoded `application/x-www-form-urlencoded` response body, as a
             dict.
         """
         url = '{}?{}'.format(self.base_url, urllib.parse.urlencode(query_parameters))
-        try: # <-- To log any raised exceptions.
-            try: # <-- To rewrite requests.* exceptions to our own exception types.
+        try:  # <-- To log any raised exceptions.
+            try:  # <-- To rewrite requests.* exceptions to our own exception types.
                 response = requests.get(url, timeout=timeout)
             except requests.Timeout as e:
                 raise exceptions.GatewayTimeoutException() from e
@@ -74,15 +77,15 @@ class Client(_Client):
                     'Couldn\'t decode SIAM response body: {}'.format(response.text)
                 ) from e
         except exceptions.GatewayException:
-            logging.critical('Exception talking to SIAM', exc_info=True, stack_info=True)
+            _logger.critical('SIAM ERROR', exc_info=True, stack_info=True)
             raise
         return retval
-
 
     def get_authn_redirect(self, passive, callback_url, timeout=(3.05, 1)):
         """ Request an authn url from the IdP, either passive or not.
 
-        :param passive: whether or not to request a passive URL :param timeout:
+        :param passive: whether or not to request a passive URL
+        :param timeout:
             How long to wait, in seconds, for the server to send data before
             giving up, as a float, or a (connect timeout, read timeout) tuple.
         :rtype: str
@@ -102,21 +105,26 @@ class Client(_Client):
         expected_param_keys = {'result_code', 'as_url', 'a-select-server', 'rid'}
         result = {k: response[k][0] for k in expected_param_keys if k in response}
         if 'result_code' in result and result['result_code'] != self.RESULT_OK:
+            _logger.critical(
+                'SIAM ERROR: Unexpected result_code "{}"'.format(result['result_code'])
+            )
             raise exceptions.GatewayResponseException(
-                'Unexpected result_code "{}" in response: "{}". Request URL: {}'.
-                format(retval['result_code'][0], response.text, url)
+                'Unexpected result_code "{}" in authenticate request: "{}"'.
+                format(result['result_code'], response.text)
             )
         if len(expected_param_keys) != len(result):
+            _logger.critical(
+                'SIAM ERROR: Malformed response: "{}"'.format(str(response))
+            )
             raise exceptions.GatewayResponseException(
                 'Missing required parameters in response: {}'.format(str(response))
             )
-        passive_authn_link = '{}&a-select-server={}&rid={}'.format(
-            result['as_url'],
-            urllib.parse.quote(result['a-select-server']),
-            urllib.parse.quote(result['rid'])
-        )
-        return passive_authn_link
-
+        redirect_url = list(urllib.parse.urlparse(result['as_url']))
+        query = {k: v[0] for k, v in urllib.parse.parse_qs(redirect_url[4]).items()}
+        query['a-select-server'] = result['a-select-server']
+        query['rid'] = result['rid']
+        redirect_url[4] = urllib.parse.urlencode(query)
+        return urllib.parse.urlunparse(redirect_url)
 
     def get_user_attributes(self, aselect_credentials, rid, timeout=(3.05, 1)):
         """ Make a credential verification request to the IdP.
@@ -126,14 +134,17 @@ class Client(_Client):
 
         1. a result_code other than 0000
         2. a result_code 0000, a uid and a tgt_exp_time that is larger than now
-        
-        No documentation about return type: this is a dict of strings, even
-        though the tgt_exp_time is semantically a natural number. --PvB
 
         :param timeout: How long to wait for the server to send data before
             giving up, as a float, or a (connect timeout, read timeout) tuple.
+        :return dict: containing the following attributes:
+
+            - ``uid``: (str) the user id
         :see: http://docs.python-requests.org/en/master/user/advanced/#timeouts
         :raise GatewayBadCredentialsException: if SIAM returns result_code "0007".
+        :raise GatewayRequestException: if SIAM returns result_code other than
+            "0007" or "0000".
+        :raise GatewayResponseException: if SIAM returns an invalid result
         """
         request_params = {
             'request': 'verify_credentials',
@@ -159,4 +170,6 @@ class Client(_Client):
             )
         if int(time.time()) >= int(result.get('tgt_exp_time', 0)):
             raise exceptions.GatewayResponseException('tgt_exp_time expired')
+        del result['result_code']
+        del result['tgt_exp_time']
         return result

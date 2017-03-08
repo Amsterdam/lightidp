@@ -46,37 +46,37 @@ def test_verify_creds(config, client):
     now = int(time.time())
     # 1. Test success
     with responses.RequestsMock() as rsps:
-        result = {
+        siam_response = {
             'result_code': client.RESULT_OK,
             'tgt_exp_time': '{}'.format(now + 10),
             'uid': 'evert'}
-        rsps.add(rsps.GET, base_url, body=uenc(result))
+        rsps.add(rsps.GET, base_url, body=uenc(siam_response))
         response = client.get_user_attributes('aselect_credentials', 'rid')
-        assert response == result
+        assert response == {'uid': 'evert'}
     # 2. Test failure
     with responses.RequestsMock() as rsps:
-        result = {'result_code': client.RESULT_INVALID_CREDENTIALS}
-        rsps.add(rsps.GET, base_url, body=uenc(result))
+        siam_response = {'result_code': client.RESULT_INVALID_CREDENTIALS}
+        rsps.add(rsps.GET, base_url, body=uenc(siam_response))
         with pytest.raises(exceptions.GatewayBadCredentialsException):
             client.get_user_attributes('aselect_credentials', 'rid')
     # 3. Test malformed response I
     with responses.RequestsMock() as rsps:
-        result = {'result_code': client.RESULT_OK}
-        rsps.add(rsps.GET, base_url, body=uenc(result))
+        siam_response = {'result_code': client.RESULT_OK}
+        rsps.add(rsps.GET, base_url, body=uenc(siam_response))
         with pytest.raises(exceptions.GatewayResponseException):
             client.get_user_attributes('aselect_credentials', 'rid')
     # 4. Test malformed response II
     with responses.RequestsMock() as rsps:
-        result = {}
-        rsps.add(rsps.GET, base_url, body=uenc(result))
+        siam_response = {}
+        rsps.add(rsps.GET, base_url, body=uenc(siam_response))
         with pytest.raises(exceptions.GatewayResponseException):
             client.get_user_attributes('aselect_credentials', 'rid')
     # 5. Test malformed response III
     with responses.RequestsMock() as rsps:
-        result = {
+        siam_response = {
             'result_code': client.RESULT_OK,
             'tgt_exp_time': '{}'.format(now - 10),
             'uid': 'evert'}
-        rsps.add(rsps.GET, base_url, body=uenc(result))
+        rsps.add(rsps.GET, base_url, body=uenc(siam_response))
         with pytest.raises(exceptions.GatewayResponseException):
             client.get_user_attributes('aselect_credentials', 'rid')
