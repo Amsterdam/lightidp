@@ -25,7 +25,7 @@ node {
     stage('Test') {
         tryStep "test", {
             sh "docker-compose -p auth -f .jenkins/docker-compose.yml build && " +
-               "docker-compose -p auth -f .jenkins/docker-compose.yml run -u root auth-test make coverage"
+               "docker-compose -p auth -f .jenkins/docker-compose.yml run -u root --rm auth-test make coverage"
         }, {
             sh "docker-compose -p auth -f .jenkins/docker-compose.yml down"
         }
