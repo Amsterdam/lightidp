@@ -27,7 +27,7 @@ node {
             sh "docker-compose -p auth -f .jenkins/docker-compose.yml build && " +
                "docker-compose -p auth -f .jenkins/docker-compose.yml run -u root auth-test make coverage"
         }, {
-            sh "docker-compose -p nap -f .jenkins-test/docker-compose.yml down"
+            sh "docker-compose -p auth -f .jenkins/docker-compose.yml down"
         }
     }
 
