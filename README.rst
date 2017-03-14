@@ -17,6 +17,7 @@ Future work:
   SHA256) this service does nothing significant, it may as well do I/O async so
   it can handle more incoming connections. A possible stack could be (asyncio
   uvloop aiohttp) | tornado + asyncpg + requests-futures.
+  OR GEVENT. 
 
 Contributing
 ------------
