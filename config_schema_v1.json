@@ -31,7 +31,19 @@
 
         "app_id": {"type": "string"},
 
-        "shared_secret": {"type": "string"}
+        "shared_secret": {"type": "string"},
+
+        "allowed_callback_hosts": {
+          "type": "object",
+
+          "patternProperties": {
+            "^[a-zA-Z0-9._-]+$": {
+              "type": "array",
+              "items": {"type": "string", "enum": ["http", "https"]},
+              "uniqueItems": true
+            }
+          }
+        }
       },
 
       "additionalProperties": false

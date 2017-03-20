@@ -54,6 +54,7 @@ def client(config):
         base_url=config['siam']['base_url'],
         app_id=config['siam']['app_id'],
         aselect_server=config['siam']['aselect_server'],
-        shared_secret=config['siam']['shared_secret']
+        shared_secret=config['siam']['shared_secret'],
+        allowed_callback_hosts=config['siam']['allowed_callback_hosts']
     )
     return client

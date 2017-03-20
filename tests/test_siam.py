@@ -36,7 +36,7 @@ def test_get_authn_link(config, client):
     )
     with responses.RequestsMock() as rsps:
         rsps.add(rsps.GET, base_url, status=200, body=body)
-        resp = client.get_authn_redirect(False, 'http://some.callback.url')
+        resp = client.get_authn_redirect(False, 'http://my.localhost')
     assert resp == expected
 
 

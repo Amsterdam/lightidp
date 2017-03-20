@@ -14,6 +14,11 @@ class AuthException(Exception):
         super(AuthException, self).__init__(*args, **kwargs)
 
 
+class CallbackException(AuthException):
+    """ Base class for all exceptions related to upstream problems with the IdP.
+    """
+
+
 class GatewayException(AuthException):
     """ Base class for all exceptions related to upstream problems with the IdP.
     """
