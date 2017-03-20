@@ -22,6 +22,18 @@ def test_siam_server_error(config, client):
 
 @pytest.mark.usefixtures('config', 'client')
 def test_get_authn_link(config, client):
+    # 1. Test we fail on a bad callbacks
+    with pytest.raises(exceptions.CallbackException):
+        client.get_authn_redirect(False, 'http://bad.callback')
+    with pytest.raises(exceptions.CallbackException):
+        client.get_authn_redirect(False, 'http://badlocalhost')
+    with pytest.raises(exceptions.CallbackException):
+        client.get_authn_redirect(False, 'https://localhost')
+    with pytest.raises(exceptions.CallbackException):
+        client.get_authn_redirect(False, 'http://amsterdam.nl')
+    with pytest.raises(exceptions.CallbackException):
+        client.get_authn_redirect(False, 'http://mijn.amsterdam.nl')
+    # 2. Test correct callbacks
     base_url = config['siam']['base_url']
     aselect_server = config['siam']['aselect_server']
     rid = '1'
@@ -35,6 +47,12 @@ def test_get_authn_link(config, client):
         base_url, aselect_server, rid
     )
     with responses.RequestsMock() as rsps:
+        rsps.add(rsps.GET, base_url, status=200, body=body)
+        client.get_authn_redirect(False, 'https://mijn.amsterdam.nl')
+        rsps.add(rsps.GET, base_url, status=200, body=body)
+        client.get_authn_redirect(False, 'https://amsterdam.nl')
+        rsps.add(rsps.GET, base_url, status=200, body=body)
+        client.get_authn_redirect(False, 'http://localhost')
         rsps.add(rsps.GET, base_url, status=200, body=body)
         resp = client.get_authn_redirect(False, 'http://my.localhost')
     assert resp == expected

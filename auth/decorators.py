@@ -145,7 +145,7 @@ def assert_gateway(f):
                 exceptions.GatewayResponseException,
                 exceptions.GatewayConnectionException) as e:
             raise werkzeug.exceptions.BadGateway() from e
-        except exceptions.CallbackException:
+        except exceptions.CallbackException as e:
             raise werkzeug.exceptions.BadRequest() from e
     return wrapper
 

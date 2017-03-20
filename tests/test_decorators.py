@@ -83,7 +83,8 @@ def test_assert_gateway():
     wz = werkzeug.exceptions
     for expected, thrown in (
         (wz.GatewayTimeout, (exceptions.GatewayTimeoutException,)),
-        (wz.BadGateway, (exceptions.GatewayRequestException, exceptions.GatewayResponseException, exceptions.GatewayConnectionException))
+        (wz.BadGateway, (exceptions.GatewayRequestException, exceptions.GatewayResponseException, exceptions.GatewayConnectionException)),
+        (wz.BadRequest, (exceptions.CallbackException,))
     ):
         for e in thrown:
             @decorators.assert_gateway
