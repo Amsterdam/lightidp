@@ -38,7 +38,7 @@ packages = ['auth']
 
 # Why are you so precise about the versions here? --PvB
 requires = [
-    'datapunt-authorization==0.2.6', 'Flask==0.12', 'PyJWT==1.4.2',
+    'datapunt-authorization==0.2.7', 'Flask==0.12', 'PyJWT==1.4.2',
     'requests==2.12.4', 'jsonschema==2.6.0', 'pyyaml==3.12', 'uwsgi==2.0.14']
 requires_test = ['responses==0.5.1', 'pytest==3.0.5', 'pytest-cov==2.4.0',
                  'pytest-capturelog==0.7']
