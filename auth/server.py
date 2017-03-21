@@ -29,7 +29,7 @@ siamclient = siam.Client(**config['siam'])
 
 # 3.1 Check whether we can get an authn redirect from SIAM
 try:
-    siamclient.get_authn_redirect(False, 'http://test')
+    siamclient.get_authn_redirect(False, 'http://localhost')
 except exceptions.AuthException:
     _logger.critical('Couldn\'t verify the SIAM config')
     raise
