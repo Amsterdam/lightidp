@@ -94,7 +94,8 @@ class Client(_Client):
         """
         # === Temporary fix, as long as we don't register clients
         parsed_callback = urllib.parse.urlparse(callback_url)
-        netloc = parsed_callback.netloc
+        # the next line makes sure we get the host without a port
+        netloc = (parsed_callback.netloc + ':').split(':', maxsplit=1)[0]
         scheme = parsed_callback.scheme
         for host, schemes in self.allowed_callback_hosts.items():
             if (netloc == host or netloc.endswith('.' + host)) and scheme in schemes:
