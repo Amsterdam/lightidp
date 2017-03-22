@@ -17,3 +17,4 @@ reports/
 coverage.xml
 docs/_build
 config.dev.yml
+siam.env

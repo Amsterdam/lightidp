@@ -6,3 +6,24 @@ database:
     - POSTGRES_DB=authz
     - POSTGRES_USER=authuser
     - POSTGRES_PASSWORD=authpassword
+
+auth:
+  build: .
+  links:
+    - database:database
+  ports:
+    - "8000:8000"
+  environment:
+    JWT_REFRESH_SECRET: refreshsecret
+    JWT_ACCESS_SECRET: accesssecret
+    DB_HOST: database
+    UWSGI_HTTP: ":8000"
+    UWSGI_MODULE: auth.server
+    UWSGI_CALLABLE: app
+    UWSGI_MASTER: 1
+    UWSGI_PROCESSES: 4
+    UWSGI_LAZY_APPS: 1
+    SIAM_URL: ${SIAM_URL}
+    SIAM_A_SELECT_SERVER: ${SIAM_ASELECT_SERVER}
+    SIAM_APP_ID: ${SIAM_APP_ID}
+    SIAM_SHARED_SECRET: ${SIAM_SHARED_SECRET}
