@@ -11,7 +11,7 @@ User's guide
 
 This section describes how you can make authenticated / authorized requests to
 the city of Amsterdam's `open data services
-<https://api.datapunt.amsterdam.nl/api/>`_. If you have any problems, please
+<https://api.data.amsterdam.nl/api/>`_. If you have any problems, please
 contact `Datapunt support <mailto:datapunt.ois@amsterdam.nl>`_.
 
 
