@@ -5,33 +5,14 @@
 import pytest
 
 
-def refreshtoken(app, headers={}):
-    client = app.test_client()
-    return client.get('/auth/refreshtoken', headers=headers)
-
-
 def accesstoken(app, headers={}):
     client = app.test_client()
     return client.get('/auth/accesstoken', headers=headers)
 
 
-@pytest.mark.usefixtures('app')
-def test_refreshtoken(app):
-    # 1. No Accept header
-    response = refreshtoken(app)
-    assert response.status_code == 406
-    # 2. Wrong Accept header
-    response = refreshtoken(app, headers={'Accept': 'application/json'})
-    assert response.status_code == 406
-    # 3. Multiple Accept header
-    response = refreshtoken(app, headers={'Accept': 'text/plain'})
-    assert response.status_code == 200
-    (_, _, _) = response.data.split(b'.')
-
-
-@pytest.mark.usefixtures('app')
-def test_accesstoken(app):
-    reftoken = str(refreshtoken(app, headers={'Accept': 'text/plain'}).data, 'utf-8')
+@pytest.mark.usefixtures('app', 'refreshtokenbuilder')
+def test_accesstoken(app, refreshtokenbuilder):
+    reftoken = str(refreshtokenbuilder.create(sub='evert').encode(), 'utf-8')
     # 1. No Accept header
     response = accesstoken(app)
     assert response.status_code == 406

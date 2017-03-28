@@ -55,7 +55,7 @@ def blueprint(client, refreshtokenbuilder):
         # all checks done, now create, log and return the JWT
         sub = user_attrs['uid'] and user_attrs['uid'].lower()
         jwt = refreshtokenbuilder.create(sub=sub).encode()
-        audit.log_refreshtoken(jwt, sub=user_attrs['uid'])
+        audit.log_refreshtoken(jwt, user_attrs['uid'])
         return make_response((jwt, 200))
 
     return blueprint

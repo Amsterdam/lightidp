@@ -12,7 +12,6 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
 
     This function returns a blueprint with two routes configured:
 
-    - GET /refreshtoken: get an anonymous refreshtoken
     - GET /accesstoken: get an accesstoken
 
     :param token.RefreshTokenBuilder refreshtokenbuilder: JWT builder for refreshtokens
@@ -34,16 +33,5 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for):
         accessjwt = accesstoken.encode()
         audit.log_accesstoken(refreshjwt, accessjwt)
         return make_response((accessjwt, 200))
-
-    @blueprint.route('/refreshtoken', methods=('GET',))
-    @decorators.assert_acceptable('text/plain')
-    @decorators.response_mimetype('text/plain')
-    def refreshtoken():
-        """ Route for creating an anonymous refreshtoken
-        """
-        refreshtoken = refreshtokenbuilder.create(sub=None)
-        refreshjwt = refreshtoken.encode()
-        audit.log_refreshtoken(refreshjwt)
-        return make_response((refreshjwt, 200))
 
     return blueprint

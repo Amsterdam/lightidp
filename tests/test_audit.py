@@ -19,13 +19,7 @@ def test__mac_from_jwt_bin():
     audit._mac_from_jwt(b'iam.bin.ary')
 
 
-def test_log_refreshtoken_anon(caplog):
-    audit.log_refreshtoken('a.b.mac')
-    assert 'mac' in caplog.text()
-    assert 'anonymous' in caplog.text()
-
-
-def test_log_refreshtoken_user(caplog):
+def test_log_refreshtoken(caplog):
     audit.log_refreshtoken('a.b.mac', sub='user')
     assert 'user' in caplog.text()
 

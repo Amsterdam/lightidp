@@ -12,7 +12,7 @@
 
         import auth.audit
         refreshtoken = ...
-        auth.audit.log_refreshtoken(refreshtoken, sub=sub)
+        auth.audit.log_refreshtoken(refreshtoken, sub)
         accesstoken = ...
         auth.audit.log_accesshtoken(refreshtoken, accesstoken)
 """
@@ -52,7 +52,7 @@ def log_accesstoken(refreshjwt, accessjwt):
     _jwtlogger.info(log_msg.format(refresh_mac, access_mac))
 
 
-def log_refreshtoken(refreshjwt, sub='anonymous'):
+def log_refreshtoken(refreshjwt, sub):
     """ Logs a refreshtoken request as “Refreshtoken created: [MAC]”
 
     :param refreshjwt: The refreshtoken that was created
