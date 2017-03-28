@@ -19,7 +19,7 @@ jwt:
   refreshtokens:
     secret: $JWT_REFRESH_SECRET
     algorithm: HS256
-    lifetime: 2592000  # 30 x 24 x 3600
+    lifetime: ${JWT_LIFETIME:-43200}  # 12 x 3600
   accesstokens:
     secret: $JWT_ACCESS_SECRET
     algorithm: HS256
