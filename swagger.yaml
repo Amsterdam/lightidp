@@ -21,7 +21,7 @@ paths:
         -
           name: active
           in: query
-          description: If present, ask IdP to show user a login screen if she is not authenticated.
+          description: If present, ask IdP to show user a login screen if she is not authenticated. Note that the value doesn't matter; if the parameter is present then regardless of its value, the request will be ‘active’.
           required: false
           default: false
           type: boolean
@@ -42,6 +42,12 @@ paths:
       produces:
         - text/plain
       parameters:
+        -
+          name: accept
+          in: header
+          description: Accept must be set to text/plain
+          required: true
+          type: string
         -
           name: aselect_credentials
           in: query
@@ -71,4 +77,30 @@ paths:
           description: Problem communicating with the SIAM server
         504:
           description: Communication with SIAM server timed out
-        
+
+  /auth/accesstoken:
+    get:
+      description: |
+        Gets an accesstoken.
+      produces:
+        - text/plain
+      parameters:
+        -
+          name: accept
+          in: header
+          description: Accept must be set to text/plain
+          required: true
+          type: string
+        -
+          name: authorization
+          in: header
+          description: Authorization must be set to Bearer [REFRESHTOKEN]
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success
+        401:
+          description: Refresh token is missing or invalid
+        406:
+          description: Requested content-type (Accept header) cannot be produced
