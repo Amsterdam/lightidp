@@ -13,7 +13,7 @@ from flask import Blueprint, make_response, redirect, render_template, request
 from auth import audit, decorators, url
 
 
-def blueprint(refreshtokenbuilder, allowed_callback_hosts, authzmap):
+def blueprint(refreshtokenbuilder, allowed_callback_hosts, password_validator):
     blueprint = Blueprint('idp_app', __name__)
 
     def _valid_callback_bytes(callback_url):
@@ -59,7 +59,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authzmap):
         email = request.form.get('email', '')
         password = request.form.get('password', '')
         callback = _valid_callback_bytes(callback_decoded).decode('utf-8')
-        if authzmap.verify_password(email, password) is False:
+        if password_validator(email, password) is False:
             return render_template(
                 'login.html', callback=request.args.get('callback')
             )
