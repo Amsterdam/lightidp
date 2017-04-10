@@ -65,7 +65,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts):
             'rid': 0,
             'a-select-server': 0
         })
-        return redirect('{}?{}'.format(callback, response_params), code=307)
+        return redirect('{}?{}'.format(callback, response_params), code=302)
 
     @blueprint.route('/token', methods=('GET',))
     @decorators.assert_acceptable('text/plain')
