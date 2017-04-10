@@ -12,7 +12,8 @@ from flask import Blueprint, make_response, redirect, render_template, request
 
 from auth import audit, decorators, url
 
-def blueprint(refreshtokenbuilder, allowed_callback_hosts, password_validator):
+
+def blueprint(refreshtokenbuilder, allowed_callback_hosts, authzmap):
     blueprint = Blueprint('idp_app', __name__)
 
     def _valid_callback_bytes(callback_url):
@@ -58,8 +59,10 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, password_validator):
         email = request.form.get('email', '')
         password = request.form.get('password', '')
         callback = _valid_callback_bytes(callback_decoded).decode('utf-8')
-        # TODO: AUTH! Something like:
-        #  password_validator(email, password)
+        if authzmap.verify_password(email, password) is False:
+            return render_template(
+                'login.html', callback=request.args.get('callback')
+            )
         jwt = refreshtokenbuilder.create(sub=email).encode()
         audit.log_refreshtoken(jwt, email)
         response_params = urllib.parse.urlencode({
