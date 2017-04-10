@@ -20,7 +20,7 @@ _logger = logging.getLogger(__name__)
 
 # ====== 2. CREATE SIAM CLIENT, TOKENBUILDERS AND AUTHZ FLOW
 
-authz_level_for = authorization.authz_mapper(**config['postgres'])
+authz_level_for, password_validator = authorization.authz_mapper(**config['postgres'])
 refreshtokenbuilder = token.RefreshTokenBuilder(**config['jwt']['refreshtokens'])
 accesstokenbuilder = token.AccessTokenBuilder(**config['jwt']['accesstokens'])
 # siamclient = siam.Client(**config['siam'])
@@ -69,7 +69,7 @@ except:
 app = Flask('authserver')
 # siam_bp = siamblueprint(siamclient, refreshtokenbuilder, config['allowed_callback_hosts'])
 jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_level_for)
-idp_bp = idpblueprint(refreshtokenbuilder, config['allowed_callback_hosts'])
+idp_bp = idpblueprint(refreshtokenbuilder, config['allowed_callback_hosts'], password_validator)
 
 # JWT
 app.register_blueprint(jwt_bp, url_prefix="{}".format(config['app']['root']))
