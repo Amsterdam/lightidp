@@ -5,10 +5,10 @@
 import werkzeug.exceptions
 from flask import Blueprint, request, make_response, redirect
 
-from auth import audit, decorators, exceptions
+from auth import audit, decorators, exceptions, url
 
 
-def blueprint(client, refreshtokenbuilder):
+def blueprint(client, refreshtokenbuilder, allowed_callback_hosts):
     """ SIAM IdP related resources.
 
     This function returns a blueprint with two routes configured:
@@ -24,14 +24,36 @@ def blueprint(client, refreshtokenbuilder):
     # Create the Flask blueprint
     blueprint = Blueprint('siam_app', __name__)
 
+    def _valid_callback_bytes(callback_url):
+        """ Takes a string, validates it against all allowed hosts and (if all is
+        well) returns a bytestring.
+        """
+        parsed_callback = url.parse_url(callback_url)
+        host = parsed_callback.host
+        scheme = parsed_callback.scheme
+        for allowed_host, schemes in allowed_callback_hosts.items():
+            if (host == allowed_host or host.endswith('.' + allowed_host)) and scheme in schemes:
+                break
+        else:
+            raise werkzeug.exceptions.BadRequest(
+                'Bad callback URL "{}"'.format(callback_url)
+            )
+        try:
+            return callback_url.encode('ascii')
+        except UnicodeEncodeError:
+            raise werkzeug.exceptions.BadRequest(
+                'Callback parameter may only include ascii characters'
+            )
+
     @blueprint.route('/authenticate', methods=('GET',))
     @decorators.assert_req_args('callback')
     @decorators.assert_gateway
     def authenticate():
         """ Route for authn requests
         """
+        callback = _valid_callback_bytes(request.args['callback'])
         response = client.get_authn_redirect(
-            'active' not in request.args, request.args['callback']
+            'active' not in request.args, callback
         )
         return redirect(response, code=307)
 

@@ -8,12 +8,13 @@ siam:
   aselect_server: $SIAM_A_SELECT_SERVER
   app_id: $SIAM_APP_ID
   shared_secret: $SIAM_SHARED_SECRET
-  # Temporary, as a replacement for client registration (rfc6749#section-2)
-  allowed_callback_hosts:
-    amsterdam.nl:
-      - https
-    localhost:
-      - http
+
+# Temporary, as a replacement for client registration (rfc6749#section-2)
+allowed_callback_hosts:
+  amsterdam.nl:
+    - https
+  localhost:
+    - http
 
 jwt:
   refreshtokens:

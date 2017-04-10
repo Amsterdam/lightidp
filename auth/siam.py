@@ -13,7 +13,7 @@ from auth import exceptions
 
 # Base class for Client, to make sure it's immutable after construction
 _Client = collections.namedtuple(
-    '_Client', 'base_url app_id aselect_server shared_secret allowed_callback_hosts'
+    '_Client', 'base_url app_id aselect_server shared_secret'
 )
 
 
@@ -92,22 +92,6 @@ class Client(_Client):
         :see: http://docs.python-requests.org/en/master/user/advanced/#timeouts
         :raise exceptions.GatewayRequestException: TODO --PvB
         """
-        # === Temporary fix, as long as we don't register clients
-        parsed_callback = urllib.parse.urlparse(callback_url)
-        # the next line makes sure we get the host without a port
-        netloc = (parsed_callback.netloc + ':').split(':', maxsplit=1)[0]
-        scheme = parsed_callback.scheme
-        for host, schemes in self.allowed_callback_hosts.items():
-            if (netloc == host or netloc.endswith('.' + host)) and scheme in schemes:
-                break
-        else:
-            _logger.critical(
-                'SIAM ERROR: bad callback URL "{}"'.format(callback_url)
-            )
-            raise exceptions.CallbackException(
-                'Bad callback URL "{}"'.format(callback_url)
-            )
-        # === END FIX
         query_parameters = {
             'request': 'authenticate',
             'forced_logon': 'true',
