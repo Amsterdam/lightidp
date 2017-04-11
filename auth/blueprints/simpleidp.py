@@ -62,7 +62,8 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
 
         Is this still an accurate docstring? —PvB
         """
-        callback = _parsed_callback(request.args.get('callback'))
+        callback = request.args.get('callback')
+        parsed_callback = _parsed_callback(callback)
         email = request.form.get('email', '')
         password = request.form.get('password', '')
         as_employee = request.form.get('type', '') == 'employee'
@@ -71,7 +72,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         elif not authz_map.verify_password(email, password):
             return render_template(
                 'login.html',
-                query_string=urllib.parse.urlencode({'callback': callback.url}),
+                query_string=urllib.parse.urlencode({'callback': callback}),
                 static_path='static',
                 error_html='De combinatie gebruikersnaam en wachtwoord wordt niet herkend.',
                 whitelisted=_whitelisted(request)
@@ -83,8 +84,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
             'rid': 0,
             'a-select-server': 0
         })
-        callback_url = callback.url
-        if callback.fragment is None:
+        if parsed_callback.fragment is None:
             callback += '#'
         return redirect('{}?{}'.format(callback, response_params), code=302)
 
