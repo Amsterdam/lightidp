@@ -23,6 +23,7 @@
     <section class="c-content">
       <h1>Inloggen</h1>
 
+{% if whitelisted %}
       <h2>Als medewerker</h2>
       <p>
         Als medewerker/ketenpartner hoef je (tijdelijk) geen gegevens in te
@@ -36,6 +37,7 @@
       </form>
 
       <hr class="c-separator">
+{% endif %}
 
       <h2>Als medewerker met speciale bevoegdheid</h2>
       <p>

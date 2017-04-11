@@ -48,7 +48,8 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         return render_template(
             'login.html',
             query_string=urllib.parse.urlencode({'callback': callback.url}),
-            static_path='static'
+            static_path='static',
+            whitelisted=False
         )
 
     @blueprint.route('/login', methods=('POST',))
@@ -69,7 +70,8 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
                 'login.html',
                 query_string=urllib.parse.urlencode({'callback': callback.url}),
                 static_path='static',
-                error_html='De combinatie gebruikersnaam en wachtwoord wordt niet herkend.'
+                error_html='De combinatie gebruikersnaam en wachtwoord wordt niet herkend.',
+                whitelisted=(request.headers['X-Auth-Whitelist'] == 'employee')
             )
         jwt = refreshtokenbuilder.create(sub=email).encode()
         audit.log_refreshtoken(jwt, email)
