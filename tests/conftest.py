@@ -2,8 +2,7 @@ import os
 import pytest
 import auth.config
 import auth.siam
-import authorization.map
-import authorization_levels
+import authorization
 
 
 def _patched_server(monkeypatch):
@@ -31,13 +30,13 @@ def _patched_server(monkeypatch):
 @pytest.fixture(autouse=True)
 def no_database(monkeypatch):
     authzmap = {
-        'employee': authorization_levels.LEVEL_EMPLOYEE,
-        'employeeplus': authorization_levels.LEVEL_EMPLOYEE_PLUS,
+        'employee': authorization.levels.LEVEL_EMPLOYEE,
+        'employeeplus': authorization.levels.LEVEL_EMPLOYEE_PLUS,
     }
 
     def AuthzMap(*args, **kwargs):
         return authzmap
-    monkeypatch.setattr(authorization.map, 'AuthzMap', AuthzMap)
+    monkeypatch.setattr(authorization, 'AuthzMap', AuthzMap)
 
 
 @pytest.fixture(scope='session')
