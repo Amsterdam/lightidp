@@ -39,6 +39,9 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
                 'Callback parameter may only include ascii characters'
             )
 
+    def _whitelisted(request):
+        return request.headers['X-Auth-Whitelist'] == 'employee'
+
     @blueprint.route('/login', methods=('GET',))
     @decorators.assert_req_args('callback')
     def show_form():
@@ -49,7 +52,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
             'login.html',
             query_string=urllib.parse.urlencode({'callback': callback.url}),
             static_path='static',
-            whitelisted=False
+            whitelisted=_whitelisted(request)
         )
 
     @blueprint.route('/login', methods=('POST',))
@@ -62,8 +65,8 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         callback = _parsed_callback(request.args.get('callback'))
         email = request.form.get('email', '')
         password = request.form.get('password', '')
-        as_employee = request.form.get('as_employee', '') == 'yes'
-        if as_employee:
+        as_employee = request.form.get('type', '') == 'employee'
+        if as_employee and _whitelisted(request):
             email = 'Medewerker'
         elif not authz_map.verify_password(email, password):
             return render_template(
@@ -71,7 +74,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
                 query_string=urllib.parse.urlencode({'callback': callback.url}),
                 static_path='static',
                 error_html='De combinatie gebruikersnaam en wachtwoord wordt niet herkend.',
-                whitelisted=(request.headers['X-Auth-Whitelist'] == 'employee')
+                whitelisted=_whitelisted(request)
             )
         jwt = refreshtokenbuilder.create(sub=email).encode()
         audit.log_refreshtoken(jwt, email)
