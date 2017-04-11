@@ -1,14 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
-<form action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post">
-    <input type="email" name="email"/><br/>
-    <input type="password" name="password"/><br/>
-    <input type="submit" value="Log in"/>
-</form>
-</body>
+<html lang="nl">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <title>Inloggen - Dataportaal</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="https://fast.fonts.net/cssapi/3680cf49-2b05-4b8a-af28-fa9e27d2bed0.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <header class="c-logo qa-logo c-logo--short">
+        <a class="c-logo__link" title="Naar voorpagina Dataportaal" href="https://atlas.amsterdam.nl">
+          <img class="c-logo__image" alt="Logo Gemeente Amsterdam" src="assets/images/logo-short.svg">
+          <div class="c-logo__title-col">
+            <span class="c-logo__title">AmsterdamData</span>
+            <sup class="c-logo__title c-logo__title-super">beta</sup>
+          </div>
+        </a>
+    </header>
+
+    <section class="c-content">
+      <h1>Inloggen</h1>
+
+      <h2>Als medewerker</h2>
+      <p>
+        Als medewerker/ketenpartner hoef je (tijdelijk) geen gegevens in te
+        vullen, maar kun je direct doorgaan om ingelogd te zijn. Dit kan
+        doordat je vanaf een vertrouwd internetadres komt.
+      </p>
+      <form class="c-form" action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post">
+        <div class="c-form-buttons">
+          <button class="c-form-buttons__button" type="submit" name="type" value="employee">Doorgaan</button>
+        </div>
+      </form>
+
+      <hr class="c-separator">
+
+      <h2>Als medewerker met speciale bevoegdheid</h2>
+      <p>
+        Als je speciale bevoegdheid toegekend hebt gekregen en daar gebruik van
+        wilt maken, kun je hieronder inloggen. Je kunt dan zoeken op basis van
+        de naam van een persoon en bekijken welke panden of percelen die in
+        eigendom heeft (zakelijk recht).
+      </p>
+      <p>
+        Gebruik (tijdelijk weer) je Atlas-gegevens.
+      </p>
+      <form class="c-form" action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post">
+        <div class="c-form-error">
+          De combinatie gebruikersnaam en wachtwoord wordt niet herkend
+        </div>
+        <div class="c-form-field">
+          <label class="c-form-field__label" for="email">E-mailadres</label>
+          <input class="c-form-field__input" type="text" id="email" name="email">
+        </div>
+        <div class="c-form-field">
+          <label class="c-form-field__label" for="password">Wachtwoord</label>
+          <input class="c-form-field__input" type="password" id="password" name="password">
+        </div>
+        <div class="c-form-buttons">
+          <button class="c-form-buttons__button" type="submit" name="type" value="employee_plus">Inloggen</button>
+        </div>
+      </form>
+      <p>
+        Speciale bevoegdheid aanvragen? Mail naar <a
+          href="mailto:algemeen.ois@amsterdam.nl">algemeen.ois@amsterdam.nl</a>
+      </p>
+    </section>
+
+  </body>
 </html>
