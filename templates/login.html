@@ -5,7 +5,7 @@
     <title>Login</title>
 </head>
 <body>
-<form action="login?callback={{ callback }}" enctype="application/x-www-form-urlencoded" method="post">
+<form action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post">
     <input type="email" name="email"/><br/>
     <input type="password" name="password"/><br/>
     <input type="submit" value="Log in"/>

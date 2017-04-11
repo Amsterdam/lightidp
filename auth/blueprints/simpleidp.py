@@ -31,7 +31,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
                 'Bad callback URL "{}"'.format(callback_url)
             )
         try:
-            return callback_url.encode('ascii')
+            return callback_url  # .encode('ascii')
         except UnicodeEncodeError:
             raise werkzeug.exceptions.BadRequest(
                 'Callback parameter may only include ascii characters'
@@ -43,9 +43,8 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         """ Route for creating an access token based on a refresh token
         """
         callback = _valid_callback_bytes(request.args.get('callback'))
-        callback_base64 = base64.urlsafe_b64encode(callback).decode("utf-8")
         return render_template(
-            'login.html', callback=callback_base64
+            'login.html', query_string=urllib.parse.urlencode({'callback': callback})
         )
 
     @blueprint.route('/login', methods=('POST',))
@@ -55,19 +54,17 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
 
         Is this still an accurate docstring? —PvB
         """
-        callback_decoded = base64.urlsafe_b64decode(request.args.get('callback')).decode('ascii')
+        callback = _valid_callback_bytes(request.args.get('callback'))
         email = request.form.get('email', '')
         password = request.form.get('password', '')
         as_employee = request.form.get('as_employee', '') == 'yes'
-        callback = _valid_callback_bytes(callback_decoded).decode('utf-8')
         if as_employee:
-            jwt = refreshtokenbuilder.create(sub="Medewerker").encode()
+            email = 'Medewerker'
         elif not authz_map.verify_password(email, password):
             return render_template(
-                'login.html', callback=request.args.get('callback')
+                'login.html', query_string=urllib.parse.urlencode({'callback': callback})
             )
-        else:
-            jwt = refreshtokenbuilder.create(sub=email).encode()
+        jwt = refreshtokenbuilder.create(sub=email).encode()
         audit.log_refreshtoken(jwt, email)
         response_params = urllib.parse.urlencode({
             'aselect_credentials': jwt,
