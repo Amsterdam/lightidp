@@ -4,15 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
     <title>Inloggen - Dataportaal</title>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/png" href="{{ static_path }}/favicon.png">
     <link rel="stylesheet" href="https://fast.fonts.net/cssapi/3680cf49-2b05-4b8a-af28-fa9e27d2bed0.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{{ static_path }}/style.css">
   </head>
   <body>
 
     <header class="c-logo qa-logo c-logo--short">
         <a class="c-logo__link" title="Naar voorpagina Dataportaal" href="https://atlas.amsterdam.nl">
-          <img class="c-logo__image" alt="Logo Gemeente Amsterdam" src="assets/images/logo-short.svg">
+          <img class="c-logo__image" alt="Logo Gemeente Amsterdam" src="{{ static_path }}/assets/images/logo-short.svg">
           <div class="c-logo__title-col">
             <span class="c-logo__title">AmsterdamData</span>
             <sup class="c-logo__title c-logo__title-super">beta</sup>
@@ -48,9 +48,11 @@
         Gebruik (tijdelijk weer) je Atlas-gegevens.
       </p>
       <form class="c-form" action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post">
+{% if error_html %}
         <div class="c-form-error">
-          De combinatie gebruikersnaam en wachtwoord wordt niet herkend
+          {{ error_html }}
         </div>
+{% endif %}
         <div class="c-form-field">
           <label class="c-form-field__label" for="email">E-mailadres</label>
           <input class="c-form-field__input" type="text" id="email" name="email">

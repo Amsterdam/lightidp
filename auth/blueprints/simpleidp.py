@@ -16,9 +16,11 @@ from auth import audit, decorators, url
 def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
     blueprint = Blueprint('idp_app', __name__)
 
-    def _valid_callback_bytes(callback_url):
+    def _parsed_callback(callback_url):
         """ Takes a string, validates it against all allowed hosts and (if all is
-        well) returns a bytestring.
+        well) returns a parsed url.
+        
+        :raise werkzeug.exceptions.BadRequest: if the callback is invalid.
         """
         parsed_callback = url.parse_url(callback_url)
         host = parsed_callback.host
@@ -31,7 +33,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
                 'Bad callback URL "{}"'.format(callback_url)
             )
         try:
-            return callback_url  # .encode('ascii')
+            return parsed_callback  # .encode('ascii')
         except UnicodeEncodeError:
             raise werkzeug.exceptions.BadRequest(
                 'Callback parameter may only include ascii characters'
@@ -42,9 +44,11 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
     def show_form():
         """ Route for creating an access token based on a refresh token
         """
-        callback = _valid_callback_bytes(request.args.get('callback'))
+        callback = _parsed_callback(request.args.get('callback'))
         return render_template(
-            'login.html', query_string=urllib.parse.urlencode({'callback': callback})
+            'login.html',
+            query_string=urllib.parse.urlencode({'callback': callback.url}),
+            static_path='static'
         )
 
     @blueprint.route('/login', methods=('POST',))
@@ -54,7 +58,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
 
         Is this still an accurate docstring? —PvB
         """
-        callback = _valid_callback_bytes(request.args.get('callback'))
+        callback = _parsed_callback(request.args.get('callback'))
         email = request.form.get('email', '')
         password = request.form.get('password', '')
         as_employee = request.form.get('as_employee', '') == 'yes'
@@ -62,7 +66,10 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
             email = 'Medewerker'
         elif not authz_map.verify_password(email, password):
             return render_template(
-                'login.html', query_string=urllib.parse.urlencode({'callback': callback})
+                'login.html',
+                query_string=urllib.parse.urlencode({'callback': callback.url}),
+                static_path='static',
+                error_html='De combinatie gebruikersnaam en wachtwoord wordt niet herkend.'
             )
         jwt = refreshtokenbuilder.create(sub=email).encode()
         audit.log_refreshtoken(jwt, email)
@@ -71,6 +78,9 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
             'rid': 0,
             'a-select-server': 0
         })
+        callback_url = callback.url
+        if callback.fragment is None:
+            callback += '#'
         return redirect('{}?{}'.format(callback, response_params), code=302)
 
     @blueprint.route('/token', methods=('GET',))

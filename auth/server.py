@@ -66,7 +66,7 @@ except:
 
 # ====== 4. CREATE FLASK WSGI APP AND BLUEPRINTS
 
-app = Flask('authserver')
+app = Flask('authserver', static_url_path="{}/idp/static".format(config['app']['root']))
 # siam_bp = siamblueprint(siamclient, refreshtokenbuilder, config['allowed_callback_hosts'])
 jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_map)
 idp_bp = idpblueprint(refreshtokenbuilder, config['allowed_callback_hosts'], authz_map)
