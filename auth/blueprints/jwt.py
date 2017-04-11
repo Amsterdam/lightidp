@@ -5,9 +5,10 @@
 from flask import Blueprint, make_response
 
 from auth import audit, decorators
+from authorization import levels
 
 
-def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_getter):
+def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_map):
     """ JWT-only resources.
 
     This function returns a blueprint with two routes configured:
@@ -28,7 +29,9 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_getter):
     def accesstoken(tokendata, refreshjwt):
         """ Route for creating an access token based on a refresh token
         """
-        authz_level = authz_getter(tokendata['sub'])
+        authz_level = levels.LEVEL_EMPLOYEE \
+            if tokendata['sub'] == 'Medewerker' \
+            else authz_map.get(tokendata['sub'], levels.LEVEL_DEFAULT)
         accesstoken = accesstokenbuilder.create(authz=authz_level)
         accessjwt = accesstoken.encode()
         audit.log_accesstoken(refreshjwt, accessjwt)

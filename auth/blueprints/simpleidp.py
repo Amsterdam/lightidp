@@ -7,13 +7,13 @@
 import base64
 import urllib
 
-import werkzeug.exceptions
+import werkzeug
 from flask import Blueprint, make_response, redirect, render_template, request
 
 from auth import audit, decorators, url
 
 
-def blueprint(refreshtokenbuilder, allowed_callback_hosts, password_validator):
+def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
     blueprint = Blueprint('idp_app', __name__)
 
     def _valid_callback_bytes(callback_url):
@@ -58,12 +58,16 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, password_validator):
         callback_decoded = base64.urlsafe_b64decode(request.args.get('callback')).decode('ascii')
         email = request.form.get('email', '')
         password = request.form.get('password', '')
+        as_employee = request.form.get('as_employee', '') == 'yes'
         callback = _valid_callback_bytes(callback_decoded).decode('utf-8')
-        if password_validator(email, password) is False:
+        if as_employee:
+            jwt = refreshtokenbuilder.create(sub="Medewerker").encode()
+        elif not authz_map.verify_password(email, password):
             return render_template(
                 'login.html', callback=request.args.get('callback')
             )
-        jwt = refreshtokenbuilder.create(sub=email).encode()
+        else:
+            jwt = refreshtokenbuilder.create(sub=email).encode()
         audit.log_refreshtoken(jwt, email)
         response_params = urllib.parse.urlencode({
             'aselect_credentials': jwt,
