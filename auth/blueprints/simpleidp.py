@@ -54,7 +54,6 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         return render_template(
             'login.html',
             query_string=urllib.parse.urlencode({'callback': callback}),
-            static_path='static',
             whitelisted=_whitelisted(request)
         )
 
@@ -70,13 +69,20 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         email = request.form.get('email', '')
         password = request.form.get('password', '')
         as_employee = request.form.get('type', '') == 'employee'
-        if as_employee and _whitelisted(request):
-            email = 'Medewerker'
+        if as_employee:
+            if _whitelisted(request):
+                email = 'Medewerker'
+            else:
+                return render_template(
+                    'login.html',
+                    query_string=urllib.parse.urlencode({'callback': callback}),
+                    error_html='Uw komt niet meer vanaf een vertrouwd internetadres.',
+                    whitelisted=False
+                )
         elif not authz_map.verify_password(email, password):
             return render_template(
                 'login.html',
                 query_string=urllib.parse.urlencode({'callback': callback}),
-                static_path='static',
                 error_html='De combinatie gebruikersnaam en wachtwoord wordt niet herkend.',
                 whitelisted=_whitelisted(request)
             )
