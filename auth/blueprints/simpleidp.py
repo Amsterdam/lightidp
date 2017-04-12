@@ -42,7 +42,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
             )
 
     def _whitelisted(request):
-        return request.headers['X-Auth-Whitelist'] == 'employee'
+        return 'X-Auth-Whitelist' in request.headers
 
     @blueprint.route('/login', methods=('GET',))
     @decorators.assert_req_args('callback')
