@@ -16,11 +16,15 @@ from auth import audit, decorators, url
 def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
     blueprint = Blueprint('idp_app', __name__)
 
-    def _parsed_callback(callback_url):
-        """ Takes a string, validates it against all allowed hosts and (if all is
-        well) returns a parsed url.
-        
+    def _validate_callback_url(callback_url):
+        """ Takes a string, validates it.
+
+        - The host must be allowed
+        - the URL must contain a fragment identifier (or at least end with a hash "#"
+
         :raise werkzeug.exceptions.BadRequest: if the callback is invalid.
+        :return: None
+
         """
         parsed_callback = url.parse_url(callback_url)
         host = parsed_callback.host
@@ -32,11 +36,9 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
             raise werkzeug.exceptions.BadRequest(
                 'Bad callback URL "{}"'.format(callback_url)
             )
-        try:
-            return parsed_callback  # .encode('ascii')
-        except UnicodeEncodeError:
+        if parsed_callback.fragment is None:
             raise werkzeug.exceptions.BadRequest(
-                'Callback parameter may only include ascii characters'
+                'Missing required fragment identifier in URL "{}"'.format(callback_url)
             )
 
     def _whitelisted(request):
@@ -47,10 +49,11 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
     def show_form():
         """ Route for creating an access token based on a refresh token
         """
-        callback = _parsed_callback(request.args.get('callback'))
+        callback = request.args.get('callback')
+        _validate_callback_url(callback)
         return render_template(
             'login.html',
-            query_string=urllib.parse.urlencode({'callback': callback.url}),
+            query_string=urllib.parse.urlencode({'callback': callback}),
             static_path='static',
             whitelisted=_whitelisted(request)
         )
@@ -63,7 +66,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         Is this still an accurate docstring? —PvB
         """
         callback = request.args.get('callback')
-        parsed_callback = _parsed_callback(callback)
+        _validate_callback_url(callback)
         email = request.form.get('email', '')
         password = request.form.get('password', '')
         as_employee = request.form.get('type', '') == 'employee'
@@ -84,8 +87,6 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
             'rid': 0,
             'a-select-server': 0
         })
-        if parsed_callback.fragment is None:
-            callback += '#'
         return redirect('{}?{}'.format(callback, response_params), code=302)
 
     @blueprint.route('/token', methods=('GET',))

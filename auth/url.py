@@ -1,7 +1,6 @@
 """
     Copied from https://github.com/shazow/urllib3/blob/master/urllib3/util/url.py
 """
-from __future__ import absolute_import
 from collections import namedtuple
 
 
