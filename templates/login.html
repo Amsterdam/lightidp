@@ -23,8 +23,8 @@
     <section class="c-content">
       <h1>Inloggen</h1>
 
-{% if whitelisted %}
       <h2>Als medewerker</h2>
+{% if whitelisted %}
       <p>
         Als medewerker/ketenpartner hoef je (tijdelijk) geen gegevens in te
         vullen, maar kun je direct doorgaan om ingelogd te zijn. Dit kan
@@ -35,9 +35,15 @@
           <button class="c-form-buttons__button" type="submit" name="type" value="employee">Doorgaan</button>
         </div>
       </form>
+{% else %}
+      <p>
+        Als medewerker/ketenpartner kun je alleen inloggen als je vanaf een
+        vertrouwd internetadres komt. Dat is bijvoorbeeld het geval als je binnen
+        ADW de site benadert.
+      </p>
+{% endif %}
 
       <hr class="c-separator">
-{% endif %}
 
       <h2>Als medewerker met speciale bevoegdheid</h2>
       <p>
