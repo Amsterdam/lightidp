@@ -66,8 +66,12 @@ class _BaseBuilder(_TokenBuilder):
 
     @property
     def _tokendata(self):
-        """ TokenData type as a property. This is a dynamically created class
-        that wraps this namedtuple's instance data and the jwt.encode function
+        """
+        TokenData type as a property.
+
+        This is a dynamically created class that wraps this
+        namedtuple's instance data and the jwt.encode function
+
         """
         try:
             return self._td
