@@ -53,7 +53,7 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         return render_template(
             'login.html',
             query_string=urllib.parse.urlencode({'callback': callback}),
-            whitelisted=False  # _whitelisted(request)
+            whitelisted=_whitelisted(request)
         )
 
     @blueprint.route('/login', methods=('POST',))
