@@ -15,6 +15,14 @@ button {
   background-color: transparent;
   cursor: pointer; }
 
+a {
+  color: #000;
+}
+
+a:hover {
+  color: #ec0000;
+}
+
 body,
 input,
 textarea,
