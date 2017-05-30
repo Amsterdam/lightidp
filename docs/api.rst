@@ -1,4 +1,4 @@
-:tocdepth: 2
+:tocdepth: 4
 
 .. _api:
 
@@ -14,8 +14,8 @@ Auditlog
 Blueprints (views)
 ------------------
 
-Flask `blueprints <http://flask.pocoo.org/docs/0.12/blueprints/>`_ for SIAM
-authentication and JWT tokens.
+:ref:`Flask blueprints <flask:blueprints>` for SIAM authentication and JWT
+tokens.
 
 .. autofunction:: auth.blueprints.siamblueprint
 .. autofunction:: auth.blueprints.jwtblueprint

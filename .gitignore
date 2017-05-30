@@ -1,20 +1,33 @@
+# Python:
+__pycache__
 *.pyc
 *.pyo
 .eggs
 *.egg-info
-.idea
-.settings/
-*venv/
-*.iml
+/.venv
+.pylintrc
+*.ipynb
+.ipynb_checkpoints
+
+/docs/_build
+/docs/*.inv
+/docs/*.inv.txt
+
+# IntelliJ/PyCharm:
+/.idea
+/*.iml
+/.editorconfig
+
+# Eclipse/PyDev:
+/.project
+/.pydevproject
+/.settings
+
+# Build, Test:
 batch.log
-**/__pycache__
-.jenkins/backups/
 reports/
 .cache
-.project
-.pydevproject
 .coverage
 coverage.xml
-docs/_build
 config.dev.yml
 siam.env

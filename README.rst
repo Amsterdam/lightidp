@@ -9,23 +9,27 @@ Datapunt Authentication & Authorization service
 
 ---------------------
 
-Have a look at the `documentation on ReadTheDocs <https://datapunt-auth.readthedocs.io/>`_.
-
 Future work:
 
 - Move to an async framework; apart from encoding/decoding tokens (HMAC +
   SHA256) this service does nothing significant, it may as well do I/O async so
   it can handle more incoming connections. A possible stack could be (asyncio
   uvloop aiohttp) | tornado + asyncpg + requests-futures.
-  OR GEVENT. 
+  OR GEVENT.
+
 
 Contributing
 ------------
 
-1. Install the dev dependencies in your virtual environment
-###########################################################
+Found a bug or want to work on the code? You can branch the `repository on
+GitHub <https://github.com/DatapuntAmsterdam/auth>`_ or file an issue at its
+`issue tracker <https://github.com/DatapuntAmsterdam/auth/issues>`_.
 
-::
+
+1. Install the dev dependencies in your virtual environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
 
     $ pip install -e .[dev]
 
@@ -36,7 +40,7 @@ The only reason you might want to install them is so for example ``pytest`` and
 ``responses`` can be resolved in you IDE.
 
 2. Create a configuration or environment file
-#############################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In ``config.yml`` you can see an example configuration. You can either:
 
@@ -45,7 +49,7 @@ In ``config.yml`` you can see an example configuration. You can either:
 - or export values for the environment variables referenced in ``config.yml``.
 
 3. Make sure you have a database running and that the tables exist
-##################################################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you have docker installed then you can start a Postgres instance with:
 
