@@ -43,7 +43,11 @@ requires = [
 requires_test = ['responses==0.5.1', 'pytest==3.0.5', 'pytest-cov==2.4.0',
                  'pytest-capturelog==0.7']
 requires_extras = {
-    'doc': ['sphinx'],
+    'docs': [
+        'sphinx',
+        'sphinx-autobuild',
+        'sphinx-rtd-theme',
+    ],
     'dev': requires_test + [ 'pylint' ],
 }
 

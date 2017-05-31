@@ -1,7 +1,7 @@
-.. _settings:
+.. _configuration:
 
 Configuration
-~~~~~~~~~~~~~
+=============
 
 Configuration is done using a ``yaml`` file that supports interpolation of
 environment variables (with default values) and validation with JSON schema. You

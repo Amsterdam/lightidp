@@ -9,7 +9,7 @@ from authorization import levels
 
 
 def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_map):
-    """ JWT-only resources.
+    """JWT-only resources.
 
     This function returns a blueprint with two routes configured:
 
@@ -17,7 +17,7 @@ def blueprint(refreshtokenbuilder, accesstokenbuilder, authz_map):
 
     :param token.RefreshTokenBuilder refreshtokenbuilder: JWT builder for refreshtokens
     :param token.AccessTokenBuilder accesstokenbuilder: JWT builder for accesstokens
-    :param AuthzMap authzmap: map for user -> authz level
+    :param authz_map: a *user* -> *authz level* map
     :return: :class:`flask.Blueprint`
     """
     blueprint = Blueprint('jwt_app', __name__)

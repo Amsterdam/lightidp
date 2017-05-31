@@ -26,7 +26,7 @@ def _mac_from_jwt(jwt):
 
     :param jwt:
         For compatibility `jwt` may be either `bytes` (e.g. as created through
-        :func:`jwt.encode`) or `str` (e.g. as fetched from a header).
+        `jwt.encode <jwt>` or `str` (e.g. as fetched from a header).
     :return: `str`
     """
     try:
