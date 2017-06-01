@@ -116,7 +116,7 @@ class _BaseBuilder(_TokenBuilder):
         """
         now = int(time.time())
         data = self._tokendata({
-            'iat': now,
+            'iat': now - 60,  # start a minute early
             'exp': now + self.lifetime,
         })
         data.update(kwargs)
