@@ -1,6 +1,8 @@
 """
-    auth.siam
-    ~~~~~~~~~
+.. py:class:: _Client
+
+    Base class for Client, to make sure it's immutable after construction.
+
 """
 import collections
 import logging
@@ -11,17 +13,18 @@ import requests
 
 from auth import exceptions
 
-# Base class for Client, to make sure it's immutable after construction
+# Documented at module level:
 _Client = collections.namedtuple(
     '_Client', 'base_url app_id aselect_server shared_secret'
 )
-
 
 _logger = logging.getLogger(__name__)
 
 
 class Client(_Client):
-    """ Client bundles all runtime configuration parameters in it's constructor
+    """Bundles all runtime configuration parameters.
+
+    Client bundles all runtime configuration parameters in it's constructor
     and provides methods for all four distinct requests supported by the
     service.
 
@@ -38,7 +41,7 @@ class Client(_Client):
     RESULT_INVALID_CREDENTIALS = '0007'
 
     def _request(self, query_parameters, timeout):
-        """ Convenience method to make a GET request to SIAM.
+        """Convenience method to make a GET request to SIAM.
 
         :param query_parameters: GET query string parameters, as a dictionary
         :param timeout: How long to wait for the server to send data before
@@ -51,8 +54,8 @@ class Client(_Client):
         :raise exceptions.GatewayConnectionException: Raised when a connection
             error occurs while talking to SIAM.
         :raise exceptions.GatewayResponseException: Raised when
-        :return: decoded `application/x-www-form-urlencoded` response body, as a
-            dict.
+        :return dict: decoded ``application/x-www-form-urlencoded`` response
+            body
         """
         url = '{}?{}'.format(self.base_url, urllib.parse.urlencode(query_parameters))
         try:  # <-- To log any raised exceptions.

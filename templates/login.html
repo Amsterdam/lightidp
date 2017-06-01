@@ -15,7 +15,6 @@
           <img class="c-logo__image" alt="Logo Gemeente Amsterdam" src="static/assets/images/logo-short.svg">
           <div class="c-logo__title-col">
             <span class="c-logo__title">AmsterdamData</span>
-            <sup class="c-logo__title c-logo__title-super">beta</sup>
           </div>
         </a>
     </header>
@@ -23,8 +22,8 @@
     <section class="c-content">
       <h1>Inloggen</h1>
 
-{% if whitelisted %}
       <h2>Als medewerker</h2>
+{% if whitelisted %}
       <p>
         Als medewerker/ketenpartner hoef je (tijdelijk) geen gegevens in te
         vullen, maar kun je direct doorgaan om ingelogd te zijn. Dit kan
@@ -35,9 +34,14 @@
           <button class="c-form-buttons__button" type="submit" name="type" value="employee">Doorgaan</button>
         </div>
       </form>
+{% else %}
+      <p>
+        Als medewerker/ketenpartner kun je momenteel alleen inloggen als je vanaf een
+        vertrouwd internetadres komt. Dat is nu niet het geval. Tip: benader de site vanuit ADW.
+      </p>
+{% endif %}
 
       <hr class="c-separator">
-{% endif %}
 
       <h2>Als medewerker met speciale bevoegdheid</h2>
       <p>
@@ -68,8 +72,7 @@
         </div>
       </form>
       <p>
-        Speciale bevoegdheid aanvragen? Mail naar <a
-          href="mailto:algemeen.ois@amsterdam.nl">algemeen.ois@amsterdam.nl</a>
+        Speciale bevoegdheid aanvragen? Gebruik bij voorkeur het interne <a href="https://intranet.amsterdam.nl/kennis-beleid/dienstverlening/programma-datapunt/autorisatie-datapunt/" target="_blank">aanvraagformulier</a> of mail naar <a href="mailto:algemeen.ois@amsterdam.nl">algemeen.ois@amsterdam.nl</a>
       </p>
     </section>
 

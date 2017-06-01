@@ -94,7 +94,7 @@ def _interpolate_environment(config):
     substitute them with values from :data:`os.environ`.
 
     **NOTE**: If a substituted value is a string containing only digits (i.e.
-    :func:`string.isdigit` == ``True``), then this function will cast it to an
+    `str.isdigit` == ``True``), then this function will cast it to an
     integer. It does not try to do any other type conversion.
 
     :param config: configuration mapping

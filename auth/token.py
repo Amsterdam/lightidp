@@ -44,18 +44,19 @@ _TokenBuilder = collections.namedtuple(
 
 
 class _BaseBuilder(_TokenBuilder):
-    """ Builder allows you to encode and decode JSON Web Tokens (JWTs).
+    """Builder allows you to encode and decode JSON Web Tokens (JWTs).
 
     NOTE: needs Python >= 3.4
 
     The key-value datastucture in the tokens is a dictionary that provides an
     additional method ``encode()``. Under water, ``encode()`` will call
-    :func:`jwt.encode` with all but the ``data`` argument passed in. It does
-    so by using the convenient fact that :func:`jwt.encode` takes a `dict` as
-    its first argument; it can use :func:`functools.partialmethod` to create a
-    partial and then bind that method to a dynamically created ``dict``
-    subclass. The result is a ``dict`` with an ``encode()`` method that, when
+    `jwt.encode <jwt>` with all but the ``data`` argument passed in. It does
+    so by using the convenient fact that `jwt.encode <jwt>` takes a `dict` as
+    its first argument; it can use `functools.partialmethod` to create a
+    partial and then bind that method to a dynamically created `dict`
+    subclass. The result is a `dict` with an ``encode()`` method that, when
     called, will return a JWT based on ``self``.
+
     """
 
     @property
@@ -66,8 +67,11 @@ class _BaseBuilder(_TokenBuilder):
 
     @property
     def _tokendata(self):
-        """ TokenData type as a property. This is a dynamically created class
-        that wraps this namedtuple's instance data and the jwt.encode function
+        """TokenData type as a property.
+
+        This is a dynamically created class that wraps this
+        namedtuple's instance data and the `jwt.encode <jwt>` function
+
         """
         try:
             return self._td
@@ -86,13 +90,12 @@ class _BaseBuilder(_TokenBuilder):
         return self._td
 
     def decode(self, encoded_token):
-        """ Decode a token into a dict. The resulting dict will be an
-        instance of the dynamically created dict subclass that contains the
-        ``encode()`` method.
+        """Decode a token into a dict.
 
-        Usage:
+        The resulting dict will be an instance of the dynamically created dict
+        subclass that contains the ``encode()`` method.
 
-        ::
+        Usage::
 
             data = accesstokens.decode(accesstoken_jwt)
             assert data['myproperty'] == 42

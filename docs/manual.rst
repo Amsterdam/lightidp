@@ -1,10 +1,18 @@
-:tocdepth: 3
+.. _manual:
 
+######
 Manual
-======
+######
 
+This section describes how you can make authenticated / authorized requests to
+the city of Amsterdam's `open data services
+<https://api.data.amsterdam.nl/api/>`_. If you have any problems, please
+contact `Datapunt support <mailto:datapunt.ois@amsterdam.nl>`_.
+
+
+***********************************
 Authentication for web applications
------------------------------------
+***********************************
 
 Make authenticated requests through a 3rd party website.
 
@@ -15,21 +23,22 @@ Make authenticated requests through a 3rd party website.
    Please contact `Datapunt support <mailto:datapunt.ois@amsterdam.nl>`_ if you
    want to know more.
 
+
 1. Redirect users to TMA login screen
-#####################################
+=====================================
 
 GET ``/auth/siam/authenticate``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------
 
 Description
-+++++++++++
+^^^^^^^^^^^
 
 Gets SIAM authentication redirect.
 Required query param callback specifies the URL the user should be redirected to by the IdP after succesful authentication.
 Optional query param active determines whether we want the user to see a login screen if she is not authenticated.
 
 Parameters
-++++++++++
+^^^^^^^^^^
 
 .. csv-table::
     :delim: |
@@ -40,7 +49,7 @@ Parameters
         active | query | No | any | If present, ask IdP to show user a login screen if she is not authenticated.
 
 Responses
-+++++++++
+^^^^^^^^^
 
 - **307**: Redirect to generated authentication url
 - **400**: Query param callback is not present
@@ -48,7 +57,7 @@ Responses
 - **504**: Communication with SIAM server timed out
 
 2. TMA redirects back to your site
-##################################
+==================================
 
 If the user successfully authenticates, then TMA will redirect the user back to
 the ``callback`` url provided in the previous step, with three parameters:
@@ -62,15 +71,15 @@ for a **refresh token**.
    support <mailto:datapunt.ois@amsterdam.nl>`_
 
 GET ``/auth/siam/token``
-~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
 Description
-+++++++++++
+^^^^^^^^^^^
 
 Gets JSON Web Token for the current user.
 
 Parameters
-++++++++++
+^^^^^^^^^^
 
 .. csv-table::
     :delim: |
@@ -82,12 +91,12 @@ Parameters
         a-select-server | query | Yes | any | The a-select-server used for this authentication attempt, as provided by SIAM
 
 Request headers
-+++++++++++++++
+^^^^^^^^^^^^^^^
 
 - ``Accept: text/plain``
 
 Responses
-+++++++++
+^^^^^^^^^
 
 - **200**: Success
    - ``Content-type: text/plain``
@@ -99,24 +108,24 @@ Responses
 
 
 3. Use the Refresh token to request an access token
-###################################################
+===================================================
 
 GET ``/auth/accesstoken``
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 Description
-+++++++++++
+^^^^^^^^^^^
 
 Gets an accesstoken.
 
 Request headers
-+++++++++++++++
+^^^^^^^^^^^^^^^
 
 - ``Accept: text/plain``
 - ``Authorization: Bearer [JWT]`` where ``JWT`` is a valid refresh token
 
 Responses
-+++++++++
+^^^^^^^^^
 
 - **200**: Success
    - ``Content-type: text/plain``
@@ -126,8 +135,9 @@ Responses
 
 - **406**: Requested content-type (Accept header) cannot be produced (only ``text/plain`` is supported)
 
+*****************************
 Making authenticated requests
------------------------------
+*****************************
 
 You can currently only authenticate using an accesstoken. Requests that require
 an authenticated user will respond with a ``401 Authentication Required`` and
@@ -138,7 +148,7 @@ contain a ``WWW-Authenticate`` header.
     $ curl -H "Authorization: Bearer [ACCESS_TOKEN]" https://api.data.amsterdam.nl
 
 Authentication errors
-#####################
+=====================
 
 If an ``Authorization`` header is malformed or the accesstoken is invalid, the
 ``WWW-Authenticate`` header may include an ``error`` property and an

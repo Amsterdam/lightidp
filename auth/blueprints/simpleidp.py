@@ -4,7 +4,6 @@
 
     Temporary identity provider.
 """
-import base64
 import urllib
 
 import werkzeug
