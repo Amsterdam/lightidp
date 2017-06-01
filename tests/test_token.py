@@ -23,7 +23,7 @@ def test_tokenbuilder_success():
     assert 'authz' in data
     # make sure the data is what we want it to be
     assert data['authz'] == authorization.levels.LEVEL_DEFAULT
-    assert data['exp'] - data['iat'] == 300
+    assert data['exp'] - data['iat'] == 300 + 60  # add 60 because iat starts 60 seconds early
     # note that encoding `data` again may not reult in the same JWT, even though
     # it contains the same JOSE header and data. This is because we're working
     # with dictionaries / hash sets, which don't guarantee order.
