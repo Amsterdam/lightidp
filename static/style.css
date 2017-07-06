@@ -37,13 +37,15 @@ button {
 h1 {
   font-size: 22.75px;
   line-height: 22.75px;
-  font-weight: bold; }
+  font-family: "Avenir LT W01 85 Heavy", Arial, sans-serif;
+  font-weight: normal; }
 
 h2 {
   margin-top: 30px;
   font-size: 17.5px;
   line-height: 17.5px;
-  font-weight: bold; }
+  font-family: "Avenir LT W01 85 Heavy", Arial, sans-serif;
+  font-weight: normal; }
 
 p {
   margin-top: 10px;
@@ -63,7 +65,8 @@ p {
   padding: 3px 10px;
   line-height: 20px;
   background-color: #ec0000;
-  font-weight: bold;
+  font-family: "Avenir LT W01 85 Heavy", Arial, sans-serif;
+  font-weight: normal;
   color: #fff;
 }
 
@@ -81,7 +84,8 @@ p {
   float: left;
   line-height: 30px;
   color: #666;
-  font-weight: bold;
+  font-family: "Avenir LT W01 85 Heavy", Arial, sans-serif;
+  font-weight: normal;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -115,7 +119,8 @@ p {
   border: 1px solid #ccc;
   background: url('assets/images/forward.svg') no-repeat right;
   line-height: 24px;
-  font-weight: bold;
+  font-family: "Avenir LT W01 85 Heavy", Arial, sans-serif;
+  font-weight: normal;
   color: #666;
 }
 
@@ -186,7 +191,8 @@ p {
 
 .c-logo__title {
   display: inline-block;
-  font-weight: bold;
+  font-family: "Avenir LT W01 85 Heavy", Arial, sans-serif;
+  font-weight: normal;
   line-height: normal; }
   .c-logo__title.c-logo__title-super {
     align-self: flex-start;
