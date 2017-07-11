@@ -1,6 +1,8 @@
-auth-test:
-  build: ../
-  environment:
-    JWT_REFRESH_SECRET: refreshsecret
-    JWT_ACCESS_SECRET: accesssecret
+version: '3.0'
+services:
+  auth-test:
+    build: ../
+    environment:
+      JWT_REFRESH_SECRET: refreshsecret
+      JWT_ACCESS_SECRET: accesssecret
 
