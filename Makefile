@@ -17,6 +17,7 @@ coverage:
 run-dev:
 	# WARNING: running with Flask server, *only* use this for development purposes
 	@set -e; \
+	. test.env; \
 	FLASK_APP=auth.server flask run -p 8109 --reload
 
 docs:

@@ -37,11 +37,10 @@ logging:
   version: 1
   formatters:
     root:
-      format: "%(asctime)s	%(name)s %(levelname)s (%(pathname)s/%(filename)s:%(funcName)s@%(lineno)d): %(message)s"
+      (): logstash_formatter.LogstashFormatterV1
     auditlog:
-      format: "%(asctime)s	%(name)s %(levelname)s (pid: %(process)d | ts: %(created)f) %(message)s"
-    werkzeug:
-      format: "%(asctime)s	%(name)s %(levelname)s: %(message)s"
+      (): logstash_formatter.LogstashFormatterV1
+      fmt: '{"extra": {"logtype": "auditlog"}}'
   handlers:
     root:
       class : logging.StreamHandler
@@ -49,17 +48,18 @@ logging:
     auditlog:
       class : logging.StreamHandler
       formatter: auditlog
-    werkzeug:
-      class : logging.StreamHandler
-      formatter: werkzeug
   loggers:
     auditlog.authserver:
       level: DEBUG
       propagate: false
-      handlers: [auditlog]
-    werkzeug:
+      handlers:
+        - auditlog
+    authserver:
+      level: ${LOGLEVEL:-DEBUG}
       propagate: false
-      handlers: [werkzeug]
+      handlers:
+        - root
   root:
     level: ${LOGLEVEL:-DEBUG}
-    handlers: [root]
+    handlers:
+      - root

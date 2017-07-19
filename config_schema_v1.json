@@ -108,67 +108,53 @@
     },
 
     "logging.dictconfig": {
-      "id": "#/definitions/logging.dictconfig",
       "type": "object",
       "required": ["version"],
-
       "properties": {
         "version": {"type": "integer", "enum": [1]},
-
         "formatters": {
           "type": "object",
-
           "patternProperties": {
             "^[a-zA-Z0-9._-]+$": {
               "type": "object",
-
               "properties": {
                 "format": {"type": "string"},
-
-                "datefmt": {"type": "string"}
-              },
-
-              "additionalProperties": false
+                "datefmt": {"type": "string"},
+                "()": {"type": "string"}
+              }
             }
           }
         },
 
         "filters": {
           "type": "object",
-
           "patternProperties": {
             "^[a-zA-Z0-9._-]+$": {
               "type": "object",
-
               "properties": {
-                "name": {"type": "string"}
-              },
-
-              "additionalProperties": false
+                "name": {"type": "string"},
+                "()": {"type": "string"}
+              }
             }
           }
         },
 
         "handlers": {
           "type": "object",
-
           "patternProperties": {
             "^[a-zA-Z0-9._-]+$": {
               "type": "object",
               "required": ["class"],
-
               "properties": {
                 "class": {"type": "string"},
-
                 "level": {"type": "string"},
-
                 "formatter": {"type": "string"},
-
                 "filters": {
                   "type": "array",
                   "items": {"type": "string"},
                   "uniqueItems": true
-                }
+                },
+                "()": {"type": "string"}
               }
             }
           }
@@ -176,27 +162,23 @@
 
         "loggers": {
           "type": "object",
-
           "patternProperties": {
             "^[a-zA-Z0-9._-]+$": {
               "type": "object",
-
               "properties": {
                 "level": {"type": "string"},
-
                 "propagate": {"type": "boolean"},
-
                 "filters": {
                   "type": "array",
                   "items": {"type": "string"},
                   "uniqueItems": true
                 },
-
                 "handlers": {
                   "type": "array",
                   "items": {"type": "string"},
                   "uniqueItems": true
-                }
+                },
+                "()": {"type": "string"}
               }
             }
           }
@@ -204,16 +186,16 @@
 
         "root": {
           "type": "object",
-
           "properties": {
-            "level": {"type": "string"},
-
+            "level": {
+              "type": "string",
+              "enum": [ "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG" ]
+            },
             "filters": {
               "type": "array",
               "items": {"type": "string"},
               "uniqueItems": true
             },
-
             "handlers": {
               "type": "array",
               "items": {"type": "string"},
@@ -223,7 +205,6 @@
         },
 
         "incremental": {"type": "boolean"},
-
         "disable_existing_loggers": {"type": "boolean"}
       }
     }
