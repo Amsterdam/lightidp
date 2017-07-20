@@ -37,29 +37,41 @@ logging:
   version: 1
   formatters:
     root:
-      (): logstash_formatter.LogstashFormatterV1
+      format: "%(asctime)s	%(name)s %(levelname)s (%(pathname)s/%(filename)s:%(funcName)s@%(lineno)d): %(message)s"
     auditlog:
-      (): logstash_formatter.LogstashFormatterV1
-      fmt: '{"extra": {"logtype": "auditlog"}}'
+      format: "%(asctime)s	%(name)s %(levelname)s (pid: %(process)d | ts: %(created)f) %(message)s"
   handlers:
-    root:
-      class : logging.StreamHandler
+    local-root:
+      class: logging.StreamHandler
       formatter: root
-    auditlog:
-      class : logging.StreamHandler
+    local-auditlog:
+      class: logging.StreamHandler
       formatter: auditlog
+    gelf-root:
+      class : graypy.GELFHandler
+      formatter: root
+      host: ${LOGSTASH_HOST:-localhost}
+      port: ${LOGSTASH_GELF_UDP_PORT:-12201}
+    gelf-auditlog:
+      class : graypy.GELFHandler
+      formatter: auditlog
+      host: ${LOGSTASH_HOST:-localhost}
+      port: ${LOGSTASH_UDP_PORT:-12201}
   loggers:
-    auditlog.authserver:
-      level: DEBUG
-      propagate: false
-      handlers:
-        - auditlog
     authserver:
       level: ${LOGLEVEL:-DEBUG}
       propagate: false
       handlers:
-        - root
+        - local-root
+        - gelf-root
+    auditlog.authserver:
+      level: DEBUG
+      propagate: false
+      handlers:
+        - local-auditlog
+        - gelf-auditlog
   root:
     level: ${LOGLEVEL:-DEBUG}
     handlers:
-      - root
+      - local-root
+      - gelf-root
