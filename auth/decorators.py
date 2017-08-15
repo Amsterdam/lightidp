@@ -6,6 +6,7 @@
     protocol related tasks, such as checking, parsing or setting headers.
 """
 import functools
+import logging
 
 from flask import make_response, request
 import werkzeug.exceptions
@@ -226,6 +227,7 @@ def insert_jwt(refreshtokenbuilder):
             try:
                 tokendata = refreshtokenbuilder.decode(jwt)
             except exceptions.JWTException:
+                logging.exception("Auth API problem: Invalid JWT token")
                 return _invalid_token_401(errmsg='Refreshtoken invalid')
 
             return f(tokendata, jwt, *args, **kwargs)
