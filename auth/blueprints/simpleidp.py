@@ -19,7 +19,6 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         """ Takes a string, validates it.
 
         - The host must be allowed
-        - the URL must contain a fragment identifier (or at least end with a hash "#"
 
         :raise werkzeug.exceptions.BadRequest: if the callback is invalid.
         :return: None
@@ -34,10 +33,6 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
         else:
             raise werkzeug.exceptions.BadRequest(
                 'Bad callback URL "{}"'.format(callback_url)
-            )
-        if parsed_callback.fragment is None:
-            raise werkzeug.exceptions.BadRequest(
-                'Missing required fragment identifier in URL "{}"'.format(callback_url)
             )
 
     def _whitelisted(request):
