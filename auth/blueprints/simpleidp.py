@@ -82,15 +82,24 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
             )
         jwt = refreshtokenbuilder.create(sub=email).encode()
         audit.log_refreshtoken(jwt, email)
-        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(callback)
-        query = {k: v[0] for k, v in urllib.parse.parse_qs(query).items()}
-        query['aselect_credentials'] = jwt
-        query['rid'] = 0
-        query['a-select-server'] = 0
-        query = urllib.parse.urlencode(query)
-        return redirect(
-            urllib.parse.urlunsplit((scheme, netloc, path, query, fragment)), code=302
-        )
+        if '#' in callback:
+            # we assume the caller expects the token back in the fragment
+            frag_query = {
+                'aselect_credentials': jwt,
+                'rid': 0,
+                'a-select-server': 0
+            }
+            frag_query = urllib.parse.urlencode(frag_query)
+            result = '{}?{}'.format(callback, frag_query)
+        else:
+            scheme, netloc, path, query, fragment = urllib.parse.urlsplit(callback)
+            query = {k: v[0] for k, v in urllib.parse.parse_qs(query).items()}
+            query['aselect_credentials'] = jwt
+            query['rid'] = 0
+            query['a-select-server'] = 0
+            query = urllib.parse.urlencode(query)
+            result = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
+        return redirect(result, code=302)
 
     @blueprint.route('/token', methods=('GET',))
     @decorators.assert_acceptable('text/plain')
