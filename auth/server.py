@@ -68,11 +68,11 @@ except:
 
 app = Flask('authserver', static_url_path="{}/idp/static".format(config['app']['root']))
 # siam_bp = siamblueprint(siamclient, refreshtokenbuilder, config['allowed_callback_hosts'])
-jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_map)
+# jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_map)
 idp_bp = idpblueprint(refreshtokenbuilder, config['allowed_callback_hosts'], authz_map)
 
 # JWT
-app.register_blueprint(jwt_bp, url_prefix="{}".format(config['app']['root']))
+# app.register_blueprint(jwt_bp, url_prefix="{}".format(config['app']['root']))
 
 # SIAM
 # app.register_blueprint(siam_bp, url_prefix="{}/siam".format(config['app']['root']))
