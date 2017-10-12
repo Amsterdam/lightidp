@@ -10,6 +10,7 @@ def accesstoken(app, headers={}):
     return client.get('/auth/accesstoken', headers=headers)
 
 
+@pytest.skip("Deprecated authz")
 @pytest.mark.usefixtures('app', 'refreshtokenbuilder')
 def test_accesstoken(app, refreshtokenbuilder):
     reftoken = str(refreshtokenbuilder.create(sub='evert').encode(), 'utf-8')
