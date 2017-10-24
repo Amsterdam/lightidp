@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "config_schema_v1.json",
   "type": "object",
-  "required": ["app", "siam", "jwt", "postgres"],
+  "required": ["app", "jwt", "postgres"],
 
   "properties": {
     "app": {
@@ -20,46 +20,14 @@
       "additionalProperties": false
     },
 
-    "siam": {
-      "type": "object",
-      "required": ["base_url", "aselect_server", "app_id", "shared_secret"],
-
-      "properties": {
-        "base_url": {"type": "string"},
-
-        "aselect_server": {"type": "string"},
-
-        "app_id": {"type": "string"},
-
-        "shared_secret": {"type": "string"}
-      },
-
-      "additionalProperties": false
-    },
-
-    "allowed_callback_hosts": {
-      "type": "object",
-
-      "patternProperties": {
-        "^[a-zA-Z0-9._-]+$": {
-          "type": "array",
-          "items": {"type": "string", "enum": ["http", "https"]},
-          "uniqueItems": true
-        }
-      }
+    "callbacks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
     },
 
     "jwt": {
-      "type": "object",
-      "required": ["refreshtokens", "accesstokens"],
-
-      "properties": {
-        "refreshtokens": {"$ref": "#/definitions/jwtconfig"},
-
-        "accesstokens": {"$ref": "#/definitions/jwtconfig"}
-      },
-
-      "additionalProperties": false
+      "$ref": "#/definitions/jwtconfig"
     },
 
     "postgres": {

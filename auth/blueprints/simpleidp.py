@@ -7,30 +7,22 @@
 import urllib
 
 import werkzeug
-from flask import Blueprint, make_response, redirect, render_template, request
+from flask import Blueprint, redirect, render_template, request
 
-from auth import audit, decorators, url
+from auth import audit, decorators
 
 
-def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
+def blueprint(tokenbuilder, allowed_callbacks, authz_map):
     blueprint = Blueprint('idp_app', __name__)
 
     def _validate_callback_url(callback_url):
         """ Takes a string, validates it.
 
-        - The host must be allowed
-
         :raise werkzeug.exceptions.BadRequest: if the callback is invalid.
         :return: None
 
         """
-        parsed_callback = url.parse_url(callback_url)
-        host = parsed_callback.host
-        scheme = parsed_callback.scheme
-        for allowed_host, schemes in allowed_callback_hosts.items():
-            if (host == allowed_host or host.endswith('.' + allowed_host)) and scheme in schemes:
-                break
-        else:
+        if not any(callback_url.startswith(cb) for cb in allowed_callbacks):
             raise werkzeug.exceptions.BadRequest(
                 'Bad callback URL "{}"'.format(callback_url)
             )
@@ -80,32 +72,14 @@ def blueprint(refreshtokenbuilder, allowed_callback_hosts, authz_map):
                 error_html='De combinatie gebruikersnaam en wachtwoord wordt niet herkend.',
                 whitelisted=_whitelisted(request)
             )
-        jwt = refreshtokenbuilder.create(sub=email).encode()
-        audit.log_refreshtoken(jwt, email)
-        if '#' in callback:
-            # we assume the caller expects the token back in the fragment
-            frag_query = {
-                'aselect_credentials': jwt,
-                'rid': 0,
-                'a-select-server': 0
-            }
-            frag_query = urllib.parse.urlencode(frag_query)
-            result = '{}?{}'.format(callback, frag_query)
-        else:
-            scheme, netloc, path, query, fragment = urllib.parse.urlsplit(callback)
-            query = {k: v[0] for k, v in urllib.parse.parse_qs(query).items()}
-            query['aselect_credentials'] = jwt
-            query['rid'] = 0
-            query['a-select-server'] = 0
-            query = urllib.parse.urlencode(query)
-            result = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
-        return redirect(result, code=302)
-
-    @blueprint.route('/token', methods=('GET',))
-    @decorators.assert_acceptable('text/plain')
-    @decorators.assert_req_args('aselect_credentials', 'rid', 'a-select-server')
-    @decorators.response_mimetype('text/plain')
-    def token():
-        return make_response((request.args['aselect_credentials'], 200))
+        jwt = tokenbuilder.create(sub=email).encode()
+        audit.log_token(jwt, email)
+        # Put credential in callback query
+        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(callback)
+        query = {k: v[0] for k, v in urllib.parse.parse_qs(query).items()}
+        query['credentials'] = jwt
+        query = urllib.parse.urlencode(query)
+        result = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
+        return redirect(result, code=307)
 
     return blueprint

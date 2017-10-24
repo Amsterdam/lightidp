@@ -2,14 +2,14 @@
     auth.tests.test_token
     ~~~~~~~~~~~~~~~~~~~~~
 """
-import authorization
+import jwt
 import pytest
-from auth import exceptions, token
+from auth import token
 
 
 def test_tokenbuilder_success():
-    builder = token.AccessTokenBuilder('secret', 300, 'HS256')
-    jwt = builder.create(authz=authorization.levels.LEVEL_DEFAULT).encode()
+    builder = token.TokenBuilder('secret', 300, 'HS256')
+    jwt = builder.create().encode()
     assert jwt
     data = builder.decode(jwt)
     # make sure we have something
@@ -20,9 +20,6 @@ def test_tokenbuilder_success():
     assert 'iat' in data
     # make sure exp and sub are in there
     assert 'exp' in data
-    assert 'authz' in data
-    # make sure the data is what we want it to be
-    assert data['authz'] == authorization.levels.LEVEL_DEFAULT
     assert data['exp'] - data['iat'] == 300 + 60  # add 60 because iat starts 60 seconds early
     # note that encoding `data` again may not reult in the same JWT, even though
     # it contains the same JOSE header and data. This is because we're working
@@ -30,14 +27,14 @@ def test_tokenbuilder_success():
 
 
 def test_tokenbuilder_invalid_algorithm():
-    builder = token.AccessTokenBuilder('secret', 300, 'invalid')
+    builder = token.TokenBuilder('secret', 300, 'invalid')
     with pytest.raises(NotImplementedError):
-        builder.create(authz=authorization.levels.LEVEL_DEFAULT).encode()
+        builder.create().encode()
 
 
 def test_tokenbuilder_decode_error():
-    builder1 = token.AccessTokenBuilder('secret1', 300, 'HS256')
-    builder2 = token.AccessTokenBuilder('secret2', 300, 'HS256')
-    jwt = builder1.create(authz=authorization.levels.LEVEL_DEFAULT).encode()
-    with pytest.raises(exceptions.JWTDecodeException):
-        builder2.decode(jwt)
+    builder1 = token.TokenBuilder('secret1', 300, 'HS256')
+    builder2 = token.TokenBuilder('secret2', 300, 'HS256')
+    encoded = builder1.create().encode()
+    with pytest.raises(jwt.exceptions.DecodeError):
+        builder2.decode(encoded)

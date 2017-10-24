@@ -19,12 +19,6 @@ def test__mac_from_jwt_bin():
     audit._mac_from_jwt(b'iam.bin.ary')
 
 
-def test_log_refreshtoken(caplog):
-    audit.log_refreshtoken('a.b.mac', sub='user')
+def test_log_token(caplog):
+    audit.log_token('a.b.mac', sub='user')
     assert 'user' in caplog.text()
-
-
-def test_log_accesstoken(caplog):
-    audit.log_accesstoken('refre.shtoken.rmac', 'acce.sstoken.amac')
-    assert 'rmac' in caplog.text()
-    assert 'amac' in caplog.text()

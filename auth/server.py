@@ -1,6 +1,6 @@
 """
-    Authentication & authorization service
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Authentication service
+    ~~~~~~~~~~~~~~~~~~~~~~
 """
 import logging.config
 import os
@@ -8,9 +8,9 @@ import os
 from authorization import AuthzMap
 from flask import Flask
 
-from . import exceptions, token
+from . import token
 from .config import load as config_load
-from .blueprints import jwtblueprint, idpblueprint
+from .blueprints import idpblueprint
 
 # ====== 1. LOAD CONFIGURATION SETTINGS AND INITIALIZE LOGGING
 
@@ -18,28 +18,16 @@ config = config_load(configpath=os.getenv('CONFIG'))
 logging.config.dictConfig(config['logging'])
 _logger = logging.getLogger(__name__)
 
-# ====== 2. CREATE SIAM CLIENT, TOKENBUILDERS AND AUTHZ FLOW
+# ====== 2. CREATE AUTHZ FLOW
 
 authz_map = AuthzMap(**config['postgres'])
-refreshtokenbuilder = token.RefreshTokenBuilder(**config['jwt']['refreshtokens'])
-accesstokenbuilder = token.AccessTokenBuilder(**config['jwt']['accesstokens'])
-# siamclient = siam.Client(**config['siam'])
+tokenbuilder = token.TokenBuilder(**config['jwt'])
 
 # ====== 3. RUN CONFIGURATION CHECKS
 
-# 3.1 Check whether we can get an authn redirect from SIAM
-# try:
-#     siamclient.get_authn_redirect(False, 'http://localhost')
-# except exceptions.AuthException:
-#     _logger.critical('Couldn\'t verify the SIAM config')
-#     raise
-# except Exception:
-#     _logger.critical('An unknown error occurred during startup')
-#     raise
-
-# 3.2 Check whether we can generate refreshtokens
+# Check whether we can generate refreshtokens
 try:
-    refreshtokenbuilder.decode(refreshtokenbuilder.create(sub='sub').encode())
+    tokenbuilder.decode(tokenbuilder.create().encode())
 except exceptions.JWTException:
     _logger.critical('Couldn\'t verify the refreshtoken config')
     raise
@@ -47,17 +35,7 @@ except Exception:
     _logger.critical('An unknown error occurred during startup')
     raise
 
-# 3.3 Check whether we can generate accesstokens
-try:
-    accesstokenbuilder.decode(accesstokenbuilder.create(authz=0).encode())
-except exceptions.JWTException:
-    _logger.critical('Couldn\'t verify the accesstoken config')
-    raise
-except Exception:
-    _logger.critical('An unknown error occurred during startup')
-    raise
-
-# 3.4 Check whether we can get authorization levels
+# Check whether we can get authorization levels
 try:
     authz_map.get('non-existing-user', None)
 except:
@@ -67,15 +45,7 @@ except:
 # ====== 4. CREATE FLASK WSGI APP AND BLUEPRINTS
 
 app = Flask('authserver', static_url_path="{}/idp/static".format(config['app']['root']))
-# siam_bp = siamblueprint(siamclient, refreshtokenbuilder, config['allowed_callback_hosts'])
-# jwt_bp = jwtblueprint(refreshtokenbuilder, accesstokenbuilder, authz_map)
-idp_bp = idpblueprint(refreshtokenbuilder, config['allowed_callback_hosts'], authz_map)
-
-# JWT
-# app.register_blueprint(jwt_bp, url_prefix="{}".format(config['app']['root']))
-
-# SIAM
-# app.register_blueprint(siam_bp, url_prefix="{}/siam".format(config['app']['root']))
+idp_bp = idpblueprint(tokenbuilder, config['callbacks'], authz_map)
 
 # SimpleIdP
 app.register_blueprint(idp_bp, url_prefix="{}/idp".format(config['app']['root']))

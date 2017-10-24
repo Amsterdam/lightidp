@@ -12,16 +12,16 @@
         from auth import token
 
         # Create a builder that contains the config
-        accesstokens = token.AccessTokenBuilder(**config)
+        tokens = token.TokenBuilder(**config)
         # Create accesstoken data
-        data = accesstokens.create(authz.levels.LEVEL_EMPLOYEE)
+        data = tokens.create()
         # data is a dict! add some property
         data['someprop'] = 'something the IdP gave us'
         # now create a JWT
-        accesstoken_jwt = data.encode()
+        jwt = data.encode()
 
         # we can also decode the jwt the same way
-        decoded = accesstokens.decode(accesstoken_jwt)
+        decoded = tokens.decode(jwt)
         # this is a dict again
         assert decoded['someprop'] == 'something the IdP gave us'
         # we could change something
@@ -35,16 +35,14 @@ import time
 import types
 import jwt
 
-from . import exceptions
-
 # Use a namedtuple to emphasize the immutability of the config
 _TokenBuilder = collections.namedtuple(
     '_TokenBuilder', ('secret', 'lifetime', 'algorithm')
 )
 
 
-class _BaseBuilder(_TokenBuilder):
-    """Builder allows you to encode and decode JSON Web Tokens (JWTs).
+class TokenBuilder(_TokenBuilder):
+    """TokenBuilder allows you to encode and decode JSON Web Tokens (JWTs).
 
     NOTE: needs Python >= 3.4
 
@@ -58,12 +56,6 @@ class _BaseBuilder(_TokenBuilder):
     called, will return a JWT based on ``self``.
 
     """
-
-    @property
-    def keys(self):
-        """ A sequence of keys that subclasses require.
-        """
-        raise NotImplementedError()
 
     @property
     def _tokendata(self):
@@ -103,15 +95,7 @@ class _BaseBuilder(_TokenBuilder):
             new_jwt = accesstokens.encode()
 
         """
-        try:
-            data = jwt.decode(encoded_token, key=self.secret)
-        except jwt.exceptions.DecodeError as e:
-            raise exceptions.JWTDecodeException() from e
-        except jwt.exceptions.ExpiredSignatureError as e:
-            raise exceptions.JWTExpiredSignatureException from e
-        except jwt.exceptions.InvalidTokenError as e:
-            raise exceptions.JWTException from e
-        self._check_integrity(data)
+        data = jwt.decode(encoded_token, key=self.secret)
         return self._tokendata(data)
 
     def create(self, **kwargs):
@@ -123,27 +107,4 @@ class _BaseBuilder(_TokenBuilder):
             'exp': now + self.lifetime,
         })
         data.update(kwargs)
-        self._check_integrity(data)
         return data
-
-    def _check_integrity(self, data):
-        """ Make sure all expected keys are present.
-        """
-        missing = (set(self.keys) | {'iat', 'exp'}) - set(data.keys())
-        if missing:
-            raise exceptions.JWTException(
-                'missing required fields {}'.format(missing))
-
-
-class AccessTokenBuilder(_BaseBuilder):
-    """ Token builder that creates access tokens.
-    """
-
-    keys = ('authz',)
-
-
-class RefreshTokenBuilder(_BaseBuilder):
-    """ Token builder that creates refresh tokens.
-    """
-
-    keys = ('sub',)

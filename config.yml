@@ -3,28 +3,16 @@ app:
   port: 8109
   root: /auth
 
-siam:
-  base_url: ${SIAM_URL:- }
-  aselect_server: ${SIAM_A_SELECT_SERVER:- }
-  app_id: ${SIAM_APP_ID:- }
-  shared_secret: ${SIAM_SHARED_SECRET:- }
-
-# Temporary, as a replacement for client registration (rfc6749#section-2)
-allowed_callback_hosts:
-  amsterdam.nl:
-    - https
-  localhost:
-    - http
+# Allowed redirect prefixes
+callbacks:
+  - https://acc.api.data.amsterdam.nl/oauth2/callback
+  - https://api.data.amsterdam.nl/oauth2/callback
+  - http://localhost
 
 jwt:
-  refreshtokens:
-    secret: $JWT_REFRESH_SECRET
-    algorithm: HS256
-    lifetime: ${JWT_LIFETIME:-43200}  # 12 x 3600
-  accesstokens:
-    secret: $JWT_ACCESS_SECRET
-    algorithm: HS256
-    lifetime: 300
+  secret: $JWT_REFRESH_SECRET
+  algorithm: HS256
+  lifetime: ${JWT_LIFETIME:-10}
 
 postgres:
   host: ${DB_HOST:-localhost}

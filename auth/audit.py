@@ -3,18 +3,15 @@
     ~~~~~~~~~~
 
     Wraps logging functions for JWT audit logging. Its goal is to provide
-    enough information to track access tokens back to refreshtokens, and track
-    refreshtokens back to subjects.
+    enough information to track tokens.
 
     Usage:
 
     ::
 
         import auth.audit
-        refreshtoken = ...
-        auth.audit.log_refreshtoken(refreshtoken, sub)
-        accesstoken = ...
-        auth.audit.log_accesshtoken(refreshtoken, accesstoken)
+        token = ...
+        auth.audit.log_token(token, sub)
 """
 import logging
 
@@ -39,25 +36,12 @@ def _mac_from_jwt(jwt):
         _jwtlogger.fatal('Not a valid JWT: {}'.format(jwt_str))
         raise
 
+def log_token(token, sub):
+    """ Logs a token
 
-def log_accesstoken(refreshjwt, accessjwt):
-    """ Logs an accesstoken request as “Refreshtoken [MAC] -> Accesstoken [MAC]”
-
-    :param refreshjwt: The refreshtoken that was used for creating this accesstoken.
-    :param accessjwt: The accesstoken that was created
-    """
-    log_msg = 'Refreshtoken {} -> Accesstoken {}'
-    refresh_mac = _mac_from_jwt(refreshjwt)
-    access_mac = _mac_from_jwt(accessjwt)
-    _jwtlogger.info(log_msg.format(refresh_mac, access_mac))
-
-
-def log_refreshtoken(refreshjwt, sub):
-    """ Logs a refreshtoken request as “Refreshtoken created: [MAC]”
-
-    :param refreshjwt: The refreshtoken that was created
+    :param token: The refreshtoken that was created
     :param sub: The subject associated with this refreshtoken
     """
     log_msg = 'Refreshtoken created: {} | sub={}'
-    refresh_mac = _mac_from_jwt(refreshjwt)
-    _jwtlogger.info(log_msg.format(refresh_mac, sub))
+    token_mac = _mac_from_jwt(token)
+    _jwtlogger.info(log_msg.format(token_mac, sub))
