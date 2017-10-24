@@ -4,5 +4,4 @@ services:
     build: ../
     environment:
       JWT_REFRESH_SECRET: refreshsecret
-      JWT_ACCESS_SECRET: accesssecret
 
