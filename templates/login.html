@@ -53,7 +53,7 @@
       <p>
         Gebruik (tijdelijk weer) je Atlas-gegevens.
       </p>
-      <form class="c-form" action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post">
+      <form class="c-form" action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post" autocomplete="off">
 {% if error_html %}
         <div class="c-form-error">
           {{ error_html }}
