@@ -80,6 +80,6 @@ def blueprint(tokenbuilder, allowed_callbacks, authz_map):
         query['credentials'] = jwt
         query = urllib.parse.urlencode(query)
         result = urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
-        return redirect(result, code=307)
+        return redirect(result, code=303)
 
     return blueprint
