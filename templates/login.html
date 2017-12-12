@@ -31,7 +31,7 @@
       </p>
       <form class="c-form" action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post">
         <div class="c-form-buttons">
-          <button class="c-form-buttons__button" type="submit" name="type" value="employee">Doorgaan</button>
+          <button class="c-form-buttons__button" type="submit" name="type" value="employee" title="Doorgaan als medewerker">Doorgaan</button>
         </div>
       </form>
 {% else %}
@@ -68,7 +68,7 @@
           <input class="c-form-field__input" type="password" id="password" name="password">
         </div>
         <div class="c-form-buttons">
-          <button class="c-form-buttons__button" type="submit" name="type" value="employee_plus">Inloggen</button>
+          <button class="c-form-buttons__button" type="submit" name="type" value="employee_plus" title="Inloggen met speciale bevoegdheid">Inloggen</button>
         </div>
       </form>
       <p>
