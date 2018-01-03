@@ -114,9 +114,10 @@ p {
 
 .c-form-buttons__button {
   margin: 10px 0;
-  padding: 0 26px 0 8px;
-  height: 26px;
+  padding: 4px 26px 4px 8px;
+  height: 32px;
   border: 1px solid #ccc;
+  border-radius: 0;
   background: url('assets/images/forward.svg') no-repeat right;
   line-height: 24px;
   font-family: "Avenir LT W01 85 Heavy", Arial, sans-serif;
