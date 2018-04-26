@@ -15,5 +15,4 @@ RUN pip install --no-cache-dir .
 
 USER datapunt
 
-CMD uwsgi
-
+CMD uwsgi --need-app
