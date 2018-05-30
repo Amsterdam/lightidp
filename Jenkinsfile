@@ -24,16 +24,16 @@ node {
 
     stage('Test') {
         tryStep "test", {
-            sh "docker-compose -p auth -f .jenkins/docker-compose.yml build && " +
-               "docker-compose -p auth -f .jenkins/docker-compose.yml run -u root --rm auth-test make test"
+            sh "docker-compose -p lightidp -f .jenkins/docker-compose.yml build && " +
+               "docker-compose -p lightidp -f .jenkins/docker-compose.yml run -u root --rm idp-test make test"
         }, {
-            sh "docker-compose -p auth -f .jenkins/docker-compose.yml down"
+            sh "docker-compose -p lightidp -f .jenkins/docker-compose.yml down"
         }
     }
 
     stage("Build image") {
         tryStep "build", {
-            def image = docker.build("build.datapunt.amsterdam.nl:5000/datapunt/auth:${env.BUILD_NUMBER}")
+            def image = docker.build("build.datapunt.amsterdam.nl:5000/datapunt/lightidp:${env.BUILD_NUMBER}")
             image.push()
         }
     }
@@ -46,7 +46,7 @@ if (BRANCH == "master") {
     node {
         stage('Push acceptance image') {
             tryStep "image tagging", {
-                def image = docker.image("build.datapunt.amsterdam.nl:5000/datapunt/auth:${env.BUILD_NUMBER}")
+                def image = docker.image("build.datapunt.amsterdam.nl:5000/datapunt/lightidp:${env.BUILD_NUMBER}")
                 image.pull()
                 image.push("acceptance")
             }
@@ -59,7 +59,7 @@ if (BRANCH == "master") {
             build job: 'Subtask_Openstack_Playbook',
             parameters: [
                     [$class: 'StringParameterValue', name: 'INVENTORY', value: 'acceptance'],
-                    [$class: 'StringParameterValue', name: 'PLAYBOOK', value: 'deploy-auth.yml'],
+                    [$class: 'StringParameterValue', name: 'PLAYBOOK', value: 'deploy-lightidp.yml'],
                 ]
             }
         }
@@ -67,14 +67,14 @@ if (BRANCH == "master") {
 
 
     stage('Waiting for approval') {
-        slackSend channel: '#ci-channel', color: 'warning', message: 'Authentication is waiting for Production Release - please confirm'
+        slackSend channel: '#ci-channel', color: 'warning', message: 'LightIdP is waiting for Production Release - please confirm'
         input "Deploy to Production?"
     }
 
     node {
         stage('Push production image') {
         tryStep "image tagging", {
-            def image = docker.image("build.datapunt.amsterdam.nl:5000/datapunt/auth:${env.BUILD_NUMBER}")
+            def image = docker.image("build.datapunt.amsterdam.nl:5000/datapunt/lightidp:${env.BUILD_NUMBER}")
             image.pull()
                 image.push("production")
                 image.push("latest")
@@ -88,7 +88,7 @@ if (BRANCH == "master") {
                 build job: 'Subtask_Openstack_Playbook',
                 parameters: [
                     [$class: 'StringParameterValue', name: 'INVENTORY', value: 'production'],
-                    [$class: 'StringParameterValue', name: 'PLAYBOOK', value: 'deploy-auth.yml'],
+                    [$class: 'StringParameterValue', name: 'PLAYBOOK', value: 'deploy-lightidp.yml'],
                 ]
             }
         }

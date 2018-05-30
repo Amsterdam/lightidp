@@ -3,6 +3,7 @@ import pytest
 import auth.config
 import dpuser
 
+
 @pytest.fixture(autouse=True)
 def no_database(monkeypatch):
     def Users(*args, **kwargs):
