@@ -1,17 +1,14 @@
-FROM amsterdam/python
-MAINTAINER datapunt@amsterdam.nl
-
-ENV PYTHONUNBUFFERED 1
+FROM python:3.6-slim
 
 EXPOSE 8000
 
-RUN apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && adduser --system datapunt
+RUN adduser --system datapunt
 
 WORKDIR /app
 COPY . /app/
-RUN pip install --no-cache-dir .
+RUN apt-get update \
+    && apt-get install -y build-essential \
+    && pip install --no-cache-dir .
 
 USER datapunt
 

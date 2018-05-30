@@ -12,7 +12,7 @@ from flask import Blueprint, redirect, render_template, request
 from auth import audit, decorators
 
 
-def blueprint(tokenbuilder, allowed_callbacks, authz_map):
+def blueprint(tokenbuilder, allowed_callbacks, users):
     blueprint = Blueprint('idp_app', __name__)
 
     def _validate_callback_url(callback_url):
@@ -65,7 +65,7 @@ def blueprint(tokenbuilder, allowed_callbacks, authz_map):
                     error_html='U komt niet meer vanaf een vertrouwd internetadres.',
                     whitelisted=False
                 )
-        elif not authz_map.verify_password(email, password):
+        elif not users.verify_password(email, password):
             return render_template(
                 'login.html',
                 query_string=urllib.parse.urlencode({'callback': callback}),

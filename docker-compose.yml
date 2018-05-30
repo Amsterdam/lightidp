@@ -5,9 +5,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: authz
-      POSTGRES_USER: authuser
-      POSTGRES_PASSWORD: authpassword
+      POSTGRES_DB: accounts
+      POSTGRES_USER: dpuser
+      POSTGRES_PASSWORD: dpuser
 
   auth:
     build: .

@@ -17,9 +17,9 @@ jwt:
 postgres:
   host: ${DB_HOST:-localhost}
   port: ${DB_PORT:-5432}
-  user: ${DB_USER:-authuser}
-  password: ${DB_PASS:-authpassword}
-  dbname: ${DB_DATABASE:-authz}
+  user: ${DB_USER:-dpuser}
+  password: ${DB_PASS:-dpuser}
+  dbname: ${DB_DATABASE:-accounts}
 
 logging:
   version: 1
