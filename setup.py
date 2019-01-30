@@ -39,12 +39,12 @@ packages = ['auth']
 # Why are you so precise about the versions here? --PvB
 requires = [
     'datapunt-accounts==1.0.0-rc.1',
-    'Flask==0.12',
+    'Flask==0.12.3',
     'graypy',
     'jsonschema==2.6.0',
     'PyJWT==1.5.2',
     'pyyaml==3.12',
-    'requests==2.12.4',
+    'requests==2.20.0',
     'uwsgi',
 ]
 requires_test = ['responses==0.5.1', 'pytest==3.0.5', 'pytest-cov==2.4.0',
