@@ -85,7 +85,7 @@ def _load_yaml(configpath=None):
         else:
             raise ConfigError('Cannot read config from {}'.format(configpath))
     with conffile.open() as f:
-        parsed = yaml.load(f)
+        parsed = yaml.safe_load(f)
     return parsed
 
 
