@@ -36,12 +36,12 @@ logging:
       class: logging.StreamHandler
       formatter: auditlog
     gelf-root:
-      class : graypy.GELFHandler
+      class : graypy.GELFUDPHandler
       formatter: root
       host: ${LOGSTASH_HOST:-localhost}
       port: ${LOGSTASH_GELF_UDP_PORT:-12201}
     gelf-auditlog:
-      class : graypy.GELFHandler
+      class : graypy.GELFUDPHandler
       formatter: auditlog
       host: ${LOGSTASH_HOST:-localhost}
       port: ${LOGSTASH_UDP_PORT:-12201}

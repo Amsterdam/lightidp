@@ -35,7 +35,6 @@ import string
 import jsonschema
 import yaml
 
-
 _module_path = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 
 DEFAULT_CONFIG_PATHS = [
