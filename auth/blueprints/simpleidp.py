@@ -4,12 +4,16 @@
 
     Temporary identity provider.
 """
+import logging
 import urllib
 
 import werkzeug
 from flask import Blueprint, redirect, render_template, request
 
 from auth import audit, decorators
+
+
+_logger = logging.getLogger(__name__)
 
 
 def blueprint(tokenbuilder, allowed_callbacks, users):
@@ -66,6 +70,7 @@ def blueprint(tokenbuilder, allowed_callbacks, users):
                     whitelisted=False
                 )
         elif not users.verify_password(email, password):
+            _logger.info("Failed to verify password for %s", email)
             return render_template(
                 'login.html',
                 query_string=urllib.parse.urlencode({'callback': callback}),

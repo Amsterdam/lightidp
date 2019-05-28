@@ -38,7 +38,7 @@ packages = ['auth']
 
 # Why are you so precise about the versions here? --PvB
 requires = [
-    'datapunt-accounts==1.0.0-rc.1',
+    'datapunt-accounts~=1.0',
     'Flask==0.12.3',
     'graypy',
     'jsonschema==2.6.0',
