@@ -25,8 +25,9 @@
       <h2>Als medewerker</h2>
 {% if whitelisted %}
       <p>
-        Als medewerker/ketenpartner hoef je (tijdelijk) geen gegevens in te
-        vullen, maar kun je direct doorgaan om ingelogd te zijn. Dit kan doordat je vanaf een gemeentelijke werkplek (of ander vertrouwd internetadres) komt.
+         Als medewerker/ketenpartner hoef je (tijdelijk) geen gegevens in te vullen,
+         maar kun je direct doorgaan om ingelogd te zijn. Dit kan doordat je vanaf een
+         gemeentelijke werkplek (of ander vertrouwd internetadres) komt.
       </p>
       <form class="c-form" action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post">
         <div class="c-form-buttons">
@@ -34,10 +35,12 @@
         </div>
       </form>
       <p>
+        Je ziet dan <a href="https://data.amsterdam.nl/content/inloggen/" target="_blank">meer gegevens</a>
+        (die dus niet publiek beschikbaar zijn).</br>
         <i>Als binnengemeentelijke organisatie mag je gebruik maken van de gegevens
-         uit het Handelsregister (HR) en de Basisregistratie kadaster (BRK)
-         voor de uitvoering van een publiekrechtelijke gemeentelijke taak.
-         Als er een externe partij bij betrokken is, neem dan even contact op 
+        uit het Handelsregister (HR) en de Basisregistratie kadaster (BRK)
+        voor de uitvoering van een publiekrechtelijke gemeentelijke taak.
+        Als er een externe partij bij betrokken is, neem dan even contact op
         met <a href="mailto:gebruik.basisinformatie@amsterdam.nl">Basisinformatie</a>.</i> 
       </p>
 
@@ -53,12 +56,9 @@
       <h2>Als medewerker met speciale bevoegdheid</h2>
       <p>
         Als je speciale bevoegdheid toegekend hebt gekregen en daar gebruik van wilt maken,
-        kun je hieronder inloggen. Je kunt dan zoeken op basis van de naam van een natuurlijk persoon,
-        bijvoorbeeld om te bekijken welke percelen of appartementen deze in eigendom heeft.
+        kun je hieronder inloggen (met je Data en Informatie accountgegevens).
       </p>
-      <p>
-        Gebruik hiervoor je Data en Informatie accountgegevens.
-      </p>
+
       <form class="c-form" action="login?{{ query_string }}" enctype="application/x-www-form-urlencoded" method="post" autocomplete="off">
 {% if error_html %}
         <div class="c-form-error">
@@ -78,7 +78,14 @@
         </div>
       </form>
       <p>
+        Je kunt dan zoeken op basis van de naam van een natuurlijk persoon,
+        bijvoorbeeld om te bekijken welke percelen of appartementen deze in eigendom heeft.
+      </p>
+      <p>
         Speciale bevoegdheid aanvragen? Gebruik het interne <a href="http://intranet.amsterdam.nl/kennis-beleid/dienstverlening/programma-datapunt/autorisatie-datapunt/" target="_blank">aanvraagformulier</a> (alleen voor medewerkers van Gemeente Amsterdam).
+      </p>
+      <p>
+        Problemen met in- of uitloggen? Neem dan <a href="mailto:datapunt@amsterdam.nl">contact</a> op.
       </p>
     </section>
 
