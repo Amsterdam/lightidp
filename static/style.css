@@ -205,3 +205,18 @@ p {
   margin: 66px 86px;
   max-width: 595px;
 }
+
+.c-alert {
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  background-color: rgb(254, 200, 19);
+}
+
+.c-alert__content {
+  display: flex;
+  flex-direction: column;
+  font-weight: 700;
+  justify-content: center;
+  width: 100%;
+}
