@@ -43,7 +43,7 @@ requires = [
     'graypy',
     'jsonschema==2.6.0',
     'PyJWT==1.5.2',
-    'pyyaml==3.12',
+    'pyyaml==5.4',
     'requests==2.20.0',
     'uwsgi',
 ]
